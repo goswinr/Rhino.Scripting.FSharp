@@ -103,19 +103,25 @@ module AutoOpenSelection =
                                         [<OPT;DEF(0)>]maximumCount:int,
                                         [<OPT;DEF(true)>]printCount:bool,
                                         [<OPT;DEF(null:Input.Custom.GetObjectGeometryFilter)>]customFilter:Input.Custom.GetObjectGeometryFilter)  : Guid ResizeArray =
-        try
-            let objectIds = rememberedObjects.[message]
-            if printCount then  // this print statement also raises an exception if object does not exist to trigger reselection
-                // RhinoScriptSyntax.PrintfnBlue "GetObjectsAndRemember for '%s': %s" message ( RhinoScriptSyntax.ObjectDescription(objectIds)) // TODO
-                RhinoScriptSyntax.Print $"GetObjectsAndRemember for '%s{message}': %d{objectIds.Count} objects"
-            elif objectIds.Exists  (System.Predicate ( fun g -> let o =  RhinoScriptSyntax.Doc.Objects.FindId(g) in isNull o || o.IsDeleted )) then
-                failwith "GetObjectsAndRemember" // to trigger reselection if object does not exist anymore
-            objectIds
-        with e ->
-            //Printf.lightGray "%A" e
+        let get() =
             let ids = RhinoScriptSyntax.GetObjects(message, filter, group, preselect, select, objects, minimumCount, maximumCount, printCount, customFilter)
             rememberedObjects.[message] <- ids
             ids
+
+        match rememberedObjects.TryGetValue message with
+        | false, _  ->
+            get()
+        | true , objectIds ->
+            if objectIds.Count = 0 then
+                get()
+            elif objectIds.Exists (System.Predicate ( fun g -> let o =  RhinoScriptSyntax.Doc.Objects.FindId g in isNull o || o.IsDeleted )) then
+                get()
+            else
+                if printCount then
+                    RhinoScriptSyntax.Print $"GetObjectsAndRemember for '%s{message}': {RhinoScriptSyntax.ObjectDescription(objectIds)}"
+                objectIds
+
+
 
 
     ///<summary>Returns the same object as in the last user interaction with the same prompt message
@@ -139,19 +145,24 @@ module AutoOpenSelection =
                                         [<OPT;DEF(false)>]select:bool,
                                         [<OPT;DEF(false)>]printDescr:bool,
                                         [<OPT;DEF(null:Input.Custom.GetObjectGeometryFilter)>]customFilter:Input.Custom.GetObjectGeometryFilter)  : Guid =
-        try
-            let objectId = rememberedObjects.[message].[0] // this may raises an exception if the key does  not exist, to trigger reselection
-            if printDescr then
-                // RhinoScriptSyntax.PrintfnBlue "GetObjectAndRemember for '%s': one %s" message ( RhinoScriptSyntax.ObjectDescription(objectId)) // this print statement also raises an exception if guid object does not exist, to trigger reselection
-                RhinoScriptSyntax.Print $"GetObjectAndRemember for '%s{message}': one %s{ RhinoScriptSyntax.ObjectDescription(objectId)}"
-            elif (let o = RhinoScriptSyntax.Doc.Objects.FindId(objectId) in isNull o || o.IsDeleted)  then
-                failwith "GetObjectAndRemember" // to trigger reselection if object does not exist anymore
-            objectId
-        with e ->
-            // Printf.lightGray "%A" e
+        let get() =
             let id = RhinoScriptSyntax.GetObject(message, filter,  preselect, select,  customFilter, subObjects=false)
             rememberedObjects.[message] <- ResizeArray [id]
             id
+
+        match rememberedObjects.TryGetValue message with
+        | false, _  ->
+            get()
+        | true , objectIds ->
+            if objectIds.Count <> 1 then
+                get()
+            elif (let o = RhinoScriptSyntax.Doc.Objects.FindId objectIds.[0] in isNull o || o.IsDeleted ) then
+                get()
+            else
+                if printDescr then
+                    RhinoScriptSyntax.Print $"GetObjectAndRemember for '%s{message}': {RhinoScriptSyntax.ObjectDescription(objectIds.[0])}"
+                objectIds.[0]
+
 
     ///<summary>Clears all remembered objects form internal Dictionary that where added via  rs.GetObjectAndRemember() or rs.GetObjectsAndRemember()</summary>
     static member ClearRememberedObjects()  : unit =

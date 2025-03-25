@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.2] - 2025-03-25
+### Fixed
+- nicer Error Messages when remembering objects
+
 ## [0.10.1] - 2025-03-15
 ### Changed
 - Referencing Rhino.Scripting 0.10.1
