@@ -15,11 +15,13 @@ This includes type extension for pretty printing of Rhino objects as well as imp
 
 This library allows you to compose RhinoScript functions with pipelines:
 
-Get started by opening the Rhino.Scripting namespaces:
+Get started by opening the Rhino.Scripting namespaces.
+Opening Rhino.Scripting.FSharp will extend
+Rhino.Scripting and Rhino.Geometry types with additional static and member functions.
 
 ```fsharp
 open Rhino.Scripting
-open Rhino.Scripting.FSharp // opening this will extend RhinoScriptSyntax and some Rhino.Geometry types with additional static and member functions.
+open Rhino.Scripting.FSharp
 type rs = RhinoScriptSyntax
 ```
 
@@ -40,7 +42,7 @@ rs.ObjectName (guid, "123")
 ```
 
 The `|>!` operator is part of Rhino.Scripting.FSharp library.
-It passes it's input on as output. See [definition](https://github.com/goswinr/Rhino.Scripting.FSharp/blob/main/Src/Rhino.Scripting/Curried.fs#L16).
+It passes its input on as output. See [definition](https://github.com/goswinr/Rhino.Scripting.FSharp/blob/main/Src/Rhino.Scripting/Curried.fs#L16).
 
 ### Full API Documentation
 
