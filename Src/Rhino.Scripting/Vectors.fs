@@ -21,7 +21,7 @@ module AutoOpenVectors =
 
     type RhinoScriptSyntax with
 
-        /// Draws a line with a Curve Arrows from a given point.
+        /// Draws a line with Curve Arrows from a given point.
         static member DrawVector(   vector:Vector3d,
                                     fromPoint:Point3d,
                                     [<OPT;DEF("")>]layer:string ) : Guid  =
@@ -30,7 +30,7 @@ module AutoOpenVectors =
             if layer<>"" then RhinoScriptSyntax.ObjectLayer(l, layer, createLayerIfMissing=true)
             l
 
-        /// Draws a line with a Curve Arrows from World Origin.
+        /// Draws a line with Curve Arrows from World Origin.
         static member DrawVector( vector:Vector3d) : Guid  =
             let l = RhinoScriptSyntax.AddLine(Point3d.Origin, Point3d.Origin + vector )
             RhinoScriptSyntax.CurveArrows(l, 2)
@@ -70,7 +70,7 @@ module AutoOpenVectors =
             let sc = distance/v.Length
             fromPt + v*sc
 
-        /// returns a Point by evaluation a line between two point with a normalized parameter.
+        /// returns a Point by evaluating a line between two points with a normalized parameter.
         /// e.g. rel=0.5 will return the middle point, rel=1.0 the endPoint
         /// if the rel parameter is omitted it is set to 0.5
         static member DivPt(fromPt:Point3d, toPt:Point3d, [<OPT;DEF(0.5)>]rel:float) : Point3d  =
@@ -78,7 +78,7 @@ module AutoOpenVectors =
             fromPt + v*rel
 
 
-        /// Returns the average of many points
+        /// Returns the average of many points.
         static member MeanPoint(pts:Point3d seq) : Point3d  =
             let mutable p = Point3d.Origin
             let mutable k = 0.0
@@ -90,10 +90,10 @@ module AutoOpenVectors =
         /// Finds the mean normal of many points.
         /// It finds the center point and then takes cross-products iterating all points in pairs of two.
         /// The first two points define the orientation of the normal.
-        /// Considers current order of points too, counterclockwise in xy Plane is z
+        /// Considers current order of points too, counterclockwise in xy plane is z.
         static member NormalOfPoints(pts:Point3d IList) : Vector3d  =
             if pts.Count <= 2  then
-                RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.NormalOfPoints can't find normal of two or less points %s" (pretty pts)
+                RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.NormalOfPoints can't find normal of two or fewer points %s" (pretty pts)
             elif pts.Count = 3 then
                 let a = pts.[0] - pts.[1]
                 let b = pts.[2] - pts.[1]
@@ -271,11 +271,11 @@ module AutoOpenVectors =
                 Pts
 
 
-        /// Offsets a Polyline in 3D space by finding th local offset in each corner.
+        /// Offsets a Polyline in 3D space by finding the local offset in each corner.
         /// Positive distance is offset inwards, negative outwards.
         /// Normal distances define a perpendicular offset at each corner.
-        /// Auto detects if given points are from a closed Polyline (first point = last point) and loops them
-        /// Auto detects points from closed polylines and loops them
+        /// Auto detects if given points are from a closed Polyline (first point = last point) and loops them.
+        /// Auto detects points from closed polylines and loops them.
         static member OffsetPoints(     points:Point3d IList,
                                         offsetDistance: float,
                                         [<OPT;DEF(0.0)>]normalDistance: float ,

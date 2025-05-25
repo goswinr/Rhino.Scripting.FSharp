@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [0.11.0] - 2025-5-25
+### Changed
+- Referencing Rhino.Scripting 0.11.0
+### Added
+- build for .NET 7 too
+### Fixed
+- typos in documentation
 
 ## [0.10.2] - 2025-03-25
 ### Fixed
@@ -24,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.8.2] - 2025-02-24
 ### Changed
 - Referencing Rhino.Scripting 0.8.0
-- rename Rhino.Scripting.FSharp -> Rhino.Scripting.FSharp (capital S)
+- rename Rhino.Scripting.Fsharp -> Rhino.Scripting.FSharp (capital S)
 
 ## [0.8.1] - 2024-10-06
 ### Changed
@@ -40,7 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First public release
 - Referencing Rhino.Scripting 0.5.0
 
-[Unreleased]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.10.2...HEAD
+[Unreleased]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.11.0...HEAD
+[0.11.0]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.10.2...0.11.0
 [0.10.2]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.10.1...0.10.2
 [0.10.1]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.10.0...0.10.1
 [0.10.0]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.8.2...0.10.0

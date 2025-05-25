@@ -15,7 +15,7 @@ module AutoOpenCurve =
 
   type PolylineCurve with
 
-        /// Gets a lazy seq (= IEnumerable) of the Points that make up the Polyline.
+        /// Gets a lazy seq (= IEnumerable) of the points that make up the Polyline.
         member pl.Points =
             seq { for i = 0 to pl.PointCount - 1 do pl.Point(i) }
 
@@ -65,11 +65,11 @@ module AutoOpenCurve =
 
 
     ///<summary>Returns the fillet arc if it fits within three points describing two connected lines (= a polyline). Fails otherwise.</summary>
-    ///<param name="prevPt">(Point3d)The first point of polyline</param>
-    ///<param name="midPt">(Point3d)The middle point of polyline, that will get the fillet</param>
-    ///<param name="nextPt">(Point3d)The last (or third) point of polyline</param>
-    ///<param name="radius">(float)The radius of the fillet to attempt to create</param>
-    ///<returns>An Arc Geometry.</returns>
+    ///<param name="prevPt">(Point3d) The first point of polyline</param>
+    ///<param name="midPt">(Point3d) The middle point of polyline, that will get the fillet</param>
+    ///<param name="nextPt">(Point3d) The last (or third) point of polyline</param>
+    ///<param name="radius">(float) The radius of the fillet to attempt to create</param>
+    ///<returns>(Arc) An Arc geometry.</returns>
     static member FilletArc  (prevPt:Point3d, midPt:Point3d, nextPt:Point3d, radius:float)  : Arc   =
         let A = prevPt-midPt
         let B = nextPt-midPt
@@ -89,10 +89,10 @@ module AutoOpenCurve =
         let arcEnd =    midPt + uB * trim
         Arc(arcStart, - uA , arcEnd)
 
-    ///<summary>Fillet some corners of polyline.</summary>
-    ///<param name="fillets">(int*float ResizeArray)The index of the corners to fillet and the fillet radius</param>
-    ///<param name="polyline">(Point3d ResizeArray) The Polyline as point-list </param>
-    ///<returns>a PolyCurve object.</returns>
+    ///<summary>Fillet some corners of a polyline.</summary>
+    ///<param name="fillets">(IDictionary&lt;int,float&gt;) The index of the corners to fillet and the fillet radius</param>
+    ///<param name="polyline">(IList&lt;Point3d&gt;) The Polyline as point-list </param>
+    ///<returns>(PolyCurve) A PolyCurve object.</returns>
     static member FilletPolyline (fillets: IDictionary<int,float>, polyline:IList<Point3d>) : PolyCurve =
         for i in fillets.Keys do
             if i >= polyline.Count-1 then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.FilletPolyline: cannot fillet corner %d . in polyline of %d points" i polyline.Count
@@ -127,14 +127,14 @@ module AutoOpenCurve =
         plc
 
 
-    ///<summary>Returns the needed trimming of two planar Surfaces in order to fit a fillet of given radius.
-    ///    the Lines can be anywhere on Plane ( except parallel to axis).</summary>
-    ///<param name="radius">(float) radius of filleting cylinder</param>
-    ///<param name="direction">(float) direction of filleting cylinder usually the intersection of the two  Planes to fillet, this might be the cross product of the two lines, but the lines might also be skew </param>
-    ///<param name="lineA">(Line) First line to fillet, must not be perpendicular to direction, the lines might also be skew  </param>
-    ///<param name="lineB">(Line) Second line to fillet, must not be perpendicular to direction or first line, the lines might also be skew  </param>
-    ///<returns>The needed trimming of two planar Surfaces in order to fit a fillet of given radius.
-    ///    the Lines can be anywhere on Plane ( except parallel to axis).</returns>
+    ///<summary>Returns the needed trimming of two planar surfaces in order to fit a fillet of given radius.
+    ///    The lines can be anywhere on the plane (except parallel to axis).</summary>
+    ///<param name="radius">(float) Radius of filleting cylinder</param>
+    ///<param name="direction">(Vector3d) Direction of filleting cylinder, usually the intersection of the two planes to fillet; this might be the cross product of the two lines, but the lines might also be skew</param>
+    ///<param name="lineA">(Line) First line to fillet, must not be perpendicular to direction; the lines might also be skew</param>
+    ///<param name="lineB">(Line) Second line to fillet, must not be perpendicular to direction or first line; the lines might also be skew</param>
+    ///<returns>(float) The needed trimming of two planar surfaces in order to fit a fillet of given radius.
+    ///    The lines can be anywhere on the plane (except parallel to axis).</returns>
     static member filletSkewLinesTrims (radius:float) (direction:Vector3d) (lineA:Line) (lineB:Line) : float  =
         let ok,axis =
             let pla = Plane(lineA.From, lineA.Direction, direction)
@@ -156,17 +156,15 @@ module AutoOpenCurve =
         let beta  = Math.PI * 0.5 - alpha
         tan(beta) * radius // the setback distance from intersection
 
-    ///<summary>Creates a fillet Curve between two lines,
+    ///<summary>Creates a fillet curve between two lines,
     ///    the fillet might be an ellipse or free form
-    ///    but it always lies on the Surface of a cylinder with the given direction and radius .</summary>
-    ///<param name="makeSCurve">(bool)only relevant if Curves are skew: make S-curve if true or kink if false</param>
-    ///<param name="radius">(float) radius of filleting cylinder</param>
-    ///<param name="direction">(float) direction of filleting cylinder usually the intersection of the two  Planes to fillet, this might be the cross product of the two lines, but the lines might also be skew </param>
-    ///<param name="lineA">(Line) First line to fillet, must not be perpendicular to direction, the lines might also be skew  </param>
-    ///<param name="lineB">(Line) Second line to fillet, must not be perpendicular to direction or first line, the lines might also be skew  </param>
-    ///<returns>(NurbsCurve)Fillet Curve Geometry,
-    ///    the true fillet arc on cylinder(wrong ends),
-    ///    the point where fillet would be at radius 0, (same Plane as arc) .</returns>
+    ///    but it always lies on the surface of a cylinder with the given direction and radius.</summary>
+    ///<param name="makeSCurve">(bool) Only relevant if curves are skew: make S-curve if true or kink if false</param>
+    ///<param name="radius">(float) Radius of filleting cylinder</param>
+    ///<param name="direction">(Vector3d) Direction of filleting cylinder, usually the intersection of the two planes to fillet; this might be the cross product of the two lines, but the lines might also be skew</param>
+    ///<param name="lineA">(Line) First line to fillet, must not be perpendicular to direction; the lines might also be skew</param>
+    ///<param name="lineB">(Line) Second line to fillet, must not be perpendicular to direction or first line; the lines might also be skew</param>
+    ///<returns>(NurbsCurve*Arc*Point3d) Fillet curve geometry, the true fillet arc on cylinder (wrong ends), the point where fillet would be at radius 0 (same plane as arc).</returns>
     static member filletSkewLines makeSCurve (radius:float)  (direction:Vector3d) (lineA:Line) (lineB:Line) : NurbsCurve*Arc*Point3d   =
         let ok,axis =
             let pla = Plane(lineA.From, lineA.Direction, direction)

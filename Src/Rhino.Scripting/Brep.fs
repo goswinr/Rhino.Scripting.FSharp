@@ -83,13 +83,13 @@ module AutoOpenBrep =
         let cy = Cylinder(circ,length)
         Brep.CreateFromCylinder(cy, capBottom=true, capTop=true)
 
-    ///<summary>Creates a Brep in the Shape of a Countersunk Screw Hole , 45 degrees slope
-    ///    a caped cone and a cylinder. one closed Polysurface </summary>
+    ///<summary>Creates a Brep in the shape of a Countersunk Screw Hole, 45 degrees slope.
+    ///    A capped cone and a cylinder. One closed Polysurface.</summary>
     ///<param name="plane">(Plane) Origin is center of cone-base or head</param>
-    ///<param name="outerDiameter">(float) diameter of cone base</param>
+    ///<param name="outerDiameter">(float) Diameter of cone base</param>
     ///<param name="innerDiameter">(float) Diameter of cylinder</param>
-    ///<param name="length">(float) total length of the screw brep</param>
-    ///<returns>(Brep) Brep Geometry.</returns>
+    ///<param name="length">(float) Total length of the screw brep</param>
+    ///<returns>(Brep) Brep geometry.</returns>
     static member CreateCounterSunkScrewVolume ( plane:Plane, outerDiameter, innerDiameter, length) : Brep  =
         let r = outerDiameter*0.5
         let mutable plco = Plane(plane)
@@ -110,12 +110,12 @@ module AutoOpenBrep =
         if brep.SolidOrientation = BrepSolidOrientation.Inward then
             brep.Flip()
         brep
-    ///<summary>Transforms a planar 2D curve in XY plane to the given plane and then extrudes it with CapPlanarHoles, with option extensions at both ends.</summary>
+    ///<summary>Transforms a planar 2D curve in XY plane to the given plane and then extrudes it with CapPlanarHoles, with optional extensions at both ends.</summary>
     ///<param name="curveToExtrudeInWorldXY">(Curve) A curve in world XY plane</param>
     ///<param name="plane">(Plane) A plane with any orientation</param>
-    ///<param name="height">(float) the hight to extrude along the Z axis of plane</param>
-    ///<param name="extraHeightPerSide">(float) Optional, Default Value: <c>0.0</c> , extra extension of the extrusion on both sides </param>
-    ///<returns>(Brep) Brep Geometry.</returns>
+    ///<param name="height">(float) The height to extrude along the Z axis of plane</param>
+    ///<param name="extraHeightPerSide">(float) Optional, Default Value: <c>0.0</c>, extra extension of the extrusion on both sides</param>
+    ///<returns>(Brep) Brep geometry.</returns>
     static member CreateExtrusionAtPlane(curveToExtrudeInWorldXY:Curve, plane:Plane, height, [<OPT;DEF(0.0)>]extraHeightPerSide:float) : Brep =
         let mutable pl = Plane(plane)
         if extraHeightPerSide <> 0.0 then
@@ -134,12 +134,12 @@ module AutoOpenBrep =
     ///<summary>Subtracts trimmer from brep (= BooleanDifference),
     /// so that a single brep is returned,
     /// draws objects and zooms on them if an error occurs.</summary>
-    ///<param name="trimmer">(Brep)the volume to cut out</param>
+    ///<param name="trimmer">(Brep) The volume to cut out</param>
     ///<param name="keep">(Brep) The volume to keep</param>
-    ///<param name="subtractionLocations">(int) Optional, The amount of locations where the brep is expected to be cut
+    ///<param name="subtractionLocations">(int) Optional, The number of locations where the brep is expected to be cut
     ///  This is an optional safety check that makes it twice as slow.
-    ///  It ensures that the count of breps from  Brep.CreateBooleanIntersection is equal to subtractionLocations </param>
-    ///<returns>(Brep) Brep Geometry.</returns>
+    ///  It ensures that the count of breps from Brep.CreateBooleanIntersection is equal to subtractionLocations</param>
+    ///<returns>(Brep) Brep geometry.</returns>
     static member SubtractBrep (keep:Brep,trimmer:Brep,[<OPT;DEF(0)>]subtractionLocations:int)  :Brep =
         let draw s b = RhinoScriptSyntax.Ot.AddBrep(b)|> RhinoScriptSyntax.setLayer s
 
@@ -192,9 +192,9 @@ module AutoOpenBrep =
         brep
 
     ///<summary> Calls Mesh.CreateFromBrep, and Mesh.HealNakedEdges() to try to ensure Mesh is closed if input is closed.</summary>
-    ///<param name="brep">(Brep)the Polysurface to extract Mesh from.</param>
-    ///<param name="meshingParameters">(MeshingParameters) Optional, The Meshing parameters , if omitted the current Meshing parameters are used. </param>
-    ///<returns>((Mesh Result) Ok Mesh or Error Mesh if input brep is closed but output Mesh not. Fails if no Meshes can be extracted.</returns>
+    ///<param name="brep">(Brep) The Polysurface to extract Mesh from.</param>
+    ///<param name="meshingParameters">(MeshingParameters) Optional, The meshing parameters, if omitted the current meshing parameters are used.</param>
+    ///<returns>(Result&lt;Mesh,Mesh&gt;) Ok Mesh or Error Mesh if input brep is closed but output Mesh not. Fails if no meshes can be extracted.</returns>
     static member ExtractRenderMesh (brep:Brep,[<OPT;DEF(null:MeshingParameters)>]meshingParameters:MeshingParameters) :Result<Mesh,Mesh> =
         let meshing =
             if notNull meshingParameters then

@@ -77,9 +77,9 @@ module AutoOpenPrinting =
         ///<returns>(unit) void, nothing.</returns>
         static member Print (x:'T) : unit =
             PrettySetup.init()
-            pretty(x)
-            |>! RhinoApp.WriteLine
-            |>  Console.WriteLine
+            let t = pretty(x)
+            RhinoApp.WriteLine t
+            Console.WriteLine t
             RhinoApp.Wait() // no switch to UI Thread needed !
 
         // ///<summary>

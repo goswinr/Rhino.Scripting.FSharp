@@ -120,7 +120,7 @@ module AutoOpenVector3d =
         // These static members can't be extension methods to be useful for Array.sum and Array.average :
         //-----------------------------------------------------------------------------------------------------
 
-        /// Returns a boolean indicating wether X, Y and Z are all exactly 0.0.
+        /// Returns a boolean indicating whether X, Y and Z are all exactly 0.0.
         member inline v.IsZero =
             v.X = 0.0 && v.Y = 0.0 && v.Z = 0.0
 
@@ -421,7 +421,7 @@ module AutoOpenVector3d =
         /// Cross product, of two 3D vectors.
         /// The resulting vector is perpendicular to both input vectors.
         /// Its length is the area of the parallelogram spanned by the input vectors.
-        /// Its direction follows th right-hand rule.
+        /// Its direction follows the right-hand rule.
         /// A x B = |A| * |B| * sin(angle)
         static member inline cross (a:Vector3d, b:Vector3d) =
             Vector3d (a.Y * b.Z - a.Z * b.Y,
@@ -563,7 +563,7 @@ module AutoOpenVector3d =
                 Vector3d(v.X*f, v.Y*f, v.Z*f)
 
         /// Returns three Vector3d's Determinant.
-        /// This is also the signed volume of the Parallelepipeds define by these three Vector3d.
+        /// This is also the signed volume of the Parallelepiped defined by these three Vector3d.
         /// Also called scalar triple product, mixed product, Box product, or in German: Spatprodukt.
         /// It is defined as the dot product of one of the Vector3d with the cross product of the other two.
         static member inline determinant (u:Vector3d, v:Vector3d, w:Vector3d) =
@@ -668,9 +668,7 @@ module AutoOpenVector3d =
         /// Fails on zero length Vector3d, tolerance 1e-12.
         static member inline areParallel (other:Vector3d) (v:Vector3d) = v.IsParallelTo other
 
-
-        /// Checks if Angle between two Vector3d is between 98.75 and 90.25 Degree.
-        /// Ignores Vector3d orientation.
+        /// Checks if Angle between two Vector3d is less than 0.25 Degree and orientation matches.
         /// Fails on zero length Vector3d, tolerance 1e-12.
         static member inline areParallelAndMatchOrientation (other:Vector3d) (v:Vector3d) = v.IsParallelAndOrientedTo other
 
@@ -872,7 +870,7 @@ module AutoOpenVector3d =
 
 
         /// Checks if Angle between two Vector3d is less than given Cosine.
-        /// Does not ignores Vector3d orientation.The angle between two Vector3d can be 0 to 180 degrees.
+        /// Does not ignore Vector3d orientation. The angle between two Vector3d can be 0 to 180 degrees.
         /// Use the Rhino.Scripting.FSharp.Cosine module to get some precomputed cosine values
         /// Fails on zero length Vector3d, tolerance 1e-12.
         static member inline isAngle180Below (cosineValue: float<Cosine.cosine>) (a:Vector3d) (b:Vector3d) =
@@ -885,7 +883,7 @@ module AutoOpenVector3d =
             bu * au > float cosineValue
 
         /// Checks if Angle between two Vector3d is more than given Cosine.
-        /// Does not ignores Vector3d orientation.The angle between two Vector3d can be 0 to 180 degrees.
+        /// Does not ignore Vector3d orientation. The angle between two Vector3d can be 0 to 180 degrees.
         /// Use the Rhino.Scripting.FSharp.Cosine module to get some precomputed cosine values.
         /// Fails on zero length Vector3d, tolerance 1e-12.
         static member inline isAngle180Above(cosineValue: float<Cosine.cosine>) (a:Vector3d) (b:Vector3d) =

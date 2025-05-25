@@ -13,7 +13,7 @@ open Rhino.Scripting
 module RhPoints =
 
 
-    /// returns the closest point index form a Point list  to a given Point
+    /// returns the closest point index from a Point list to a given Point
     let closestPointIdx (pt:Point3d) (pts:ResizeArray<Point3d>) : int =
         if pts.Count = 0 then RhinoScriptingFSharpException.Raise "RhPoints.closestPoint empty List of Points: pts"
         let mutable mi = -1
@@ -26,7 +26,7 @@ module RhPoints =
                 mi <- i
         mi
 
-    /// returns the closest point form a Point list to a given Point
+    /// returns the closest point from a Point list to a given Point
     let closestPoint (pt:Point3d) (pts:ResizeArray<Point3d>) : Point3d=
         pts.[closestPointIdx pt pts]
 
@@ -55,7 +55,7 @@ module RhPoints =
         Point3d.distance xs.[i]  ys.[j]
 
     /// find the index of the point that has the biggest distance to any point from the other set
-    /// basically the mos lonely point in 'findPointFrom' list with respect to 'checkAgainst' list
+    /// basically the most lonely point in 'findPointFrom' list with respect to 'checkAgainst' list
     /// returns findPointFromIdx * checkAgainstIdx
     let mostDistantPointIdx (findPointFrom:ResizeArray<Point3d>) (checkAgainst:ResizeArray<Point3d>) : int*int=
         if findPointFrom.Count = 0 then RhinoScriptingFSharpException.Raise "RhPoints.mostDistantPoint empty List of Points: findPointFrom"
@@ -84,7 +84,7 @@ module RhPoints =
         findPointFrom.[i]
 
 
-    /// Culls points if they are to close to previous or next item
+    /// Culls points if they are too close to previous or next item
     /// Last and first points stay the same
     let cullDuplicatePointsInSeq (tolerance) (pts:ResizeArray<Point3d>)  =
         if pts.Count = 0 then RhinoScriptingFSharpException.Raise "RhPoints.cullDuplicatePointsInSeq empty List of Points: pts"
@@ -110,7 +110,7 @@ module RhPoints =
 
 
     let internal minIndexBy (projection : 'T -> 'Key) (xs: ResizeArray<'T>) : int =
-        if xs.Count = 0 then RhinoScriptingFSharpException.Raise "RhPoints.ResizeArr.minIndexBy: Failed on empty ." // noReflection for Fable. <%O>" typeof<'T>
+        if xs.Count = 0 then RhinoScriptingFSharpException.Raise "RhPoints.ResizeArr.minIndexBy: Failed on empty." // noReflection for Fable. <%O>" typeof<'T>
         let mutable f = projection xs.[0]
         let mutable mf = f
         let mutable ii = 0
@@ -121,7 +121,7 @@ module RhPoints =
                 mf <- f
         ii
     let internal maxIndexBy (projection : 'T -> 'Key) (xs: ResizeArray<'T>) : int =
-        if xs.Count = 0 then RhinoScriptingFSharpException.Raise "RhPoints.ResizeArr.maxIndBy: Failed on empty ResizeArray." // noReflection for Fable. <%O>" typeof<'T>
+        if xs.Count = 0 then RhinoScriptingFSharpException.Raise "RhPoints.ResizeArr.maxIndexBy: Failed on empty ResizeArray." // noReflection for Fable. <%O>" typeof<'T>
         let mutable f = projection xs.[0]
         let mutable mf = f
         let mutable ii = 0
@@ -148,8 +148,8 @@ module RhPoints =
         res
 
 
-    /// Similar to Join Polylines this tries to find continuous sequences of points.
-    /// 'tolGap' is the maximum allowable gap between the start and the endpoint of to segments.
+    /// Similar to Join Polylines, this tries to find continuous sequences of points.
+    /// 'tolGap' is the maximum allowable gap between the start and the endpoint of two segments.
     /// Search starts from the segment with the most points.
     /// Both start and end point of each point list is checked for adjacency
     let findContinuousPoints (tolGap:float)  (ptss: ResizeArray<ResizeArray<Point3d>>)  =

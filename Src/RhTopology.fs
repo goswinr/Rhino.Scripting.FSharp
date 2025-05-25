@@ -9,7 +9,7 @@ open Rhino.Scripting.RhinoScriptingUtils
 [<RequireQualifiedAccess>]
 module RhTopology =
 
-    // The same function exist on FsEX.ResizeArray module too but with extra error checking.
+    // The same function exists on FsEX.ResizeArray module too but with extra error checking.
     // Swap the values of two given indices in ResizeArray
     let inline private swap i j (xs:ResizeArray<'T>) :unit =
         if i<>j then
@@ -17,7 +17,7 @@ module RhTopology =
             xs.[i] <- xs.[j]
             xs.[j] <- ti
 
-    // The same function exist on FsEX.ResizeArray module too but with extra error checking.
+    // The same function exists on FsEX.ResizeArray module too but with extra error checking.
     // Like ResizeArray.minIndexBy but starting to search only from a given index
     let inline private minIndexByFrom  (compareBy: 'T -> 'U)  fromIdx (xs:ResizeArray<'T>) : int =
         let mutable idx = fromIdx
@@ -30,24 +30,24 @@ module RhTopology =
         idx
 
     /// Sorts elements in place to be in a circular structure.
-    /// for each line end point it finds the next closest line start point.
+    /// For each line end point it finds the next closest line start point.
     /// (Does not check other line end points that might be closer)
     /// Line is used as an abstraction to hold start and end of arbitrary object.
     let sortToLoop(getLine: 'T -> Line) (xs:ResizeArray<'T>)  =
         for i = 0 to xs.Count - 2 do // only run till second last
             let thisLine = getLine xs.[i]
-            //  TODO could be optimized using a R-Tree for very large lists instead of minBy function
+            //  TODO could be optimized using an R-Tree for very large lists instead of minBy function
             let nextIdx = xs |> minIndexByFrom (fun c -> RhinoScriptSyntax.DistanceSquare ((getLine c).From ,  thisLine.To) ) (i+1)
             xs |> swap (i+1) nextIdx
 
-    /// Sorts elements in place  to be in a circular structure.
+    /// Sorts elements in place to be in a circular structure.
     /// For each line end it finds the next closest start point or end point.
     /// Line is used as an abstraction to hold start and end of arbitrary object.
-    /// Reverses the input in place,  where required via reverseInPlace function that takes the index of the element as parameter.
+    /// Reverses the input in place, where required via reverseInPlace function that takes the index of the element as parameter.
     let sortToLoopWithReversing (getLine: 'T -> Line) (reverseInPlace: int -> 'T -> unit) (xs:ResizeArray<'T>) : unit =
         for i = 0 to xs.Count - 2 do // only run till second last
             let thisLine = getLine xs.[i]
-            // TODO could be optimized using a R-Tree for very large lists instead of minBy function
+            // TODO could be optimized using an R-Tree for very large lists instead of minBy function
             let nextIdxSt = xs |> minIndexByFrom (fun c -> RhinoScriptSyntax.DistanceSquare ((getLine c).From ,  thisLine.To) ) (i+1)
             let nextIdxEn = xs |> minIndexByFrom (fun c -> RhinoScriptSyntax.DistanceSquare ((getLine c).To   ,  thisLine.To) ) (i+1)
             // check if closest endpoint is closer than closest start-point

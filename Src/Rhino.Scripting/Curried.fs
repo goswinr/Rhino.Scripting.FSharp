@@ -24,14 +24,14 @@ module AutoOpenCurried =
 
   type RhinoScriptSyntax with
 
-    ///<summary>Modifies the layer of an object, creates layer if it does not yet exists.</summary>
+    ///<summary>Modifies the layer of an object, creates layer if it does not yet exist.</summary>
     ///<param name="layer">(string) Name of layer or empty string for current layer</param>
     ///<param name="objectId">(Guid) The identifier of the object</param>
     ///<returns>(unit) void, nothing.</returns>
     static member setLayer (layer:string) (objectId:Guid) : unit =
         RhinoScriptSyntax.ObjectLayer(objectId, layer, createLayerIfMissing=true)
 
-    ///<summary>Modifies the layer of several objects, creates layer if it does not yet exists.</summary>
+    ///<summary>Modifies the layer of several objects, creates layer if it does not yet exist.</summary>
     ///<param name="layer">(string) Name of layer or empty string for current layer</param>
     ///<param name="objectIds">(Guid seq) The identifiers of several objects</param>
     ///<returns>(unit) void, nothing.</returns>
@@ -59,7 +59,7 @@ module AutoOpenCurried =
     static member getLayer (objectId:Guid) : string =
         RhinoScriptSyntax.ObjectLayer(objectId)
 
-    ///<summary>Returns the short layer of an object. Without Parent Layers.</summary>
+    ///<summary>Returns the short layer name of an object. Without Parent Layers.</summary>
     ///<param name="objectId">(Guid) The identifier of the object</param>
     ///<returns>(string) The object's current layer.</returns>
     static member getLayerShort (objectId:Guid) : string =
@@ -81,35 +81,35 @@ module AutoOpenCurried =
 
 
     ///<summary>Returns the name of an object or "" if none given.</summary>
-    ///<param name="objectId">(Guid)Id of object</param>
-    ///<returns>(string) The current object name, empty string if no name given .</returns>
+    ///<param name="objectId">(Guid) Id of object</param>
+    ///<returns>(string) The current object name, empty string if no name given.</returns>
     static member getName (objectId:Guid) : string =
         RhinoScriptSyntax.ObjectName(objectId)
 
 
-    ///<summary>Sets the Color of an object.</summary>
+    ///<summary>Sets the color of an object.</summary>
     ///<param name="color">(Drawing.Color) The new object color.</param>
-    ///<param name="objectId">(Guid)Id of object</param>
+    ///<param name="objectId">(Guid) Id of object</param>
     ///<returns>(unit) void, nothing.</returns>
     static member setColor(color:Drawing.Color) (objectId:Guid) : unit =
         RhinoScriptSyntax.ObjectColor(objectId, color)
 
-    ///<summary>Sets the Color of several objects.</summary>
+    ///<summary>Sets the color of several objects.</summary>
     ///<param name="color">(Drawing.Color) The new object color.</param>
-    ///<param name="objectIds">(Guid seq)Id of several objects</param>
+    ///<param name="objectIds">(Guid seq) Ids of several objects</param>
     ///<returns>(unit) void, nothing.</returns>
     static member setColors(color:Drawing.Color) (objectIds:seq<Guid>) : unit =
         RhinoScriptSyntax.ObjectColor(objectIds, color)
 
-    ///<summary>Returns the color of an object .</summary>
-    ///<param name="objectId">(Guid)Id of object</param>
-    ///<returns>(string) The current object color.</returns>
+    ///<summary>Returns the color of an object.</summary>
+    ///<param name="objectId">(Guid) Id of object</param>
+    ///<returns>(Drawing.Color) The current object color.</returns>
     static member getColor (objectId:Guid) : Drawing.Color =
         RhinoScriptSyntax.ObjectColor(objectId)
 
     ///<summary>Sets a user text stored on an object.</summary>
     ///<param name="key">(string) The key name to set</param>
-    ///<param name="value">(string) The string value to set. Cannot be empty string. use RhinoScriptSyntax.DeleteUserText to delete keys</param>
+    ///<param name="value">(string) The string value to set. Cannot be empty string. Use RhinoScriptSyntax.DeleteUserText to delete keys</param>
     ///<param name="objectId">(Guid) The object's identifier</param>
     ///<returns>(unit) void, nothing.</returns>
     static member setUserText( key:string) ( value :string) (objectId:Guid) : unit =
@@ -117,7 +117,7 @@ module AutoOpenCurried =
 
     ///<summary>Sets a user text stored on several objects.</summary>
     ///<param name="key">(string) The key name to set</param>
-    ///<param name="value">(string) The string value to set. Cannot be empty string. use RhinoScriptSyntax.DeleteUserText to delete keys</param>
+    ///<param name="value">(string) The string value to set. Cannot be empty string. Use RhinoScriptSyntax.DeleteUserText to delete keys</param>
     ///<param name="objectIds">(Guid seq) The identifiers of several objects</param>
     ///<returns>(unit) void, nothing.</returns>
     static member setUserTexts( key:string) ( value :string) (objectIds:seq<Guid>) : unit =
@@ -125,8 +125,8 @@ module AutoOpenCurried =
 
     ///<summary>Append a string to a possibly already existing user-text value.</summary>
     ///<param name="key">(string) The key name to set</param>
-    ///<param name="value">(string) The string value to append. Cannot be empty string. use RhinoScriptSyntax.DeleteUserText to delete keys</param>
-    ///<param name="objectId">(Guid) The identifier of the objects</param>
+    ///<param name="value">(string) The string value to append. Cannot be empty string. Use RhinoScriptSyntax.DeleteUserText to delete keys</param>
+    ///<param name="objectId">(Guid) The identifier of the object</param>
     ///<returns>(unit) void, nothing.</returns>
     static member appendUserText(key:string) (value :string) (objectId:Guid) : unit =
         if String.IsNullOrWhiteSpace key then
@@ -144,32 +144,32 @@ module AutoOpenCurried =
             if not <| obj.Attributes.SetUserString(key,  existing + value ) then
                 RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.appendUserText failed on %s for key '%s' and value '%s'" (pretty objectId) key value
 
-    ///<summary>Returns user text stored on an object, fails if non existing.</summary>
+    ///<summary>Returns user text stored on an object, fails if non-existing.</summary>
     ///<param name="key">(string) The key name</param>
-    ///<param name="objectId">(Guid) The object's identifies</param>
-    ///<returns>(string) if key is specified, the associated value,fails if non existing.</returns>
+    ///<param name="objectId">(Guid) The object's identifier</param>
+    ///<returns>(string) If key is specified, the associated value, fails if non-existing.</returns>
     static member getUserText( key:string) (objectId:Guid) : string =
         RhinoScriptSyntax.GetUserText(objectId, key)
 
-    ///<summary>Checks if the user text stored on an object matches a given string, fails if non existing.</summary>
+    ///<summary>Checks if the user text stored on an object matches a given string, fails if non-existing.</summary>
     ///<param name="key">(string) The key name</param>
     ///<param name="valueToMatch">(string) The value to check for equality with</param>
-    ///<param name="objectId">(Guid) The object's identifies</param>
-    ///<returns>(string) if key is specified, the associated value,fails if non existing.</returns>
+    ///<param name="objectId">(Guid) The object's identifier</param>
+    ///<returns>(bool) If key exists and matches, true.</returns>
     static member isUserTextValue( key:string) (valueToMatch:string) (objectId:Guid) : bool =
         valueToMatch = RhinoScriptSyntax.GetUserText(objectId, key)
 
     ///<summary>Checks if a User Text key is stored on an object.</summary>
     ///<param name="key">(string) The key name</param>
-    ///<param name="objectId">(Guid) The object's identifies</param>
-    ///<returns>(bool) if key exist true.</returns>
+    ///<param name="objectId">(Guid) The object's identifier</param>
+    ///<returns>(bool) If key exists, true.</returns>
     static member hasUserText( key:string) (objectId:Guid) : bool =
         RhinoScriptSyntax.HasUserText(objectId, key)
 
-    ///<summary>Returns user text stored on an object, returns Option.None if non existing.</summary>
+    ///<summary>Returns user text stored on an object, returns Option.None if non-existing.</summary>
     ///<param name="key">(string) The key name</param>
-    ///<param name="objectId">(Guid) The object's identifies</param>
-    ///<returns>(string Option) if key is specified, Some(value) else None .</returns>
+    ///<param name="objectId">(Guid) The object's identifier</param>
+    ///<returns>(string option) If key is specified, Some(value) else None.</returns>
     static member tryGetUserText( key:string) (objectId:Guid) : string option=
         RhinoScriptSyntax.TryGetUserText(objectId, key)
 

@@ -32,7 +32,7 @@ module AutoOpenSelection =
     ///<param name="includeLockedObjects">(bool) Optional, Default Value: <c>false</c> Include locked objects</param>
     ///<param name="includeLights">(bool) Optional, Default Value: <c>false</c> Include light objects</param>
     ///<param name="includeGrips">(bool) Optional, Default Value: <c>false</c> Include grips objects</param>
-    ///<returns>(Guid ResizeArray) Identifiers for all the objects that are not hidden and who's layer is on and visible.</returns>
+    ///<returns>(Guid ResizeArray) Identifiers for all the objects that are not hidden and whose layer is on and visible.</returns>
     static member ShownObjects(     [<OPT;DEF(0)>]filter:int,
                                     [<OPT;DEF(true)>]printCount:bool,
                                     [<OPT;DEF(false)>]includeReferences:bool,
@@ -164,7 +164,7 @@ module AutoOpenSelection =
                 objectIds.[0]
 
 
-    ///<summary>Clears all remembered objects form internal Dictionary that where added via  rs.GetObjectAndRemember() or rs.GetObjectsAndRemember()</summary>
+    ///<summary>Clears all remembered objects from the internal Dictionary that were added via  rs.GetObjectAndRemember() or rs.GetObjectsAndRemember()</summary>
     static member ClearRememberedObjects()  : unit =
         // RhinoScriptSyntax.PrintfGray "Cleared %d remembered Selection Sets" rememberedObjects.Count
         rememberedObjects.Clear()

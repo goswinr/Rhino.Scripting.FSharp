@@ -26,12 +26,12 @@ type RhinoScriptingFSharpException (s:string) =
 /// Math Utility functions and values.
 module UtilRHinoScriptingFSharp =
 
-    /// Test is a value is not null.
+    /// Test if a value is not null.
     let inline notNull x = match x with null -> false | _ -> true
 
     /// Any int will give a valid index for given collection size.
     /// Converts negative indices to positive ones and loops to start after last index is reached.
-    /// Returns a valid index for a collection of 'length' items for any integer
+    /// Returns a valid index for a collection of 'length' items for any integer.
     let inline idxLooped i length =
         let t = i % length
         if t >= 0 then t
@@ -78,11 +78,11 @@ module UtilRHinoScriptingFSharp =
     [<Literal>]
     let halfPi = 1.5707963267948966 // (Math.PI*0.5).ToString("R")
 
-    /// Converts Angels from Degrees to Radians.
+    /// Converts Angles from Degrees to Radians.
     /// By multiplying with 0.0174... (PI / 180.)
     let inline toRadians degrees = 0.017453292519943295 * degrees //  (Math.PI / 180.).ToString("R")
 
-    /// Converts Angels from Radians to Degrees.
+    /// Converts Angles from Radians to Degrees.
     /// By multiplying with 57.29... (180. / PI)
     let inline toDegrees radians = 57.295779513082323 * radians  // (180. / Math.PI).ToString("R")
 
@@ -126,8 +126,8 @@ module UtilRHinoScriptingFSharp =
     [<Literal>]
     let ``-1.0 + 1e-6`` = -1.00000107288360595703
 
-    /// The float number that is 16 increments bigger than 1.0.
-    /// This is approx 1.0 - 1e-6
+    /// The float number that is 16 increments bigger than -1.0.
+    /// This is approx -1.0 - 1e-6
     /// see https://float.exposed/0xbf7ffff0
     [<Literal>]
     let ``-1.0 - 1e-6`` = -0.99999904632568359375
@@ -164,7 +164,7 @@ module UtilRHinoScriptingFSharp =
     let inline isBetweenZeroAndOne (x:float) =
         x >= 0.0 && x <= 1.0
 
-    /// Check if value is between 0.0 and +1.0 inclusive a tolerance of 1e-6 .
+    /// Check if value is between 0.0 and +1.0 inclusive with a tolerance of 1e-6 .
     let inline isBetweenZeroAndOneTolerant (x:float) =
         -1e-6 < x && x < ``1.0 + 1e-6``
 
