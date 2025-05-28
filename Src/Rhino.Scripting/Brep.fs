@@ -160,7 +160,7 @@ module AutoOpenBrep =
                 RhinoScriptSyntax.ZoomBoundingBox(trimmer.GetBoundingBox(false))
                 RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.SubtractBrep:CreateBooleanIntersection check is null, no intersection found, tolerance = %g" RhinoScriptSyntax.Doc.ModelAbsoluteTolerance
             if xs.Length <> subtractionLocations then
-                draw "debug trimer empty Intersection" trimmer
+                draw "debug trimmer empty Intersection" trimmer
                 draw "debug keep empty Intersection" keep
                 RhinoScriptSyntax.ZoomBoundingBox(trimmer.GetBoundingBox(false))
                 RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.SubtractBrep:CreateBooleanIntersection check returned %d breps instead of one , tolerance = %g" xs.Length RhinoScriptSyntax.Doc.ModelAbsoluteTolerance
@@ -173,13 +173,13 @@ module AutoOpenBrep =
             RhinoScriptSyntax.ZoomBoundingBox(trimmer.GetBoundingBox(false))
             RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.SubtractBrep:CreateBooleanDifference is null, tolerance = %g" RhinoScriptSyntax.Doc.ModelAbsoluteTolerance
         if bs.Length = 0 then
-            draw "debug trimer for empty result" trimmer
+            draw "debug trimmer for empty result" trimmer
             draw "debug keep for empty result" keep
             RhinoScriptSyntax.ZoomBoundingBox(trimmer.GetBoundingBox(false))
             RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.SubtractBrep:CreateBooleanDifference returned 0 breps instead of one , tolerance = %g" RhinoScriptSyntax.Doc.ModelAbsoluteTolerance
         if bs.Length <> 1 then
             bs |> Seq.iter (draw "debug more than one")
-            draw "debug trimer for more than one" trimmer
+            draw "debug trimmer for more than one" trimmer
             RhinoScriptSyntax.ZoomBoundingBox(trimmer.GetBoundingBox(false))
             RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.SubtractBrep:CreateBooleanDifference returned %d breps instead of one , tolerance = %g" bs.Length RhinoScriptSyntax.Doc.ModelAbsoluteTolerance
         let brep = bs.[0]

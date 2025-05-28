@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+## [0.12.1] - 2025-5-28
+### Changed
+- Referencing [Rhino.Scripting 0.12.0](https://github.com/goswinr/Rhino.Scripting/blob/main/CHANGELOG.md#0120)
+
 ## [0.11.0] - 2025-5-25
 ### Changed
 - Referencing Rhino.Scripting 0.11.0
@@ -47,7 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First public release
 - Referencing Rhino.Scripting 0.5.0
 
-[Unreleased]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.11.0...HEAD
+[Unreleased]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.12.1...HEAD
+[0.12.1]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.11.0...0.12.1
 [0.11.0]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.10.2...0.11.0
 [0.10.2]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.10.1...0.10.2
 [0.10.1]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.10.0...0.10.1
