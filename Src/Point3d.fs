@@ -186,7 +186,7 @@ module AutoOpenPnt =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        static member failedCreateFromMembersXYZ(pt:'T,e:exn) = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.createFromMembersXYZ: %A could not be converted to a Rhino.Scripting.FSharp:Point3d:\r\n%A" pt e
+        static member failedCreateFromMembersXYZ(pt:'T,e:exn) = RhinoScriptingFSharpException.Raise $"Rhino.Scripting.FSharp:Point3d.createFromMembersXYZ: {pt} could not be converted to a Rhino.Scripting.FSharp:Point3d:{Environment.NewLine}{e}" pt e
 
         /// Accepts any type that has a X, Y and Z (UPPERCASE) member that can be converted to a float.
         /// Internally this is not using reflection at runtime but F# Statically Resolved Type Parameters at compile time.
@@ -199,7 +199,7 @@ module AutoOpenPnt =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        static member failedCreateFromMembersxyz(pt:'T,e:exn) = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.createFromMembersxyz: %A could not be converted to a Rhino.Scripting.FSharp:Point3d:\r\n%A" pt e
+        static member failedCreateFromMembersxyz(pt:'T,e:exn) = RhinoScriptingFSharpException.Raise $"Rhino.Scripting.FSharp:Point3d.createFromMembersxyz: {pt} could not be converted to a Rhino.Scripting.FSharp:Point3d:{Environment.NewLine}{e}"
         /// Accepts any type that has a x, y and z (lowercase) member that can be converted to a float.
         /// Internally this is not using reflection at runtime but F# Statically Resolved Type Parameters at compile time.
         static member inline createFromMembersxyz pt =
@@ -550,7 +550,7 @@ module AutoOpenPnt =
             let y = ( ^T : (member Y : _) pt)
             let z = ( ^T : (member Z : _) pt)
             try Point3f(float32 x, float32 y, float32 z)
-            with e -> RhinoScriptingFSharpException.Raise "Point3f.createFromMembersXYZ: %A could not be converted to a Point3f:\r\n%A" pt e
+            with e -> RhinoScriptingFSharpException.Raise $"Point3f.createFromMembersXYZ: Rhino.Scripting.FSharp:Point3f:{Environment.NewLine}{e}"
 
 
         /// Accepts any type that has a x, y and z (lowercase) member that can be converted to a float32.
@@ -560,4 +560,4 @@ module AutoOpenPnt =
             let y = ( ^T : (member y : _) pt)
             let z = ( ^T : (member z : _) pt)
             try Point3f(float32 x, float32 y, float32 z)
-            with e ->  RhinoScriptingFSharpException.Raise "Point3f.createFromMembersxyz: %A could not be converted to a Point3f:\r\n%A" pt e
+            with e ->  RhinoScriptingFSharpException.Raise $"Point3f.createFromMembersxyz: Rhino.Scripting.FSharp:Point3f:{Environment.NewLine}{e}"

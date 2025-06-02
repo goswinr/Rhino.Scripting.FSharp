@@ -1,4 +1,4 @@
-![logo](https://raw.githubusercontent.com/goswinr/Rhino.Scripting.FSharp/main/Docs/img/logo.png)
+![logo](https://raw.githubusercontent.com/goswinr/Rhino.Scripting.FSharp/main/Docs/img/logo128.png)
 
 # Rhino.Scripting.FSharp
 
@@ -15,15 +15,19 @@ This includes type extension for pretty printing of Rhino objects as well as imp
 
 This library allows you to compose RhinoScript functions with pipelines:
 
-Get started by opening the Rhino.Scripting namespaces.
-Opening Rhino.Scripting.FSharp will extend
-Rhino.Scripting and Rhino.Geometry types with additional static and member functions.
+Get started by opening the `Rhino.Scripting` namespaces.
+Opening `Rhino.Scripting.FSharp` will extend
+`Rhino.Scripting` and `Rhino.Geometry` types with additional static and member functions.
 
 ```fsharp
+#r "nuget: Rhino.Scripting.FSharp"
 open Rhino.Scripting
 open Rhino.Scripting.FSharp
 type rs = RhinoScriptSyntax
 ```
+Now you can use the `|>` and `|>!` operator to chain RhinoScript functions together in a more F# idiomatic way.
+The `|>!` operator is part of Rhino.Scripting.FSharp library.
+It passes its input on as output. See [definition](https://github.com/goswinr/Rhino.Scripting.FSharp/blob/main/Src/Rhino.Scripting/Curried.fs#L16).
 
 ```fsharp
 rs.AddPoint( 1. , 2.,  3.)
@@ -32,7 +36,7 @@ rs.AddPoint( 1. , 2.,  3.)
 |>  rs.setName "123"
 ```
 
-instead of
+instead of regular RhinoScript syntax like this:
 
 ```fsharp
 let guid = rs.AddPoint( 1. , 2.,  3.)
@@ -41,12 +45,10 @@ rs.SetUserText (guid, "id", "point123")
 rs.ObjectName (guid, "123")
 ```
 
-The `|>!` operator is part of Rhino.Scripting.FSharp library.
-It passes its input on as output. See [definition](https://github.com/goswinr/Rhino.Scripting.FSharp/blob/main/Src/Rhino.Scripting/Curried.fs#L16).
 
 ### Full API Documentation
 
-[goswinr.github.io/Rhino.Scripting.FSharp](https://goswinr.github.io/Rhino.Scripting.FSharp)
+[goswinr.github.io/Rhino.Scripting.FSharp](https://goswinr.github.io/Rhino.Scripting.FSharp/reference/rhino-scripting-fsharp.html)
 
 ## Thread Safety
 While the main Rhino Document is officially not thread safe, this library can be used from any thread.<br>

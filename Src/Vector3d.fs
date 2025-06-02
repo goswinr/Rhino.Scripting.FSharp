@@ -85,7 +85,7 @@ module AutoOpenVector3d =
             let y = ( ^T : (member Y : _) pt)
             let z = ( ^T : (member Z : _) pt)
             try Vector3d(float x, float y, float z)
-            with e -> RhinoScriptingFSharpException.Raise "Vector3d.createFromMembersXYZ: %A could not be converted to a Vector3d:\r\n%A" pt e
+            with e -> RhinoScriptingFSharpException.Raise $"Vector3d.createFromMembersXYZ: {pt} could not be converted to a Rhino.Scripting.FSharp:Vector3d:{Environment.NewLine}{e}"
 
 
         /// Accepts any type that has a x, y and z (lowercase) member that can be converted to a float.
@@ -95,7 +95,7 @@ module AutoOpenVector3d =
             let y = ( ^T : (member y : _) pt)
             let z = ( ^T : (member z : _) pt)
             try Vector3d(float x, float y, float z)
-            with e ->  RhinoScriptingFSharpException.Raise "Vector3d.createFromMembersxyz: %A could not be converted to a Vector3d:\r\n%A" pt e
+            with e ->  RhinoScriptingFSharpException.Raise $"Vector3d.createFromMembersxyz: {pt} could not be converted to a Rhino.Scripting.FSharp:Vector3d:{Environment.NewLine}{e}"
 
         //[<Extension>]
         //Unitizes the vector , fails if input is of zero length
@@ -992,7 +992,7 @@ module AutoOpenVector3d =
             let y = ( ^T : (member Y : _) pt)
             let z = ( ^T : (member Z : _) pt)
             try Vector3f(float32 x, float32 y, float32 z)
-            with e -> RhinoScriptingFSharpException.Raise "Vector3f.createFromMembersXYZ: %A could not be converted to a Vector3f:\r\n%A" pt e
+            with e -> RhinoScriptingFSharpException.Raise $"Vector3f.createFromMembersXYZ: Rhino.Scripting.FSharp:Vector3d:{Environment.NewLine}{e}"
 
 
         /// Accepts any type that has a x, y and z (lowercase) member that can be converted to a float32.
@@ -1002,4 +1002,4 @@ module AutoOpenVector3d =
             let y = ( ^T : (member y : _) pt)
             let z = ( ^T : (member z : _) pt)
             try Vector3f(float32 x, float32 y, float32 z)
-            with e ->  RhinoScriptingFSharpException.Raise "Vector3f.createFromMembersxyz: %A could not be converted to a Vector3f:\r\n%A" pt e
+            with e ->  RhinoScriptingFSharpException.Raise $"Vector3f.createFromMembersxyz: Rhino.Scripting.FSharp:Vector3f:{Environment.NewLine}{e}"
