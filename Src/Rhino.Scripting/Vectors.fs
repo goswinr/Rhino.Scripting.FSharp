@@ -39,7 +39,7 @@ module AutoOpenVectors =
         ///<summary>Draws the axes of a Plane and adds TextDots to label them.</summary>
         ///<param name="pl">(Plane)</param>
         ///<param name="axLength">(float) Optional, Default Value: <c>1.0</c>, the size of the drawn lines</param>
-        ///<param name="suffixInDot">(string) Optional, Default Value: no suffix, text to add to x TextDot label do of x axis. And y and z too.</param>
+        ///<param name="suffixInDot">(string) Optional, Default Value: no suffix, text to add to the TextDot labels of x, y, and z axes.</param>
         ///<param name="layer">(string) Optional, Default Value: the current layer, String for layer to draw plane on. The Layer will be created if it does not exist.</param>
         ///<returns>List of Guids of added Objects</returns>
         static member DrawPlane(    pl:Plane,
@@ -64,13 +64,16 @@ module AutoOpenVectors =
             RhinoScriptSyntax.AddObjectsToGroup(es, gg)
             es
 
-        /// returns a point that is at a given distance from a point in the direction of another point.
+        /// Returns a point that is at a given distance from a point in the direction of another point.
+        /// Raises an exception if fromPt equals dirPt.
         static member DistPt(fromPt:Point3d, dirPt:Point3d, distance:float) : Point3d  =
             let v = dirPt - fromPt
-            let sc = distance/v.Length
+            let len = v.Length
+            if isTooTiny len then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.DistPt: fromPt %s and dirPt %s are too close" (pretty fromPt) (pretty dirPt)
+            let sc = distance / len
             fromPt + v*sc
 
-        /// returns a Point by evaluating a line between two points with a normalized parameter.
+        /// Returns a Point by evaluating a line between two points with a normalized parameter.
         /// e.g. rel=0.5 will return the middle point, rel=1.0 the endPoint
         /// if the rel parameter is omitted it is set to 0.5
         static member DivPt(fromPt:Point3d, toPt:Point3d, [<OPT;DEF(0.5)>]rel:float) : Point3d  =
@@ -98,7 +101,7 @@ module AutoOpenVectors =
                 let a = pts.[0] - pts.[1]
                 let b = pts.[2] - pts.[1]
                 let v= Vector3d.CrossProduct(b, a)
-                if v.IsTiny() then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.NormalOfPoints: three points are in a line  %s" (pretty pts)
+                if v.IsTiny() then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.NormalOfPoints: three points are in a line: %s" (pretty pts)
                 else
                     v.Unitized
             else
@@ -112,7 +115,7 @@ module AutoOpenVectors =
                     let b = n-cen
                     let x = Vector3d.CrossProduct(a, b)  |> Vector3d.matchOrientation v // TODO do this matching?
                     v <- v + x
-                if v.IsTiny() then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.NormalOfPoints: points are in a line  %s" (pretty pts)
+                if v.IsTiny() then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.NormalOfPoints: points are in a line: %s" (pretty pts)
                 else
                     v.Unitized
 
@@ -185,12 +188,12 @@ module AutoOpenVectors =
                     if   lenDist = 0 then             Array.create distsNeeded 0.0
                     elif lenDist = 1 then             Array.create distsNeeded offDists0.[0]
                     elif lenDist = distsNeeded then   offDists0
-                    else RhinoScriptingFSharpException.Raise "OffsetPoints: offsetDistances has %d items but should have %d (lastIsFirst=%b) (loop=%b)" lenDist distsNeeded lastIsFirst loop
+                    else RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.OffsetPoints: offsetDistances has %d items but should have %d (lastIsFirst=%b) (loop=%b)" lenDist distsNeeded lastIsFirst loop
                 let normDists =
                     if   lenDistNorm = 0 then                 Array.create distsNeededNorm 0.0
                     elif lenDistNorm = 1 then                 Array.create distsNeededNorm normDists0.[0]
                     elif lenDistNorm = distsNeededNorm then   normDists0
-                    else RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.OffsetPoints: normalDistances has %d items but should have %d (lastIsFirst=%b) (loop=%b)" lenDist distsNeededNorm lastIsFirst loop
+                    else RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.OffsetPoints: normalDistances has %d items but should have %d (lastIsFirst=%b) (loop=%b)" lenDistNorm distsNeededNorm lastIsFirst loop
                 let refNormal = RhinoScriptSyntax.NormalOfPoints(points) //to have good starting direction, first kink might be in bad direction
                 let Pts = ResizeArray<Point3d>(pointCount)
                 let Ns = ResizeArray<Vector3d>(pointCount)
@@ -265,7 +268,7 @@ module AutoOpenVectors =
                         //print (i,"is collinear")
                         //print (ni,"next i")
                         if offDists.[pi] <> offDists.[saveIdx (ni-1) distsNeeded] then
-                            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.OffsetPoints: can't fix collinear at index %d with index %d and %d because offset distances are mismatching: %f, %f" i pi ni offDists.[pi] offDists.[saveIdx (ni-1) pointCount]
+                            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.OffsetPoints: can't fix collinear at index %d with index %d and %d because offset distances are mismatching: %f, %f" i pi ni offDists.[pi] offDists.[saveIdx (ni-1) distsNeeded]
                         Pts.[i] <- points.[i] + (nv + pv)*0.5
                 if lastIsFirst then Pts.[lastIndex] <- Pts.[0]
                 Pts
@@ -275,7 +278,6 @@ module AutoOpenVectors =
         /// Positive distance is offset inwards, negative outwards.
         /// Normal distances define a perpendicular offset at each corner.
         /// Auto detects if given points are from a closed Polyline (first point = last point) and loops them.
-        /// Auto detects points from closed polylines and loops them.
         static member OffsetPoints(     points:Point3d IList,
                                         offsetDistance: float,
                                         [<OPT;DEF(0.0)>]normalDistance: float ,

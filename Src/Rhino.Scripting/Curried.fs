@@ -91,14 +91,14 @@ module AutoOpenCurried =
     ///<param name="color">(Drawing.Color) The new object color.</param>
     ///<param name="objectId">(Guid) Id of object</param>
     ///<returns>(unit) void, nothing.</returns>
-    static member setColor(color:Drawing.Color) (objectId:Guid) : unit =
+    static member setColor (color:Drawing.Color) (objectId:Guid) : unit =
         RhinoScriptSyntax.ObjectColor(objectId, color)
 
     ///<summary>Sets the color of several objects.</summary>
     ///<param name="color">(Drawing.Color) The new object color.</param>
     ///<param name="objectIds">(Guid seq) Ids of several objects</param>
     ///<returns>(unit) void, nothing.</returns>
-    static member setColors(color:Drawing.Color) (objectIds:seq<Guid>) : unit =
+    static member setColors (color:Drawing.Color) (objectIds:seq<Guid>) : unit =
         RhinoScriptSyntax.ObjectColor(objectIds, color)
 
     ///<summary>Returns the color of an object.</summary>
@@ -269,7 +269,7 @@ module AutoOpenCurried =
     ///<returns>(unit) void, nothing.</returns>
     static member transformGeo (matrix:Transform) (geo:GeometryBase) : unit =
         if not <| geo.Transform(matrix) then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.scale failed. geo:'%s' matrix:'%s' " (pretty geo) matrix.Pretty
+            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.transformGeo failed. geo:'%s' matrix:'%s' " (pretty geo) matrix.Pretty
         if matrix.SimilarityType = TransformSimilarityType.OrientationReversing then
             match geo with
             | :? Brep as g -> if g.IsSolid then g.Flip()
@@ -300,7 +300,7 @@ module AutoOpenCurried =
         let xf = Transform.Translation(translation)
         let res = RhinoScriptSyntax.Doc.Objects.Transform(objectId, xf, deleteOriginal=true) // TODO test to ensure GUID is the same ?
         if res = Guid.Empty then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.move to from objectId:'%s' translation:'%A'" (pretty objectId) translation
+            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.move failed for objectId:'%s' translation:'%A'" (pretty objectId) translation
 
     ///<summary>Moves a single object in X Direction.</summary>
     ///<param name="translationX">(float) movement in X direction</param>
@@ -310,7 +310,7 @@ module AutoOpenCurried =
         let xf = Transform.Translation(Vector3d(translationX, 0.0, 0.0 ))
         let res = RhinoScriptSyntax.Doc.Objects.Transform(objectId, xf, deleteOriginal=true) // TODO test to ensure GUID is the same ?
         if res = Guid.Empty then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveX to from objectId:'%s' translation:'%A'" (pretty objectId) translationX
+            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveX failed for objectId:'%s' translationX:'%A'" (pretty objectId) translationX
 
     ///<summary>Moves a single object in Y Direction.</summary>
     ///<param name="translationY">(float) movement in Y direction</param>
@@ -320,7 +320,7 @@ module AutoOpenCurried =
         let xf = Transform.Translation(Vector3d(0.0, translationY, 0.0))
         let res = RhinoScriptSyntax.Doc.Objects.Transform(objectId, xf, deleteOriginal=true) // TODO test to ensure GUID is the same ?
         if res = Guid.Empty then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveY to from objectId:'%s' translation:'%A'" (pretty objectId) translationY
+            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveY failed for objectId:'%s' translationY:'%A'" (pretty objectId) translationY
 
     ///<summary>Moves a single object in Z Direction.</summary>
     ///<param name="translationZ">(float) movement in Z direction</param>
@@ -330,15 +330,15 @@ module AutoOpenCurried =
         let xf = Transform.Translation(Vector3d(0.0, 0.0, translationZ))
         let res = RhinoScriptSyntax.Doc.Objects.Transform(objectId, xf, deleteOriginal=true) // TODO test to ensure GUID is the same ?
         if res = Guid.Empty then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveZ to from objectId:'%s' translation:'%A'" (pretty objectId) translationZ
+            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveZ failed for objectId:'%s' translationZ:'%A'" (pretty objectId) translationZ
 
     ///<summary>Moves a Geometry.</summary>
     ///<param name="translation">(Vector3d) Vector3d</param>
     ///<param name="geo">(GeometryBase) The Geometry to move</param>
     ///<returns>(unit) void, nothing.</returns>
     static member moveGeo (translation:Vector3d)  (geo:GeometryBase): unit =
-        if not <|  geo.Translate translation then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveGeo to from geo:'%A' translation:'%A'"  geo translation
+        if not <| geo.Translate translation then
+            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveGeo failed for geo:'%A' translation:'%A'"  geo translation
 
     ///<summary>Moves a Geometry in X Direction.</summary>
     ///<param name="translationX">(float) movement in X direction</param>
@@ -346,7 +346,7 @@ module AutoOpenCurried =
     ///<returns>(unit) void, nothing.</returns>
     static member moveGeoX (translationX:float)  (geo:GeometryBase): unit =
         if not <| geo.Translate (Vector3d(translationX, 0.0, 0.0 )) then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveGeoX to from geo:'%A' translation:'%f'"  geo translationX
+            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveGeoX failed for geo:'%A' translationX:'%f'"  geo translationX
 
     ///<summary>Moves a Geometry in Y Direction.</summary>
     ///<param name="translationY">(float) movement in Y direction</param>
@@ -354,7 +354,7 @@ module AutoOpenCurried =
     ///<returns>(unit) void, nothing.</returns>
     static member moveGeoY (translationY:float)  (geo:GeometryBase): unit =
         if not <| geo.Translate (Vector3d(0.0, translationY, 0.0)) then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveGeoY to from geo:'%A' translation:'%f'"  geo translationY
+            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveGeoY failed for geo:'%A' translationY:'%f'"  geo translationY
 
     ///<summary>Moves a Geometry in Z Direction.</summary>
     ///<param name="translationZ">(float) movement in Z direction</param>
@@ -362,7 +362,7 @@ module AutoOpenCurried =
     ///<returns>(unit) void, nothing.</returns>
     static member moveGeoZ (translationZ:float) (geo:GeometryBase): unit =
         if not <| geo.Translate (Vector3d(0.0, 0.0, translationZ)) then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveGeoZ to from geo:'%A' translation:'%f'"  geo translationZ
+            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveGeoZ failed for geo:'%A' translationZ:'%f'"  geo translationZ
 
     ///<summary>Enables or disables a Curve object's annotation arrows.
     /// The size of the arrow cannot be changed. For an adjustable arrow size use a dimension leader object.

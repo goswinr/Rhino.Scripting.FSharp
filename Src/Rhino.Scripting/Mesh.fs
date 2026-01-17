@@ -43,15 +43,15 @@ module AutoOpenMesh =
                                 m.Vertices.Add (c.X,c.Y,c.Z) ,
                                 m.Vertices.Add (d.X,d.Y,d.Z) ) |>ignore
 
-        /// Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces ??
+        /// Adds a quad face from two lines. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.
         static member MeshAddQuadFace ((m:Mesh), l:Line, ll:Line) =
             RhinoScriptSyntax.MeshAddQuadFace(m, l.From ,l.To ,ll.From , ll.To)
 
 
-        /// Appends a welded Quad to last 2 vertices. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.
+        /// Appends a welded quad to last 2 vertices. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.
         static member MeshAddQuadFaceToLastTwo (m:Mesh, a:Point3d, b:Point3d) =
             let c = m.Vertices.Count
-            if c<2 then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.Cannot append quad to mesh %A" m
+            if c<2 then RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.MeshAddQuadFaceToLastTwo: Cannot append quad to mesh with less than 2 vertices. Mesh: %A" m
             else m.Faces.AddFace(c-1, c-2,  m.Vertices.Add (b.X,b.Y,b.Z), m.Vertices.Add (a.X,a.Y,a.Z)) |>ignore
 
         /// Appends a welded quad to last 2 vertices. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.
@@ -77,8 +77,10 @@ module AutoOpenMesh =
             m.Faces.AddFace( m.Vertices.Add (e.X,e.Y,e.Z),  m.Vertices.Add (f.X,f.Y,f.Z),  a, d ) |>ignore
 
 
-        /// Makes a closed loop of welded quads. Last line is ignored; it is considered the same as the first one (e.g. coming from closed Polyline).
+        /// Makes a closed loop of welded quads from a list of lines. Requires at least 3 lines.
+        /// Last line is ignored; it is considered the same as the first one (e.g. coming from closed Polyline).
         static member MeshAddLoopWelded (m:Mesh, lns:ResizeArray<Line>) =
+            if lns.Count < 3 then RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.MeshAddLoopWelded: Requires at least 3 lines, but got %d" lns.Count
             // add first face
             let ln0 = lns.[0]
             let s0 = ln0.From
@@ -105,9 +107,10 @@ module AutoOpenMesh =
             //last face
             m.Faces.AddFace(d,c,b0,a0) |> ignore
 
-        /// Makes a closed loop of NOT welded quads. Last line is ignored; it is considered the same as the first one (e.g. coming from closed Polyline).
+        /// Makes a closed loop of unwelded quads from a list of lines. Requires at least 2 lines.
+        /// Uses all lines with wrapping (last line connects back to first).
         static member MeshAddLoopUnWelded (m:Mesh, lns:ResizeArray<Line>) =
-            // for lnP,ln in Seq.thisNext lns do
+            if lns.Count < 2 then RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.MeshAddLoopUnWelded: Requires at least 2 lines, but got %d" lns.Count
             for i = 0 to lns.Count-1 do
                 let lnP = lns.[i]
                 let ln = lns.[(i+1)%lns.Count]

@@ -22,7 +22,7 @@ module AutoOpenSelection =
   type RhinoScriptSyntax with
 
 
-    ///<summary>Returns identifiers of all objects in the current model or paper space that are not hidden, not locked nor on turned off layers.</summary>
+    ///<summary>Returns identifiers of all objects in the current model or paper space that are not hidden, not locked, nor on turned-off layers.</summary>
     ///<param name="filter">(int) Optional, Default Value: <c>0</c>
     ///    The type(s) of geometry (points, Curves, Surfaces, Meshes,...)
     ///    that can be selected. Object types can be added together to filter
@@ -63,8 +63,7 @@ module AutoOpenSelection =
                 if Vis.Contains(ob.Attributes.LayerIndex) then
                         objectIds.Add(ob.Id)
         if printCount then
-            // RhinoScriptSyntax.PrintfnBlue "ShownObjects found %s"  ( RhinoScriptSyntax.ObjectDescription(objectIds)) // TODO
-            RhinoScriptSyntax.Print $"ShownObjects found %d{objectIds.Count} objects"
+            RhinoScriptSyntax.Print $"ShownObjects found {objectIds.Count} objects"
         objectIds
 
 
@@ -118,7 +117,7 @@ module AutoOpenSelection =
                 get()
             else
                 if printCount then
-                    RhinoScriptSyntax.Print $"GetObjectsAndRemember for '%s{message}': {RhinoScriptSyntax.ObjectDescription(objectIds)}"
+                    RhinoScriptSyntax.Print $"GetObjectsAndRemember for '{message}': {RhinoScriptSyntax.ObjectDescription(objectIds)}"
                 objectIds
 
 
@@ -136,7 +135,7 @@ module AutoOpenSelection =
     ///<param name="select">(bool) Optional, Default Value: <c>false</c>
     ///    Select the picked objects. If False, the objects that are
     ///    picked are not selected</param>
-    ///<param name="printDescr">(bool) Optional, Default Value: <c>false</c> Print object description to command window</param>
+    ///<param name="printDescr">(bool) Optional, Default Value: <c>false</c> Print the object description to command window</param>
     ///<param name="customFilter">(Input.Custom.GetObjectGeometryFilter) Optional, A custom filter function</param>
     ///<returns>(Guid) a identifier of the picked object.</returns>
     static member GetObjectAndRemember( message:string,
@@ -160,7 +159,7 @@ module AutoOpenSelection =
                 get()
             else
                 if printDescr then
-                    RhinoScriptSyntax.Print $"GetObjectAndRemember for '%s{message}': {RhinoScriptSyntax.ObjectDescription(objectIds.[0])}"
+                    RhinoScriptSyntax.Print $"GetObjectAndRemember for '{message}': {RhinoScriptSyntax.ObjectDescription(objectIds.[0])}"
                 objectIds.[0]
 
 

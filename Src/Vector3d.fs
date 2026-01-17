@@ -16,7 +16,7 @@ module internal VecUnitized =
 
         /// Returns angle between two 3D unit-vectors in Radians.
         /// Takes vector orientation into account.
-        /// Range 0.0 to Pi( = 0 to 180 Degree)
+        /// Range 0.0 to Pi ( = 0 to 180 Degrees).
         let inline anglePi (a:Vector3d) (b:Vector3d) =
             // The "straight forward" method of acos(u.v) has large precision
             // issues when the dot product is near +/-1.  This is due to the
@@ -30,7 +30,7 @@ module internal VecUnitized =
             // 2*asin(|u-v|/2) gives us the angle between u and v.
             // The largest possible value of |u-v| occurs with perpendicular
             // vectors and is sqrt(2)/2 which is well away from extreme slope
-            // at +/-1. (See Windows OS Bug 01706299 for details) (form WPF reference source code)
+            // at +/-1. (See Windows OS Bug 01706299 for details) (from WPF reference source code)
             let dot = a * b
             if -0.98 < dot && dot < 0.98 then // threshold for switching 0.98 ?
                 acos dot
@@ -40,7 +40,7 @@ module internal VecUnitized =
 
         /// Returns positive angle between two 3D unit-vectors in Radians.
         /// Ignores orientation.
-        /// Range 0.0 to Pi/2 ( = 0 to 90 Degree)
+        /// Range 0.0 to Pi/2 ( = 0 to 90 Degrees).
         let inline angleHalfPi (a:Vector3d) (b:Vector3d) =
             let dot = a * b
             let dotAbs = abs dot
@@ -51,7 +51,7 @@ module internal VecUnitized =
                 else             2.0 * asin(vecDist3(a.X ,  a.Y,  a.Z, b.X, b.Y, b.Z) * 0.5)
 
 
-        /// Returns positive angle between two 3D unit-vectors in Degrees,
+        /// Returns positive angle between two 3D unit-vectors in Degrees.
         /// Ignores vector orientation.
         /// Range: 0 to 90 Degrees.
         let inline angle90 (a:Vector3d) (b:Vector3d) =
@@ -286,20 +286,20 @@ module AutoOpenVector3d =
             if r >= 0. then  r
             else r + 4.0
 
-        /// Checks if the angle between the two 3D Vector3d is less than 180 degrees.
+        /// Checks if the angle between the two 3D Vector3d is less than 90 degrees.
         /// Calculates the dot product of two 3D Vector3d.
         /// Then checks if it is bigger than 1e-12.
-        /// Fails if any of the two Vector3d is shorter than zeroLengthTolerance  (1e-12).
+        /// Fails if any of the two Vector3d is shorter than zeroLengthTolerance (1e-12).
         member inline v.MatchesOrientation (other:Vector3d) =
             if isTooTinySq(v.LengthSq    ) then RhinoScriptingFSharpException.Raise "Vector3d.MatchesOrientation: Vector3d 'this' is too short: %s. 'other':%s " v.AsString other.AsString
             if isTooTinySq(other.LengthSq) then RhinoScriptingFSharpException.Raise "Vector3d.MatchesOrientation: Vector3d 'other' is too short: %s. 'this':%s " other.AsString v.AsString
             v * other > 1e-12
 
 
-        /// Checks if the angle between the two 3D Vector3d is more than 180 degrees.
+        /// Checks if the angle between the two 3D Vector3d is more than 90 degrees.
         /// Calculates the dot product of two 3D Vector3d.
         /// Then checks if it is smaller than minus 1e-12.
-        /// Fails if any of the two Vector3d is shorter than zeroLengthTolerance  (1e-12).
+        /// Fails if any of the two Vector3d is shorter than zeroLengthTolerance (1e-12).
         member inline v.IsOppositeOrientation (other:Vector3d) =
             if isTooTinySq(v.LengthSq    ) then RhinoScriptingFSharpException.Raise "Vector3d.IsOppositeOrientation: Vector3d 'this' is too short: %s. 'other':%s " v.AsString other.AsString
             if isTooTinySq(other.LengthSq) then RhinoScriptingFSharpException.Raise "Vector3d.IsOppositeOrientation: Vector3d 'other' is too short: %s. 'this':%s " other.AsString v.AsString
@@ -404,7 +404,7 @@ module AutoOpenVector3d =
             let au = this  * (1.0 / sqrt sa)
             let bu = other * (1.0 / sqrt sb)
             let d = bu * au
-            float -maxCosine < d && d  < float maxCosine // = cosine of 98.75 and 90.25 degrees
+            float -maxCosine < d && d  < float maxCosine // = cosine of 89.75 and 90.25 degrees
 
 
 
@@ -554,10 +554,10 @@ module AutoOpenVector3d =
             v.Unitized
 
         /// Unitize 3D Vector3d, if input Vector3d is shorter than 1e-6 the default unit-Vector3d is returned.
-        static member inline unitizeOrDefault (defaultUnitVector3dtor:Vector3d) (v:Vector3d) =
+        static member inline unitizeOrDefault (defaultUnitVector3d:Vector3d) (v:Vector3d) =
             let l = v.LengthSq
             if l < 1e-12  then  // = sqrt (1e-06)
-                defaultUnitVector3dtor
+                defaultUnitVector3d
             else
                 let f = 1.0 / sqrt(l)
                 Vector3d(v.X*f, v.Y*f, v.Z*f)
@@ -571,8 +571,8 @@ module AutoOpenVector3d =
 
 
         /// Returns positive angle between two 3D Vector3d in Radians.
-        /// Takes Vector3d orientation into account,
-        /// Range 0.0 to Pi( = 0 to 180 Degree).
+        /// Takes Vector3d orientation into account.
+        /// Range 0.0 to Pi ( = 0 to 180 Degrees).
         static member anglePi (a:Vector3d) (b:Vector3d) =
             VecUnitized.anglePi a.Unitized b.Unitized
 
@@ -647,18 +647,18 @@ module AutoOpenVector3d =
             if orientationToMatch * vec < 0.0 then -vec else vec
 
 
-        /// Checks if the angle between the two 3D Vector3d is less than 180 degrees.
+        /// Checks if the angle between the two 3D Vector3d is less than 90 degrees.
         /// Calculates the dot product of two 3D Vector3d.
         /// Then checks if it is bigger than 1e-12.
-        /// If any of the two Vector3d is zero length returns false.
+        /// Fails if any of the two Vector3d is shorter than zeroLengthTolerance (1e-12).
         static member inline matchesOrientation (v:Vector3d) (other:Vector3d) =
             v.MatchesOrientation other
 
 
-        /// Checks if the angle between the two 3D Vector3d is more than 180 degrees.
+        /// Checks if the angle between the two 3D Vector3d is more than 90 degrees.
         /// Calculates the dot product of two 3D Vector3d.
         /// Then checks if it is smaller than minus 1e-12.
-        /// If any of the two Vector3d is zero length returns false.
+        /// Fails if any of the two Vector3d is shorter than zeroLengthTolerance (1e-12).
         static member inline isOppositeOrientation (v:Vector3d) (other:Vector3d) =
             v.IsOppositeOrientation other
 
@@ -672,7 +672,7 @@ module AutoOpenVector3d =
         /// Fails on zero length Vector3d, tolerance 1e-12.
         static member inline areParallelAndMatchOrientation (other:Vector3d) (v:Vector3d) = v.IsParallelAndOrientedTo other
 
-        /// Checks if Angle between two Vector3d is between 98.75 and 90.25 Degree.
+        /// Checks if Angle between two Vector3d is between 89.75 and 90.25 Degrees.
         /// Ignores Vector3d orientation.
         /// Fails on zero length Vector3d, tolerance 1e-12.
         static member inline arePerpendicular (other:Vector3d) (v:Vector3d) = v.IsPerpendicularTo other
@@ -735,10 +735,10 @@ module AutoOpenVector3d =
             elif dot < float Cosine.``179.95`` then
                 RhinoScriptingFSharpException.Raise "Vector3d.slerp: Can't interpolate Vector3d in opposite directions:%A" ende
             else
-                let ang = acos(dot) // the angel between the two Vector3d
+                let ang = acos(dot) // the angle between the two Vector3d
                 let perp = eu - su*dot |> Vector3d.unitize // a Vector3d perpendicular to start and in the same plane with ende.
                 let theta = ang*rel // the angle part we want for the result
-                let theta360 = (theta+twoPi) % twoPi // make sure it is i the range 0.0 to 2 Pi (360 degrees)
+                let theta360 = (theta+twoPi) % twoPi // make sure it is in the range 0.0 to 2 Pi (360 degrees)
                 let cosine = cos (theta360)
                 let sine   = sqrt(1.0 - cosine*cosine)
                 let res =  //unitized result Vector3d
@@ -816,14 +816,14 @@ module AutoOpenVector3d =
 
         /// Returns a perpendicular horizontal Vector3d. Rotated counterclockwise.
         /// Just does Vector3d(-v.Y, v.X, 0.0)
-        /// On vertical input Vector3d resulting Vector3d if of zero length.
+        /// On vertical input Vector3d resulting Vector3d is of zero length.
         static member inline perpendicularInXY (v:Vector3d) =
             Vector3d(-v.Y, v.X, 0.0)
 
         /// Returns a Vector3d that is perpendicular to the given Vector3d and in the same vertical Plane.
         /// Projected into the X-Y plane input and output Vector3d are parallel and of same orientation.
         /// Not of same length, not unitized.
-        /// On vertical input Vector3d resulting Vector3d if of zero length.
+        /// On vertical input Vector3d resulting Vector3d is of zero length.
         static member inline perpendicularInVerticalPlane (v:Vector3d) =
             let hor = Vector3d(v.Y, -v.X, 0.0)
             let r = Vector3d.cross (v, hor)
@@ -935,7 +935,7 @@ module AutoOpenVector3d =
         /// The default value corresponds to approx 0.25 degree. Below this angle Vector3d are considered parallel.
         /// Use the module Rhino.Scripting.FSharp.RelAngleDiscriminant to set another tolerance here.</param>
         ///<returns> For (almost) zero length or (almost) parallel Vector3d: ValueNone
-        /// Else ValueSome with a tuple of the parameters at which the two infinite 2D lines intersect to each other.
+        /// Else ValueSome with a tuple of the parameters at which the two infinite 3D lines are closest to each other.
         /// The tuple's order corresponds to the input order.</returns>
         static member intersection( ptA:Point3d,
                                     ptB:Point3d,

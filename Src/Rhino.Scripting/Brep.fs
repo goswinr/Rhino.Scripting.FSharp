@@ -6,7 +6,7 @@ open Rhino.Geometry
 open Rhino.Scripting
 open Rhino.Scripting.RhinoScriptingUtils
 
-/// This module provides functions to create or manipulate Rhino Breps/ Polysurface
+/// This module provides functions to create or manipulate Rhino Breps/Polysurfaces.
 /// This module is automatically opened when Rhino.Scripting.FSharp namespace is opened.
 /// These type extensions are only visible in F#.
 [<AutoOpen>]
@@ -14,12 +14,12 @@ module AutoOpenBrep =
 
   type RhinoScriptSyntax with // TODO change to Brep type extensions ??!!
 
-    ///<summary>Creates a Brep in the Shape of a Slotted Hole. Closed with caps. </summary>
-    ///<param name="plane">(Plane)Origin = center of hole</param>
-    ///<param name="length">(float) total length of slotted hole</param>
-    ///<param name="width">(float) width = radius of slotted hole</param>
-    ///<param name="height">(float) height of slotted hole volume</param>
-    ///<returns>(Brep) Closed Brep Geometry.</returns>
+    ///<summary>Creates a Brep in the shape of a slotted hole. Closed with caps.</summary>
+    ///<param name="plane">(Plane) Origin is the center of the hole</param>
+    ///<param name="length">(float) Total length of the slotted hole</param>
+    ///<param name="width">(float) Width (diameter) of the slotted hole</param>
+    ///<param name="height">(float) Height of the slotted hole volume</param>
+    ///<returns>(Brep) Closed Brep geometry.</returns>
     static member CreateSlottedHoleVolume( plane:Plane, length, width, height) : Brep  =
         if length<width then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.SlottedHole: length= %g must be more than width= %g" length width
         let root05  = sqrt 0.5
@@ -68,27 +68,27 @@ module AutoOpenBrep =
         Transform.PlaneToPlane (Plane.WorldXY, plane) |> c2.Transform |> ignore
         let rb = Brep.CreateFromLoft( [|c1;c2|], Point3d.Unset, Point3d.Unset, LoftType.Straight, false )
         if isNull rb || rb.Length <> 1  then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.*** Failed to Create loft part of  SlottedHole , at tolerance %f" RhinoScriptSyntax.Doc.ModelAbsoluteTolerance
+            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.CreateSlottedHoleVolume: Failed to create loft part of SlottedHole at tolerance %f" RhinoScriptSyntax.Doc.ModelAbsoluteTolerance
         rb.[0].CapPlanarHoles( RhinoScriptSyntax.Doc.ModelAbsoluteTolerance)
 
 
 
-    ///<summary>Creates a solid Brep in the Shape of a  cylinder. Closed with caps. </summary>
-    ///<param name="plane">(Plane) Origin is center of base of cylinder</param>
-    ///<param name="diameter">(float) Diameter of cylinder</param>
-    ///<param name="length">(float) total length of the screw brep</param>
-    ///<returns>(Brep) Brep Geometry.</returns>
+    ///<summary>Creates a solid Brep in the shape of a cylinder. Closed with caps.</summary>
+    ///<param name="plane">(Plane) Origin is the center of the base of the cylinder</param>
+    ///<param name="diameter">(float) Diameter of the cylinder</param>
+    ///<param name="length">(float) Total length of the cylinder</param>
+    ///<returns>(Brep) Brep geometry.</returns>
     static member CreateCylinder ( plane:Plane, diameter, length) : Brep  =
         let circ = Circle(plane,diameter*0.5)
         let cy = Cylinder(circ,length)
         Brep.CreateFromCylinder(cy, capBottom=true, capTop=true)
 
-    ///<summary>Creates a Brep in the shape of a Countersunk Screw Hole, 45 degrees slope.
+    ///<summary>Creates a Brep in the shape of a countersunk screw hole with 45 degrees slope.
     ///    A capped cone and a cylinder. One closed Polysurface.</summary>
-    ///<param name="plane">(Plane) Origin is center of cone-base or head</param>
-    ///<param name="outerDiameter">(float) Diameter of cone base</param>
-    ///<param name="innerDiameter">(float) Diameter of cylinder</param>
-    ///<param name="length">(float) Total length of the screw brep</param>
+    ///<param name="plane">(Plane) Origin is the center of the cone-base or head</param>
+    ///<param name="outerDiameter">(float) Diameter of the cone base</param>
+    ///<param name="innerDiameter">(float) Diameter of the cylinder</param>
+    ///<param name="length">(float) Total length of the screw Brep</param>
     ///<returns>(Brep) Brep geometry.</returns>
     static member CreateCounterSunkScrewVolume ( plane:Plane, outerDiameter, innerDiameter, length) : Brep  =
         let r = outerDiameter*0.5
@@ -100,21 +100,23 @@ module AutoOpenBrep =
         plane.Rotate(Math.PI * 0.5, plane.ZAxis)|> RhinoScriptingFSharpException.FailIfFalse "rotate plane" // so that seam of cone an cylinder align
         let cySrf = RhinoScriptSyntax.CreateCylinder(plane, innerDiameter, length)
         let bs = Brep.CreateBooleanUnion( [coneSrf; cySrf], RhinoScriptSyntax.Doc.ModelAbsoluteTolerance)
-        if bs.Length <> 1 then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.%d items as result from creating countersunk screw" bs.Length
+        if bs.Length <> 1 then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.CreateCounterSunkScrewVolume: Expected 1 Brep but got %d items" bs.Length
         let brep = bs.[0]
         if brep.SolidOrientation = BrepSolidOrientation.Inward then brep.Flip()
         brep
 
-    ///If brep.SolidOrientation is inward then flip brep.
+    ///<summary>If brep.SolidOrientation is inward then flip the brep.</summary>
+    ///<param name="brep">(Brep) The Brep to orient</param>
+    ///<returns>(Brep) The same Brep, flipped if needed.</returns>
     static member OrientBrep (brep:Brep) : Brep  =
         if brep.SolidOrientation = BrepSolidOrientation.Inward then
             brep.Flip()
         brep
     ///<summary>Transforms a planar 2D curve in XY plane to the given plane and then extrudes it with CapPlanarHoles, with optional extensions at both ends.</summary>
-    ///<param name="curveToExtrudeInWorldXY">(Curve) A curve in world XY plane</param>
+    ///<param name="curveToExtrudeInWorldXY">(Curve) A curve in the world XY plane</param>
     ///<param name="plane">(Plane) A plane with any orientation</param>
-    ///<param name="height">(float) The height to extrude along the Z axis of plane</param>
-    ///<param name="extraHeightPerSide">(float) Optional, Default Value: <c>0.0</c>, extra extension of the extrusion on both sides</param>
+    ///<param name="height">(float) The height to extrude along the Z-axis of the plane</param>
+    ///<param name="extraHeightPerSide">(float) Optional, Default Value: <c>0.0</c>. Extra extension of the extrusion on both sides</param>
     ///<returns>(Brep) Brep geometry.</returns>
     static member CreateExtrusionAtPlane(curveToExtrudeInWorldXY:Curve, plane:Plane, height, [<OPT;DEF(0.0)>]extraHeightPerSide:float) : Brep =
         let mutable pl = Plane(plane)
@@ -131,12 +133,12 @@ module AutoOpenBrep =
         brep
 
 
-    ///<summary>Subtracts trimmer from brep (= BooleanDifference),
-    /// so that a single brep is returned,
-    /// draws objects and zooms on them if an error occurs.</summary>
-    ///<param name="trimmer">(Brep) The volume to cut out</param>
+    ///<summary>Subtracts trimmer from brep (Boolean Difference),
+    /// so that a single brep is returned.
+    /// Draws debug objects and zooms on them if an error occurs.</summary>
     ///<param name="keep">(Brep) The volume to keep</param>
-    ///<param name="subtractionLocations">(int) Optional, The number of locations where the brep is expected to be cut
+    ///<param name="trimmer">(Brep) The volume to cut out</param>
+    ///<param name="subtractionLocations">(int) Optional. The number of locations where the brep is expected to be cut.
     ///  This is an optional safety check that makes it twice as slow.
     ///  It ensures that the count of breps from Brep.CreateBooleanIntersection is equal to subtractionLocations</param>
     ///<returns>(Brep) Brep geometry.</returns>
@@ -191,10 +193,10 @@ module AutoOpenBrep =
         if brep.SolidOrientation = BrepSolidOrientation.Inward then  brep.Flip()
         brep
 
-    ///<summary> Calls Mesh.CreateFromBrep, and Mesh.HealNakedEdges() to try to ensure Mesh is closed if input is closed.</summary>
-    ///<param name="brep">(Brep) The Polysurface to extract Mesh from.</param>
-    ///<param name="meshingParameters">(MeshingParameters) Optional, The meshing parameters, if omitted the current meshing parameters are used.</param>
-    ///<returns>(Result&lt;Mesh,Mesh&gt;) Ok Mesh or Error Mesh if input brep is closed but output Mesh not. Fails if no meshes can be extracted.</returns>
+    ///<summary>Calls Mesh.CreateFromBrep and Mesh.HealNakedEdges() to try to ensure Mesh is closed if input is closed.</summary>
+    ///<param name="brep">(Brep) The Polysurface to extract a Mesh from</param>
+    ///<param name="meshingParameters">(MeshingParameters) Optional. The meshing parameters; if omitted the current meshing parameters are used</param>
+    ///<returns>(Result&lt;Mesh,Mesh&gt;) Ok Mesh, or Error Mesh if input brep is closed but output Mesh is not. Fails if no meshes can be extracted.</returns>
     static member ExtractRenderMesh (brep:Brep,[<OPT;DEF(null:MeshingParameters)>]meshingParameters:MeshingParameters) :Result<Mesh,Mesh> =
         let meshing =
             if notNull meshingParameters then

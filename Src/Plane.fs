@@ -27,25 +27,29 @@ module AutoOpenPlane=
         let v = pt-pl.Origin
         pl.XAxis * v, pl.YAxis * v, pl.ZAxis * v
 
-    /// First finds the closet point on plane from a test point.
+    /// First finds the closest point on plane from a test point.
     /// Then returns a new plane with Origin at this point and the same Axes vectors.
     member inline pl.PlaneAtClPt pt =
         let o = pl.ClosestPoint pt
         Plane(o, pl.XAxis, pl.YAxis)
 
-    /// Returns the angle to another Plane in Degree, ignoring the normal's orientation.
-    /// So 0.0 if the planes are parallel. And 90 degrees if the planes are perpendicular to ech other.
+    /// Returns the angle to another Plane in Degrees, ignoring the normal's orientation.
+    /// So 0.0 if the planes are parallel. And 90 degrees if the planes are perpendicular to each other.
     member inline this.Angle90ToPlane (pl:Plane) =
         Vector3d.angle90 this.ZAxis pl.ZAxis
 
-    /// Returns the angle to 3D vector in Degree, ignoring the plane's orientation.
-    /// So 0.0 if the vector is parallele to the Plane. And 90 degrees if the vector is perpendicular to the plane.
+    /// Returns the angle to a 3D vector in Degrees, ignoring the plane's orientation.
+    /// So 0.0 if the vector is parallel to the Plane. And 90 degrees if the vector is perpendicular to the plane.
+    /// Fails if the vector is too short (IsZeroLength shorter than 1e-12).
     member inline pl.Angle90ToVec (v:Vector3d) =
-        90.0 - Vector3d.angle90 v.Unitized pl.ZAxis
+        let len = v.Length
+        if isTooTiny len then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:.Plane.Angle90ToVec: Vector is too short: %O" v
+        let u = Vector3d(v.X/len, v.Y/len, v.Z/len)
+        90.0 - Vector3d.angle90 u pl.ZAxis
 
 
-    /// Returns the angle to a Line in Degree, ignoring the ZAxis's orientation.
-    /// So 0.0 if the line is parallele to the Plane. And 90 degrees if the line is perpendicular to the plane.
+    /// Returns the angle to a Line in Degrees, ignoring the ZAxis's orientation.
+    /// So 0.0 if the line is parallel to the Plane. And 90 degrees if the line is perpendicular to the plane.
     member inline pl.Angle90ToLine (ln:Line) =
         let x = ln.ToX-ln.FromX
         let y = ln.ToY-ln.FromY
@@ -61,67 +65,55 @@ module AutoOpenPlane=
     /// Evaluate at 2D parameter (Z parameter = 0.0)
     member inline p.EvaluateAtXY (px:float, py:float) = p.Origin + p.XAxis*px + p.YAxis*py
 
-    /// Checks if two PPlanes are coincident within the distance tolerance. 1e-6 by default.
+    /// Checks if two Planes are coincident within the distance tolerance. 1e-6 by default.
     /// This means that their Z-axes are parallel within the angle tolerance
     /// and the distance of second origin to the first plane is less than the distance tolerance.
     /// The default angle tolerance is 0.25 degrees.
-    /// This tolerance can be customized by an optional minium cosine value.
+    /// This tolerance can be customized by an optional minimum cosine value.
     /// See Rhino.Scripting.FSharp:.Cosine module.
     member inline pl.IsCoincidentTo (other:Plane,
                                     [<OPT;DEF(1e-6)>] distanceTolerance:float,
                                     [<OPT;DEF(Cosine.``0.25``)>] minCosine:float<Cosine.cosine>) =
         pl.ZAxis.IsParallelTo(other.ZAxis, minCosine)
         &&
-        pl.DistanceToPt other.Origin < distanceTolerance
+        abs(pl.DistanceToPt other.Origin) < distanceTolerance
 
 
-    /// Return a new plane with given Origin
+    /// Return a new plane with given Origin.
+    [<Obsolete("Use Plane.setOrigin instead")>]
     static member inline setOrig (pt:Point3d) (pl:Plane) =
-        let mutable p = pl.Clone()
-        p.Origin <- pt
-        p
+        Plane(pt, pl.XAxis, pl.YAxis)
 
     /// Return a new plane with given Origin X value changed.
+    [<Obsolete("Use Plane.setOriginX instead")>]
     static member inline setOrigX (x:float) (pl:Plane) =
-        let mutable p = pl.Clone()
-        p.OriginX <- x
-        p
+        Plane(pl.Origin |> Point3d.withX x, pl.XAxis, pl.YAxis)
 
     /// Return a new plane with given Origin Y value changed.
+    [<Obsolete("Use Plane.setOriginY instead")>]
     static member inline setOrigY (y:float) (pl:Plane) =
-        let mutable p = pl.Clone()
-        p.OriginY <- y
-        p
+        Plane(pl.Origin |> Point3d.withY y, pl.XAxis, pl.YAxis)
 
     /// Return a new plane with given Origin Z value changed.
+    [<Obsolete("Use Plane.setOriginZ instead")>]
     static member inline setOrigZ (z:float) (pl:Plane) =
-        let mutable p = pl.Clone()
-        p.OriginZ <- z
-        p
+        Plane(pl.Origin |> Point3d.withZ z, pl.XAxis, pl.YAxis)
 
     /// Return a new plane with Origin translated by Vector3d.
     static member inline translateBy (v:Vector3d) (pl:Plane) =
-        let mutable p = pl.Clone()
-        p.Origin <- p.Origin + v
-        p
+        Plane(pl.Origin + v, pl.XAxis, pl.YAxis)
 
     /// Return a new plane with Origin translated in World X direction.
     static member inline translateByWorldX (x:float) (pl:Plane) =
-        let mutable p = pl.Clone()
-        p.OriginX <- p.OriginX + x
-        p
+        Plane(pl.Origin |> Point3d.moveX x, pl.XAxis, pl.YAxis)
 
     /// Return a new plane with Origin translated in World Y direction.
     static member inline translateByWorldY (y:float) (pl:Plane) =
-        let mutable p = pl.Clone()
-        p.OriginY <- p.OriginY + y
-        p
+        Plane(pl.Origin |> Point3d.moveY y, pl.XAxis, pl.YAxis)
 
     /// Return a new plane with Origin translated in World Z direction.
     static member inline translateByWorldZ (z:float) (pl:Plane) =
-        let mutable p = pl.Clone()
-        p.OriginZ <- p.OriginZ + z
-        p
+        Plane(pl.Origin |> Point3d.moveZ z, pl.XAxis, pl.YAxis)
 
 
     /// Rotate about Z axis by angle in degree.
@@ -155,7 +147,7 @@ module AutoOpenPlane=
         //abs (a.ZAxis.Z - b.ZAxis.Z) <= tol
 
 
-    /// Checks if two 3D Parametrized Planes are coincident within the distance tolerance..
+    /// Checks if two 3D Parametrized Planes are coincident within the distance tolerance.
     /// This means that the Z-axes are parallel within 0.25 degrees
     /// and the distance of second origin to the first plane is less than the tolerance.
     static member inline areCoincident tol (a:Plane) (b:Plane) =
@@ -229,8 +221,8 @@ module AutoOpenPlane=
         Plane(Point3d.Origin, Vector3d.XAxis, -Vector3d.YAxis)
 
     /// Builds Plane at first point, X-axis to second point,
-    /// Y-axis to third point or at lest in plane with third point.
-    /// Fails if points are closer than 1e-5.
+    /// Y-axis to third point or at least in plane with third point.
+    /// Fails if points are closer than 1e-6.
     static member createThreePoints (origin:Point3d) (xPt:Point3d) (yPt:Point3d) =
         let x = xPt-origin
         let y = yPt-origin
@@ -243,7 +235,7 @@ module AutoOpenPlane=
         let xu = Vector3d(x.X*xf, x.Y*xf, x.Z*xf)
         let yu = Vector3d(y.X*yf, y.Y*yf, y.Z*yf)
         if xu.IsParallelTo(yu, Cosine.``1.0``) then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:.Plane.createThreePoints failed. The points are colinear by less than 1.0 degree, origin %s and xPt %s and yPt %s" origin.AsString xPt.AsString yPt.AsString
+            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:.Plane.createThreePoints failed. The points are collinear by less than 1.0 degree, origin %s and xPt %s and yPt %s" origin.AsString xPt.AsString yPt.AsString
         let z  = Vector3d.cross (xu, yu)
         let y' = Vector3d.cross (z, x)
         Plane(origin, xu, y'.Unitized)
@@ -300,7 +292,7 @@ module AutoOpenPlane=
         let xu = Vector3d(xAxis.X *xf,  xAxis.Y*xf,  xAxis.Z*xf)
         let nu = Vector3d(normal.X*nf, normal.Y*nf, normal.Z*nf)
         if nu.IsParallelTo(xu, Cosine.``1.0``) then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:.Plane.createOriginNormalXaxis failed. The vectors are colinear by less than 1.0 degrees, origin %s and normal %s and normal %s" origin.AsString normal.AsString xAxis.AsString
+            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:.Plane.createOriginNormalXaxis failed. The vectors are collinear by less than 1.0 degrees, origin %s and normal %s and xAxis %s" origin.AsString normal.AsString xAxis.AsString
         let y = Vector3d.cross (nu, xu)
         let x = Vector3d.cross (y, nu)
         Plane(origin, x.Unitized, y.Unitized)
@@ -387,7 +379,7 @@ module AutoOpenPlane=
     //     let z = Vector3d.transformRigid m pl.ZAxis
     //     Plane (o, x, y, z)
 
-    /// Rotate Plane 180 Degrees around Z-axis if the Y-axis orientation does not match World Y (pl.Yax.Y < 0.0)
+    /// Rotate Plane 180 Degrees around Z-axis if the Y-axis orientation does not match World Y (pl.YAxis.Y < 0.0).
     /// To ensure that Y is always positive. For example for showing Text.
     static member inline rotateZ180IfYNegative (pl:Plane) =
         if pl.YAxis.Y < 0.0 then Plane.rotateOnZ180 pl else pl
@@ -425,8 +417,8 @@ module AutoOpenPlane=
             Some <| ((pl.Origin - ln.From) * z) / nenner
 
 
-    /// Returns the line parameter and the X and Y parameters on the Plane. as tuple (pLn, pPlX, pPlY).
-    /// The parameters is the intersection point of the infinite Line with the Plane.
+    /// Returns the line parameter and the X and Y parameters on the Plane as tuple (pLn, pPlX, pPlY).
+    /// The parameter is the intersection point of the infinite Line with the Plane.
     /// Returns None if they are parallel or coincident.
     static member intersectLineParameters  (ln:Line) (pl:Plane) : option<float*float*float> =
         let z = pl.ZAxis

@@ -55,14 +55,14 @@ module UtilRHinoScriptingFSharp =
         // use 'not' to catch a NaN too ( a cross product of infinit long vectors can give a NaN length)
         not ( x > 1e-12 )
 
-    /// Returns true for values smaller than 1e-12 and for NaN
-    /// uses UtilRhino.Scripting.FSharp:zeroLengthTolerance
+    /// Returns true for values smaller than 1e-12 and for NaN.
+    /// Uses zeroLengthTolerance.
     let inline isTooTiny x =
         // use 'not' to catch a NaN too ( a cross product of infinit long vectors can give a NaN length)
         not ( x > zeroLengthTolerance )
 
-    /// Returns true for values smaller than 1e-24 (square of 1e-12) and for NaN
-    /// uses UtilRhino.Scripting.FSharp:zeroLengthTolSquared
+    /// Returns true for values smaller than 1e-24 (square of 1e-12) and for NaN.
+    /// Uses zeroLengthTolSquared.
     let inline isTooTinySq x =
         // use 'not' to catch a NaN too ( a cross product of infinit long vectors can give a NaN length)
         not ( x > zeroLengthTolSquared)
@@ -120,17 +120,17 @@ module UtilRHinoScriptingFSharp =
     [<Literal>]
     let ``1.0 - 1e-6`` = 0.99999904632568359375
 
-   /// The float number that is 9 increments smaller than -1.0.
-    /// This is approx -1.0 + 1e-6
-    /// see https://float.exposed/0xbf800009
-    [<Literal>]
-    let ``-1.0 + 1e-6`` = -1.00000107288360595703
-
     /// The float number that is 16 increments bigger than -1.0.
-    /// This is approx -1.0 - 1e-6
+    /// This is approx -1.0 + 1e-6
     /// see https://float.exposed/0xbf7ffff0
     [<Literal>]
-    let ``-1.0 - 1e-6`` = -0.99999904632568359375
+    let ``-1.0 + 1e-6`` = -0.99999904632568359375
+
+    /// The float number that is 9 increments smaller than -1.0.
+    /// This is approx -1.0 - 1e-6
+    /// see https://float.exposed/0xbf800009
+    [<Literal>]
+    let ``-1.0 - 1e-6`` = -1.00000107288360595703
 
     /// Tests if a number is close to 1.0 by a 1e-6 tolerance.
     /// This is a float increment of 6 steps or decrement of 16 steps.
@@ -144,9 +144,9 @@ module UtilRHinoScriptingFSharp =
 
 
     /// Tests if a number is close to minus 1.0 by a 1e-6 tolerance.
-    /// This is a float increment of 6 steps or decrement of 16 steps.
-    let inline isMinusOne  x =
-        ``-1.0 - 1e-6`` > x && x > ``-1.0 + 1e-6``
+    /// This is a float increment of 16 steps or decrement of 9 steps.
+    let inline isMinusOne x =
+        ``-1.0 + 1e-6`` > x && x > ``-1.0 - 1e-6``
 
     /// Tests if a number is close to 0.0 by 1e-6
     /// This is approximately the same tolerance that 6 increments of a float are away from 1.0.
@@ -174,13 +174,11 @@ module UtilRHinoScriptingFSharp =
         if   sign signedValue = sign numToMatch then numToMatch
         else -numToMatch
 
+    /// Alias for idxLooped.
     /// Any int will give a valid index for given collection size.
     /// Converts negative indices to positive ones and loops to start after last index is reached.
     /// Returns a valid index for a collection of 'length' items for any integer.
-    let inline saveIdx i length =
-        let t = i % length
-        if t >= 0 then t
-        else           t + length
+    let inline saveIdx i length = idxLooped i length
 
 /// Precalculated cosine values for faster checking the angles of dot products of unit-vectors.
 [<RequireQualifiedAccess>]

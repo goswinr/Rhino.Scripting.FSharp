@@ -23,10 +23,10 @@ module AutoOpenCurve =
   type RhinoScriptSyntax with
 
 
-    ///<summary>Returns parameter of the point on a Curve that is closest to a test point.</summary>
-    ///<param name="curveId">(Guid) Identifier of a Curve object</param>
+    ///<summary>Returns parameter of the point on a curve that is closest to a test point.</summary>
+    ///<param name="curveId">(Guid) Identifier of a curve object</param>
     ///<param name="point">(Point3d) Sampling point</param>
-    ///<returns>(float) The parameter of the closest point on the Curve.</returns>
+    ///<returns>(float) The parameter of the closest point on the curve.</returns>
     static member curveClosestParameter(curveId:Guid) (point:Point3d) : float =
         let curve = RhinoScriptSyntax.CoerceCurve(curveId)
         let t = ref 0.
@@ -34,33 +34,33 @@ module AutoOpenCurve =
         if not <| rc then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.curveClosestParameter failed. curveId:'%s'" (pretty curveId)
         !t
 
-    ///<summary>Returns parameter of the point on a Curve that is closest to a test point.</summary>
+    ///<summary>Returns parameter of the point on a curve that is closest to a test point.</summary>
     ///<param name="curve">(Geometry.Curve) A Curve geometry object</param>
     ///<param name="point">(Point3d) Sampling point</param>
-    ///<returns>(float) The parameter of the closest point on the Curve.</returns>
+    ///<returns>(float) The parameter of the closest point on the curve.</returns>
     static member curveGeoClosestParameter (curve:Curve) (point:Point3d): float =
         let t = ref 0.
         let rc = curve.ClosestPoint(point, t)
-        if not <| rc then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.curveGeoClosestParameter failed on Curve Geometry"
+        if not <| rc then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.curveGeoClosestParameter failed for point %s" point.Pretty
         !t
 
-    ///<summary>Returns the point on a Curve that is closest to a test point.</summary>
-    ///<param name="curveId">(Guid) Identifier of a Curve object</param>
+    ///<summary>Returns the point on a curve that is closest to a test point.</summary>
+    ///<param name="curveId">(Guid) Identifier of a curve object</param>
     ///<param name="point">(Point3d) Sampling point</param>
-    ///<returns>(Point3d) The closest point on the Curve.</returns>
+    ///<returns>(Point3d) The closest point on the curve.</returns>
     static member curveClosestPoint (curveId:Guid) (point:Point3d) : Point3d =
         let curve = RhinoScriptSyntax.CoerceCurve(curveId)
         let rc, t = curve.ClosestPoint(point)
         if not <| rc then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.curveClosestPoint failed. curveId:'%s'" (pretty curveId)
         curve.PointAt(t)
 
-    ///<summary>Returns the point on a Curve that is closest to a test point.</summary>
+    ///<summary>Returns the point on a curve that is closest to a test point.</summary>
     ///<param name="curve">(Geometry.Curve) A Curve geometry object</param>
     ///<param name="point">(Point3d) Sampling point</param>
-    ///<returns>(Point3d) The closest point on the Curve.</returns>
+    ///<returns>(Point3d) The closest point on the curve.</returns>
     static member curveGeoClosestPoint (curve:Curve) (point:Point3d) : Point3d =
         let rc, t = curve.ClosestPoint(point)
-        if not <| rc then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.curveGeoClosestPoint failed on Curve Geometry"
+        if not <| rc then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.curveGeoClosestPoint failed for point %s" point.Pretty
         curve.PointAt(t)
 
 
@@ -91,11 +91,11 @@ module AutoOpenCurve =
 
     ///<summary>Fillet some corners of a polyline.</summary>
     ///<param name="fillets">(IDictionary&lt;int,float&gt;) The index of the corners to fillet and the fillet radius</param>
-    ///<param name="polyline">(IList&lt;Point3d&gt;) The Polyline as point-list </param>
-    ///<returns>(PolyCurve) A PolyCurve object.</returns>
+    ///<param name="polyline">(IList&lt;Point3d&gt;) The polyline as point list</param>
+    ///<returns>(PolyCurve) A PolyCurve geometry.</returns>
     static member FilletPolyline (fillets: IDictionary<int,float>, polyline:IList<Point3d>) : PolyCurve =
         for i in fillets.Keys do
-            if i >= polyline.Count-1 then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.FilletPolyline: cannot fillet corner %d . in polyline of %d points" i polyline.Count
+            if i < 0 || i >= polyline.Count-1 then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.FilletPolyline: cannot fillet corner %d in polyline of %d points" i polyline.Count
 
         let closed = RhinoScriptSyntax.Distance(polyline.[0], polyline.[polyline.Count-1] ) < RhinoScriptSyntax.Doc.ModelAbsoluteTolerance
         let mutable prevPt = polyline.[0]
@@ -133,8 +133,7 @@ module AutoOpenCurve =
     ///<param name="direction">(Vector3d) Direction of filleting cylinder, usually the intersection of the two planes to fillet; this might be the cross product of the two lines, but the lines might also be skew</param>
     ///<param name="lineA">(Line) First line to fillet, must not be perpendicular to direction; the lines might also be skew</param>
     ///<param name="lineB">(Line) Second line to fillet, must not be perpendicular to direction or first line; the lines might also be skew</param>
-    ///<returns>(float) The needed trimming of two planar surfaces in order to fit a fillet of given radius.
-    ///    The lines can be anywhere on the plane (except parallel to axis).</returns>
+    ///<returns>(float) The setback distance from the intersection point.</returns>
     static member filletSkewLinesTrims (radius:float) (direction:Vector3d) (lineA:Line) (lineB:Line) : float  =
         let ok,axis =
             let pla = Plane(lineA.From, lineA.Direction, direction)
@@ -223,7 +222,7 @@ module AutoOpenCurve =
             let weights = [|1. ; midw ; 1. ; midw ; 1.|]
             let mid = (ma + mb)*0.5
             let pts = [|arcStart; ma; mid; mb; arcEnd|]
-            RhinoScriptSyntax.CreateNurbsCurve(pts, knots, 2, weights),arc,arcPl.Origin
+            RhinoScriptSyntax.CreateNurbsCurve(pts, knots, 2, weights), arc, arcPl.Origin
 
 
 

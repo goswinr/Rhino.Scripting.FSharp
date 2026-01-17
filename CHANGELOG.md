@@ -7,12 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-01-17
+### Changed
+- Referencing [Rhino.Scripting 0.13.0](https://github.com/goswinr/Rhino.Scripting/blob/main/CHANGELOG.md#0130)
+### Fixed
+- Many typos in documentation(thank you Claude!)
 
-## [0.12.1] - 2025-5-28
+## [0.12.1] - 2025-05-28
 ### Changed
 - Referencing [Rhino.Scripting 0.12.0](https://github.com/goswinr/Rhino.Scripting/blob/main/CHANGELOG.md#0120)
 
-## [0.11.0] - 2025-5-25
+## [0.11.0] - 2025-05-25
 ### Changed
 - Referencing Rhino.Scripting 0.11.0
 ### Added
@@ -53,7 +58,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First public release
 - Referencing Rhino.Scripting 0.5.0
 
-[Unreleased]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.12.1...HEAD
+[Unreleased]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.13.0...HEAD
+[0.13.0]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.12.1...0.13.0
 [0.12.1]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.11.0...0.12.1
 [0.11.0]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.10.2...0.11.0
 [0.10.2]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.10.1...0.10.2
@@ -64,10 +70,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.8.0]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.5.0...0.8.0
 [0.5.0]: https://github.com/goswinr/Rhino.Scripting.FSharp/releases/tag/0.5.0
 
-
-
-<!--
-use to get tag dates:
-git log --tags --simplify-by-decoration --pretty="format:%ci %d"
-
--->

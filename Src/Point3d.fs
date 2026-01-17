@@ -6,7 +6,6 @@ open Rhino
 open Rhino.Geometry
 open Rhino.Scripting.RhinoScriptingUtils
 open UtilRHinoScriptingFSharp
-open System
 
 #nowarn "44" // for internal inline constructors and hidden obsolete members for error cases
 
@@ -30,7 +29,7 @@ module AutoOpenPnt =
         //-----------------------------------------------------------------------------------------------------
 
 
-        /// Returns a boolean indicating wether X, Y and Z are exactly 0.0.
+        /// Returns a boolean indicating whether X, Y and Z are exactly 0.0.
         member inline pt.IsOrigin =
             pt.X = 0.0 && pt.Y = 0.0 && pt.Z= 0.0
 
@@ -38,19 +37,19 @@ module AutoOpenPnt =
         member inline p.IsNotOrigin =
             p.X <> 0.0 || p.Y <> 0.0 || p.Z <> 0.0
 
-        /// Returns a boolean indicating wether the absolute value of X, Y and Z is each less than the given tolerance.
+        /// Returns a boolean indicating whether the absolute value of X, Y and Z is each less than the given tolerance.
         member inline pt.IsAlmostOrigin tol =
-            abs pt.X < tol && abs pt.Y < tol
+            abs pt.X < tol && abs pt.Y < tol && abs pt.Z < tol
 
         /// Returns new 3D point with new X coordinate, Y and Z stay the same.
         member inline pt.WithX x =
             Point3d (x, pt.Y, pt.Z)
 
-        /// Returns a new 3D vector with new y coordinate, X and Z stay the same.
+        /// Returns a new 3D point with new Y coordinate, X and Z stay the same.
         member inline pt.WithY y =
             Point3d (pt.X, y, pt.Z)
 
-        /// Returns a new 3D vector with new z coordinate, X and Y stay the same.
+        /// Returns a new 3D point with new Z coordinate, X and Y stay the same.
         member inline pt.WithZ z =
             Point3d (pt.X, pt.Y, z)
 
@@ -143,14 +142,14 @@ module AutoOpenPnt =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        member p.FailedAngle360InXYTo(fromPt:Point3d, toPt:Point3d) = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.closestPointOnLine: Line is too short for fromPt %O to %O and %O" fromPt toPt p
+        member p.FailedClosestPointOnLine(fromPt:Point3d, toPt:Point3d) = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.ClosestPointOnLine: Line is too short for fromPt %O to %O and testPt %O" fromPt toPt p
 
         /// Get closest point on finite line to test point.
         member inline testPt.ClosestPointOnLine(fromPt:Point3d, toPt:Point3d) =
             let dir = testPt - fromPt
             let v   = toPt   - fromPt
             let lenSq = v.LengthSq
-            if isTooTinySq(lenSq) then testPt.FailedAngle360InXYTo(fromPt, toPt)
+            if isTooTinySq(lenSq) then testPt.FailedClosestPointOnLine(fromPt, toPt)
             let dot = Vector3d.dot (v, dir) / lenSq
             if   dot <= 0.0 then  fromPt
             elif dot >= 1.0 then  toPt
@@ -166,7 +165,7 @@ module AutoOpenPnt =
             let v   = toPt   - fromPt
             let lenSq = v.LengthSq
             if isTooTinySq(lenSq) then testPt.FailedDistanceToLine(fromPt, toPt)
-            let dot = Vector3d.dot (v, dir) / v.LengthSq
+            let dot = Vector3d.dot (v, dir) / lenSq
             if   dot <= 0.0 then testPt.DistanceTo   fromPt
             elif dot >= 1.0 then testPt.DistanceTo   toPt
             else                 testPt.DistanceTo   (fromPt + v * dot)
@@ -302,7 +301,9 @@ module AutoOpenPnt =
         /// If the returned vector has length zero then the points are in one line.
         static member normalOf3Pts (a:Point3d, b:Point3d, c:Point3d) = Vector3d.cross (a-b, c-b)
 
-        static member failedDistPt (fromPt:Point3d, dirPt:Point3d, distance:float) = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.distPt: distance form %O to %O is too small to scale to distance: %g" fromPt dirPt distance
+        /// A separate function to compose the error message that does not get inlined.
+        [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
+        static member failedDistPt (fromPt:Point3d, dirPt:Point3d, distance:float) = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.distPt: distance from %O to %O is too small to scale to distance: %g" fromPt dirPt distance
 
         /// Returns a point that is at a given distance from a 3D point in the direction of another point.
         static member inline distPt (fromPt:Point3d, dirPt:Point3d, distance:float) : Point3d =
@@ -519,8 +520,14 @@ module AutoOpenPnt =
                                 orientation:Vector3d) : struct(Vector3d * Vector3d * Point3d * Vector3d) =
             let vp = prevPt - thisPt
             let vn = nextPt - thisPt
-            // if RhVec.isAngleBelowQuaterDegree(vp, vn) then // TODO refine error criteria
-            if Vector3d.angleHalfPi vp vn < float Cosine.``0.25`` then
+            // Check if vectors are nearly parallel (angle less than 0.25 degrees)
+            // Use cross product magnitude relative to input lengths as parallelism test
+            let cross = Vector3d.CrossProduct(vp, vn)
+            let crossLenSq = cross.LengthSq
+            let vpLenSq = vp.LengthSq
+            let vnLenSq = vn.LengthSq
+            // sin(0.25°)² ≈ 1.9e-5, so cross²/(|vp|²|vn|²) < 1e-5 means angle < ~0.18°
+            if isTooTinySq(vpLenSq) || isTooTinySq(vnLenSq) || crossLenSq < vpLenSq * vnLenSq * 1e-5 then
                 struct(Vector3d.Zero, Vector3d.Zero, Point3d.Origin, Vector3d.Zero)
             else
                 let n =
