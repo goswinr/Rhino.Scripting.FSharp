@@ -167,7 +167,7 @@ module AutoOpenVector3d =
         /// Same as Vector3d.withLength.
         member inline v.WithLength (desiredLength:float) =
             let l = v.Length
-            if isTooTiny l then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.WithLength %g : %O is too small for unitizing, Tolerance:%g" desiredLength v zeroLengthTolerance
+            if isTooTiny l then RhinoScriptingFSharpException.Raise "Vector3d.WithLength %g : %O is too small for unitizing, Tolerance:%g" desiredLength v zeroLengthTolerance
             v * (desiredLength / l)
 
         // A separate function to compose the error message that does not get inlined.
@@ -211,7 +211,7 @@ module AutoOpenVector3d =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        member v.FailedDirectionDiamondInXY() = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.DirectionDiamondInXY: input Vector3d is vertical or zero length:%O" v
+        member v.FailedDirectionDiamondInXY() = RhinoScriptingFSharpException.Raise "Vector3d.DirectionDiamondInXY: input Vector3d is vertical or zero length:%O" v
         /// The diamond angle.
         /// Calculates the proportion of X to Y component.
         /// It is always positive and in the range of 0.0 to 4.0 (for 360 Degrees)
@@ -234,7 +234,7 @@ module AutoOpenVector3d =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        member v.FailedDirection2PiInXY() = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.Direction2PiInXY: input Vector3d is zero length or vertical: %O" v
+        member v.FailedDirection2PiInXY() = RhinoScriptingFSharpException.Raise "Vector3d.Direction2PiInXY: input Vector3d is zero length or vertical: %O" v
         /// Returns the angle in Radians from X-axis,
         /// Going Counter-Clockwise till two Pi.
         /// For World X-Y plane. Considers only the X and Y components of the Vector3d.
@@ -249,7 +249,7 @@ module AutoOpenVector3d =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        member v.FailedDirectionPiInXY() = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.DirectionPiInXY: input Vector3d is zero length or vertical: %O" v
+        member v.FailedDirectionPiInXY() = RhinoScriptingFSharpException.Raise "Vector3d.DirectionPiInXY: input Vector3d is zero length or vertical: %O" v
         /// Returns the angle in Radians from X-axis,
         /// Ignores orientation.
         /// Range 0.0 to Pi.
@@ -291,8 +291,8 @@ module AutoOpenVector3d =
         /// Then checks if it is bigger than 1e-12.
         /// Fails if any of the two Vector3d is shorter than zeroLengthTolerance  (1e-12).
         member inline v.MatchesOrientation (other:Vector3d) =
-            if isTooTinySq(v.LengthSq    ) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.MatchesOrientation: Vector3d 'this' is too short: %s. 'other':%s " v.AsString other.AsString
-            if isTooTinySq(other.LengthSq) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.MatchesOrientation: Vector3d 'other' is too short: %s. 'this':%s " other.AsString v.AsString
+            if isTooTinySq(v.LengthSq    ) then RhinoScriptingFSharpException.Raise "Vector3d.MatchesOrientation: Vector3d 'this' is too short: %s. 'other':%s " v.AsString other.AsString
+            if isTooTinySq(other.LengthSq) then RhinoScriptingFSharpException.Raise "Vector3d.MatchesOrientation: Vector3d 'other' is too short: %s. 'this':%s " other.AsString v.AsString
             v * other > 1e-12
 
 
@@ -301,8 +301,8 @@ module AutoOpenVector3d =
         /// Then checks if it is smaller than minus 1e-12.
         /// Fails if any of the two Vector3d is shorter than zeroLengthTolerance  (1e-12).
         member inline v.IsOppositeOrientation (other:Vector3d) =
-            if isTooTinySq(v.LengthSq    ) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.IsOppositeOrientation: Vector3d 'this' is too short: %s. 'other':%s " v.AsString other.AsString
-            if isTooTinySq(other.LengthSq) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.IsOppositeOrientation: Vector3d 'other' is too short: %s. 'this':%s " other.AsString v.AsString
+            if isTooTinySq(v.LengthSq    ) then RhinoScriptingFSharpException.Raise "Vector3d.IsOppositeOrientation: Vector3d 'this' is too short: %s. 'other':%s " v.AsString other.AsString
+            if isTooTinySq(other.LengthSq) then RhinoScriptingFSharpException.Raise "Vector3d.IsOppositeOrientation: Vector3d 'other' is too short: %s. 'this':%s " other.AsString v.AsString
             v * other < -1e-12
 
 
@@ -313,7 +313,7 @@ module AutoOpenVector3d =
             let x = abs (v.X)
             let y = abs (v.Y)
             let z = abs (v.Z)
-            if isTooSmall (x+y+z) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.IsXAligned cannot not check very tiny Vector3d. (tolerance 1e-6) %A" v
+            if isTooSmall (x+y+z) then RhinoScriptingFSharpException.Raise "Vector3d.IsXAligned cannot not check very tiny Vector3d. (tolerance 1e-6) %A" v
             else y < 1e-9 && z < 1e-9
 
         /// Checks if 3D Vector3d is parallel to the world Y axis. Ignoring orientation.
@@ -323,7 +323,7 @@ module AutoOpenVector3d =
             let x = abs (v.X)
             let y = abs (v.Y)
             let z = abs (v.Z)
-            if isTooSmall (x+y+z) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.IsYAligned cannot not check very tiny Vector3d. (tolerance 1e-6) %O" v
+            if isTooSmall (x+y+z) then RhinoScriptingFSharpException.Raise "Vector3d.IsYAligned cannot not check very tiny Vector3d. (tolerance 1e-6) %O" v
             else x < 1e-9 && z < 1e-9
 
         /// Checks if 3D Vector3d is parallel to the world Z axis. Ignoring orientation.
@@ -334,7 +334,7 @@ module AutoOpenVector3d =
             let x = abs (v.X)
             let y = abs (v.Y)
             let z = abs (v.Z)
-            if isTooSmall (x+y+z) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.IsZAligned cannot not check very tiny Vector3d. (tolerance 1e-6) %O" v
+            if isTooSmall (x+y+z) then RhinoScriptingFSharpException.Raise "Vector3d.IsZAligned cannot not check very tiny Vector3d. (tolerance 1e-6) %O" v
             else x < 1e-9 && y < 1e-9
 
         /// Checks if 3D Vector3d is parallel to the world Z axis. Ignoring orientation.
@@ -345,7 +345,7 @@ module AutoOpenVector3d =
             let x = abs (v.X)
             let y = abs (v.Y)
             let z = abs (v.Z)
-            if isTooSmall (x+y+z) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.IsVertical cannot not check very tiny Vector3d. (tolerance 1e-6) %O" v
+            if isTooSmall (x+y+z) then RhinoScriptingFSharpException.Raise "Vector3d.IsVertical cannot not check very tiny Vector3d. (tolerance 1e-6) %O" v
             else x < 1e-9 && y < 1e-9
 
         /// Checks if 3D Vector3d is horizontal (Z component is almost zero).
@@ -355,7 +355,7 @@ module AutoOpenVector3d =
             let x = abs (v.X)
             let y = abs (v.Y)
             let z = abs (v.Z)
-            if isTooSmall (x+y+z) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.IsHorizontal cannot not check very tiny Vector3d. (tolerance 1e-6) %O" v
+            if isTooSmall (x+y+z) then RhinoScriptingFSharpException.Raise "Vector3d.IsHorizontal cannot not check very tiny Vector3d. (tolerance 1e-6) %O" v
             else z < 1e-9
 
         /// Checks if two 3D Vector3d are parallel.
@@ -366,9 +366,9 @@ module AutoOpenVector3d =
         /// Fails on Vector3d shorter than zeroLengthTolerance (1e-12).
         member inline this.IsParallelTo(other:Vector3d, [<OPT;DEF(Cosine.``0.25``)>] minCosine:float<Cosine.cosine> ) =
             let sa = this.LengthSq
-            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.IsParallelTo: Vector3d 'this' is too short: %s. 'other':%s " this.AsString other.AsString
+            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Vector3d.IsParallelTo: Vector3d 'this' is too short: %s. 'other':%s " this.AsString other.AsString
             let sb = other.LengthSq
-            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.IsParallelTo: Vector3d 'other' is too short: %s. 'this':%s " other.AsString this.AsString
+            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Vector3d.IsParallelTo: Vector3d 'other' is too short: %s. 'this':%s " other.AsString this.AsString
             let au = this  * (1.0 / sqrt sa)
             let bu = other * (1.0 / sqrt sb)
             abs(bu * au) > float minCosine // 0.999990480720734 = cosine of 0.25 degrees:
@@ -382,9 +382,9 @@ module AutoOpenVector3d =
         /// Fails on Vector3d shorter than zeroLengthTolerance (1e-12).
         member inline this.IsParallelAndOrientedTo (other:Vector3d, [<OPT;DEF(Cosine.``0.25``)>] minCosine:float<Cosine.cosine> ) =
             let sa = this.LengthSq
-            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.IsParallelAndOrientedTo: Vector3d 'this' is too short: %s. 'other':%s " this.AsString other.AsString
+            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Vector3d.IsParallelAndOrientedTo: Vector3d 'this' is too short: %s. 'other':%s " this.AsString other.AsString
             let sb = other.LengthSq
-            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.IsParallelAndOrientedTo: Vector3d 'other' is too short: %s. 'this':%s " other.AsString this.AsString
+            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Vector3d.IsParallelAndOrientedTo: Vector3d 'other' is too short: %s. 'this':%s " other.AsString this.AsString
             let au = this  * (1.0 / sqrt sa)
             let bu = other * (1.0 / sqrt sb)
             bu * au > float minCosine // 0.999990480720734 = cosine of 0.25 degrees:
@@ -398,9 +398,9 @@ module AutoOpenVector3d =
         /// Fails on Vector3d shorter than zeroLengthTolerance (1e-12).
         member inline this.IsPerpendicularTo (other:Vector3d, [<OPT;DEF(Cosine.``89.75``)>] maxCosine:float<Cosine.cosine> ) =
             let sa = this.LengthSq
-            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.IsPerpendicularTo: Vector3d 'this' is too short: %s. 'other':%s " this.AsString other.AsString
+            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Vector3d.IsPerpendicularTo: Vector3d 'this' is too short: %s. 'other':%s " this.AsString other.AsString
             let sb = other.LengthSq
-            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.IsPerpendicularTo: Vector3d 'other' is too short: %s. 'this':%s " other.AsString this.AsString
+            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Vector3d.IsPerpendicularTo: Vector3d 'other' is too short: %s. 'this':%s " other.AsString this.AsString
             let au = this  * (1.0 / sqrt sa)
             let bu = other * (1.0 / sqrt sb)
             let d = bu * au
@@ -723,8 +723,8 @@ module AutoOpenVector3d =
             // implementation tested in Rhino!
             let sLen = start.Length
             let eLen = ende.Length
-            if isTooTiny sLen then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.slerp: Can't interpolate from zero length Vector3d:%A" start
-            if isTooTiny eLen then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.slerp: Can't interpolate to zero length Vector3d:%A" ende
+            if isTooTiny sLen then RhinoScriptingFSharpException.Raise "Vector3d.slerp: Can't interpolate from zero length Vector3d:%A" start
+            if isTooTiny eLen then RhinoScriptingFSharpException.Raise "Vector3d.slerp: Can't interpolate to zero length Vector3d:%A" ende
             let fs = 1.0 / sLen
             let fe = 1.0 / eLen
             let su  = start * fs //unitized start Vector3d
@@ -733,7 +733,7 @@ module AutoOpenVector3d =
             if dot > float Cosine.``0.05`` then  // Vector3d are in the same direction interpolate linear only
                 Vector3d.lerp(start, ende, rel)
             elif dot < float Cosine.``179.95`` then
-                RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.slerp: Can't interpolate Vector3d in opposite directions:%A" ende
+                RhinoScriptingFSharpException.Raise "Vector3d.slerp: Can't interpolate Vector3d in opposite directions:%A" ende
             else
                 let ang = acos(dot) // the angel between the two Vector3d
                 let perp = eu - su*dot |> Vector3d.unitize // a Vector3d perpendicular to start and in the same plane with ende.
@@ -802,7 +802,7 @@ module AutoOpenVector3d =
         /// 100% = 45 Degrees.
         /// Returns positive (or negative) Infinity if line is vertical or input has length zero.
         static member inline slopePercent (v:Vector3d) =
-            //if isTooTiny (abs(v.Z)) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.slopePercent: Can't get Slope from vertical Vector3d %O" v
+            //if isTooTiny (abs(v.Z)) then RhinoScriptingFSharpException.Raise "Vector3d.slopePercent: Can't get Slope from vertical Vector3d %O" v
             let len2D = sqrt(v.X*v.X + v.Y*v.Y)
             100.0 * v.Z / len2D
 
@@ -848,9 +848,9 @@ module AutoOpenVector3d =
         /// Fails on zero length Vector3d, tolerance 1e-12.
         static member inline isAngle90Below (cosineValue: float<Cosine.cosine>) (a:Vector3d) (b:Vector3d) =
             let sa = a.LengthSq
-            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.isAngle90Below: Vector3d a is too short: %s. Vector3d b:%s " a.AsString b.AsString
+            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Vector3d.isAngle90Below: Vector3d a is too short: %s. Vector3d b:%s " a.AsString b.AsString
             let sb = b.LengthSq
-            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.isAngle90Below: Vector3d b is too short: %s. Vector3d a:%s " b.AsString a.AsString
+            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Vector3d.isAngle90Below: Vector3d b is too short: %s. Vector3d a:%s " b.AsString a.AsString
             let au = a * (1.0 / sqrt sa)
             let bu = b * (1.0 / sqrt sb)
             abs(bu * au) > float cosineValue
@@ -861,9 +861,9 @@ module AutoOpenVector3d =
         /// Fails on zero length Vector3d, tolerance 1e-12.
         static member inline isAngle90Above(cosineValue: float<Cosine.cosine>) (a:Vector3d) (b:Vector3d) =
             let sa = a.LengthSq
-            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.isAngle90Above: Vector3d a is too short: %s. Vector3d b:%s " a.AsString b.AsString
+            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Vector3d.isAngle90Above: Vector3d a is too short: %s. Vector3d b:%s " a.AsString b.AsString
             let sb = b.LengthSq
-            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.isAngle90Above: Vector3d b is too short: %s. Vector3d a:%s " b.AsString a.AsString
+            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Vector3d.isAngle90Above: Vector3d b is too short: %s. Vector3d a:%s " b.AsString a.AsString
             let au = a * (1.0 / sqrt sa)
             let bu = b * (1.0 / sqrt sb)
             abs(bu * au) < float cosineValue
@@ -875,9 +875,9 @@ module AutoOpenVector3d =
         /// Fails on zero length Vector3d, tolerance 1e-12.
         static member inline isAngle180Below (cosineValue: float<Cosine.cosine>) (a:Vector3d) (b:Vector3d) =
             let sa = a.LengthSq
-            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.isAngle180Below: Vector3d a is too short: %s. Vector3d b:%s " a.AsString b.AsString
+            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Vector3d.isAngle180Below: Vector3d a is too short: %s. Vector3d b:%s " a.AsString b.AsString
             let sb = b.LengthSq
-            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.isAngle180Below: Vector3d b is too short: %s. Vector3d a:%s " b.AsString a.AsString
+            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Vector3d.isAngle180Below: Vector3d b is too short: %s. Vector3d a:%s " b.AsString a.AsString
             let au = a * (1.0 / sqrt sa)
             let bu = b * (1.0 / sqrt sb)
             bu * au > float cosineValue
@@ -888,9 +888,9 @@ module AutoOpenVector3d =
         /// Fails on zero length Vector3d, tolerance 1e-12.
         static member inline isAngle180Above(cosineValue: float<Cosine.cosine>) (a:Vector3d) (b:Vector3d) =
             let sa = a.LengthSq
-            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.isAngle180Above: Vector3d a is too short: %s. Vector3d b:%s " a.AsString b.AsString
+            if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Vector3d.isAngle180Above: Vector3d a is too short: %s. Vector3d b:%s " a.AsString b.AsString
             let sb = b.LengthSq
-            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp.Vector3d.isAngle180Above: Vector3d b is too short: %s. Vector3d a:%s " b.AsString a.AsString
+            if isTooTinySq(sb) then RhinoScriptingFSharpException.Raise "Vector3d.isAngle180Above: Vector3d b is too short: %s. Vector3d a:%s " b.AsString a.AsString
             let au = a * (1.0 / sqrt sa)
             let bu = b * (1.0 / sqrt sb)
             bu * au < float cosineValue

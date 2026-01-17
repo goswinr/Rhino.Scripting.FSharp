@@ -16,7 +16,7 @@ type RhinoScriptingFSharpException (s:string) =
     inherit System.Exception(s)
 
     static member Raise msg =
-        Printf.kprintf (fun s -> raise (new RhinoScriptingFSharpException(s))) msg
+        Printf.kprintf (fun s -> raise (new RhinoScriptingFSharpException($"Rhino.Scripting.FSharp.{s}"))) msg
 
     static member FailIfFalse s b =
         if not b then raise (new RhinoScriptingFSharpException(s))

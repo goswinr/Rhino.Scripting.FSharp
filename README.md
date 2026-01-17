@@ -5,7 +5,6 @@
 [![Rhino.Scripting on nuget.org](https://img.shields.io/nuget/v/Rhino.Scripting.FSharp)](https://www.nuget.org/packages/Rhino.Scripting.FSharp/)
 [![Build Status](https://github.com/goswinr/Rhino.Scripting.FSharp/actions/workflows/build.yml/badge.svg)](https://github.com/goswinr/Rhino.Scripting.FSharp/actions/workflows/build.yml)
 [![Docs Build Status](https://github.com/goswinr/Rhino.Scripting.FSharp/actions/workflows/docs.yml/badge.svg)](https://github.com/goswinr/Rhino.Scripting.FSharp/actions/workflows/docs.yml)
-[![Check dotnet tools](https://github.com/goswinr/Rhino.Scripting.FSharp/actions/workflows/outdatedDotnetTool.yml/badge.svg)](https://github.com/goswinr/Rhino.Scripting.FSharp/actions/workflows/outdatedDotnetTool.yml)
 [![license](https://img.shields.io/github/license/goswinr/Rhino.Scripting.FSharp)](LICENSE.md)
 ![code size](https://img.shields.io/github/languages/code-size/goswinr/Rhino.Scripting.FSharp.svg)
 
@@ -25,6 +24,7 @@ open Rhino.Scripting
 open Rhino.Scripting.FSharp
 type rs = RhinoScriptSyntax
 ```
+
 Now you can use the `|>` and `|>!` operator to chain RhinoScript functions together in a more F# idiomatic way.
 The `|>!` operator is part of Rhino.Scripting.FSharp library.
 It passes its input on as output. See [definition](https://github.com/goswinr/Rhino.Scripting.FSharp/blob/main/Src/Rhino.Scripting/Curried.fs#L16).
@@ -46,7 +46,7 @@ rs.ObjectName (guid, "123")
 ```
 
 
-### Full API Documentation
+## Full API Documentation
 
 [goswinr.github.io/Rhino.Scripting.FSharp](https://goswinr.github.io/Rhino.Scripting.FSharp/reference/rhino-scripting-fsharp.html)
 
