@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>library</OutputType>
-    <TargetFrameworks>net48;net7.0</TargetFrameworks>
+    <TargetFrameworks>net7.0;net48</TargetFrameworks> <!-- FsDoc will use the first target framework: https://fsprojects.github.io/FSharp.Formatting/apidocs.html#Selected-projects -->
 
     <LangVersion>preview</LangVersion>
     <NeutralLanguage>en</NeutralLanguage>
@@ -10,7 +10,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference> <!-- so that dependabot does not fail https://github.com/dependabot/dependabot-core/issues/10883#issuecomment-2495962805 -->
 
-    <RootNamespace>Rhino.Scripting</RootNamespace>
+    <RootNamespace>Rhino.Scripting.FSharp</RootNamespace>
     <AssemblyName>Rhino.Scripting.FSharp</AssemblyName>
     <AssemblyTitle>Rhino.Scripting.FSharp</AssemblyTitle>
     <Product>Rhino.Scripting.FSharp</Product>    <!--visible in explorer-->
@@ -20,7 +20,7 @@
     <!-- <Version>0.1</Version> done by Ionide.KeepAChangelog.Tasks -->
 
     <Authors>GoswinR</Authors>
-    <Copyright>Goswin Rothenthal 2019</Copyright>
+    <Copyright>Goswin Rothenthal 2019-2026</Copyright>
     <Description>Rhino.Scripting, with extensions designed for F#</Description>
 
     <Configuration>Release</Configuration>
@@ -54,6 +54,10 @@
     <FsDocsWarnOnMissingDocs>true</FsDocsWarnOnMissingDocs>
 
     <ChangelogFile>./CHANGELOG.md</ChangelogFile>
+
+    <!-- to have Rhino.Scripting.xml and Rhino.Scripting.pdb in package too: https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#copydebugsymbolfilesfrompackages -->
+    <CopyDebugSymbolFilesFromPackages>true</CopyDebugSymbolFilesFromPackages>
+    <CopyDocumentationFilesFromPackages>true</CopyDocumentationFilesFromPackages>
   </PropertyGroup>
 
   <ItemGroup>

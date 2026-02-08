@@ -14,14 +14,24 @@ module AutoOpenMesh =
 
     type RhinoScriptSyntax with
 
-        /// Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces. Sort points counterclockwise.
+        ///<summary>Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces. Sort points counterclockwise.</summary>
+        ///<param name="m">(Mesh) The mesh to add the face to</param>
+        ///<param name="a">(Point3f) First vertex</param>
+        ///<param name="b">(Point3f) Second vertex</param>
+        ///<param name="c">(Point3f) Third vertex</param>
+        ///<returns>(unit) void, nothing.</returns>
         static member MeshAddTriaFace (m:Mesh, a:Point3f, b:Point3f, c:Point3f)  =
             m.Faces.AddFace(
                 m.Vertices.Add a ,
                 m.Vertices.Add b ,
                 m.Vertices.Add c ) |>ignore
 
-        /// Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces. Sort points counterclockwise.
+        ///<summary>Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces. Sort points counterclockwise.</summary>
+        ///<param name="m">(Mesh) The mesh to add the face to</param>
+        ///<param name="a">(Point3d) First vertex</param>
+        ///<param name="b">(Point3d) Second vertex</param>
+        ///<param name="c">(Point3d) Third vertex</param>
+        ///<returns>(unit) void, nothing.</returns>
         static member MeshAddTriaFace (m:Mesh, a:Point3d, b:Point3d, c:Point3d)  =
             m.Faces.AddFace(
                 m.Vertices.Add (a.X,a.Y,a.Z) ,
@@ -29,38 +39,68 @@ module AutoOpenMesh =
                 m.Vertices.Add (c.X,c.Y,c.Z) ) |>ignore
 
 
-        /// Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces. Sort points counterclockwise.
+        ///<summary>Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces. Sort points counterclockwise.</summary>
+        ///<param name="m">(Mesh) The mesh to add the face to</param>
+        ///<param name="a">(Point3f) First vertex</param>
+        ///<param name="b">(Point3f) Second vertex</param>
+        ///<param name="c">(Point3f) Third vertex</param>
+        ///<param name="d">(Point3f) Fourth vertex</param>
+        ///<returns>(unit) void, nothing.</returns>
         static member MeshAddQuadFace (m:Mesh, a:Point3f, b:Point3f, c:Point3f, d:Point3f) =
             m.Faces.AddFace(    m.Vertices.Add a ,
                                 m.Vertices.Add b ,
                                 m.Vertices.Add c ,
                                 m.Vertices.Add d ) |>ignore
 
-        /// Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces. Sort points counterclockwise.
+        ///<summary>Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces. Sort points counterclockwise.</summary>
+        ///<param name="m">(Mesh) The mesh to add the face to</param>
+        ///<param name="a">(Point3d) First vertex</param>
+        ///<param name="b">(Point3d) Second vertex</param>
+        ///<param name="c">(Point3d) Third vertex</param>
+        ///<param name="d">(Point3d) Fourth vertex</param>
+        ///<returns>(unit) void, nothing.</returns>
         static member MeshAddQuadFace (m:Mesh, a:Point3d, b:Point3d, c:Point3d, d:Point3d) =
             m.Faces.AddFace(    m.Vertices.Add (a.X,a.Y,a.Z) ,
                                 m.Vertices.Add (b.X,b.Y,b.Z) ,
                                 m.Vertices.Add (c.X,c.Y,c.Z) ,
                                 m.Vertices.Add (d.X,d.Y,d.Z) ) |>ignore
 
-        /// Adds a quad face from two lines. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.
+        ///<summary>Adds a quad face from two lines. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.</summary>
+        ///<param name="m">(Mesh) The mesh to add the face to</param>
+        ///<param name="l">(Line) First line</param>
+        ///<param name="ll">(Line) Second line</param>
+        ///<returns>(unit) void, nothing.</returns>
         static member MeshAddQuadFace ((m:Mesh), l:Line, ll:Line) =
             RhinoScriptSyntax.MeshAddQuadFace(m, l.From ,l.To ,ll.From , ll.To)
 
 
-        /// Appends a welded quad to last 2 vertices. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.
+        ///<summary>Appends a welded quad to last 2 vertices. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.</summary>
+        ///<param name="m">(Mesh) The mesh to add the face to</param>
+        ///<param name="a">(Point3d) First vertex of the new edge</param>
+        ///<param name="b">(Point3d) Second vertex of the new edge</param>
+        ///<returns>(unit) void, nothing.</returns>
         static member MeshAddQuadFaceToLastTwo (m:Mesh, a:Point3d, b:Point3d) =
             let c = m.Vertices.Count
             if c<2 then RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.MeshAddQuadFaceToLastTwo: Cannot append quad to mesh with less than 2 vertices. Mesh: %A" m
             else m.Faces.AddFace(c-1, c-2,  m.Vertices.Add (b.X,b.Y,b.Z), m.Vertices.Add (a.X,a.Y,a.Z)) |>ignore
 
-        /// Appends a welded quad to last 2 vertices. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.
+        ///<summary>Appends a welded quad to last 2 vertices. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.</summary>
+        ///<param name="m">(Mesh) The mesh to add the face to</param>
+        ///<param name="l">(Line) The line defining the new edge</param>
+        ///<returns>(unit) void, nothing.</returns>
         static member MeshAddQuadFaceToLastTwo (m:Mesh, l:Line) =
             RhinoScriptSyntax.MeshAddQuadFaceToLastTwo (m, l.From ,l.To)
 
 
-        /// Adds a welded quad and triangle face to simulate a pentagon. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.
-        /// Obsolete? Use built-in Ngons instead?
+        ///<summary>Adds a welded quad and triangle face to simulate a pentagon. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.
+        /// Obsolete? Use built-in Ngons instead?</summary>
+        ///<param name="m">(Mesh) The mesh to add the face to</param>
+        ///<param name="a">(Point3d) First vertex</param>
+        ///<param name="b">(Point3d) Second vertex</param>
+        ///<param name="c">(Point3d) Third vertex</param>
+        ///<param name="d">(Point3d) Fourth vertex</param>
+        ///<param name="e">(Point3d) Fifth vertex</param>
+        ///<returns>(unit) void, nothing.</returns>
         static member MeshAddPentaFace (m:Mesh, a:Point3d, b:Point3d, c:Point3d, d:Point3d, e:Point3d) =
             let a = m.Vertices.Add (a.X,a.Y,a.Z)
             let d = m.Vertices.Add (d.X,d.Y,d.Z)
@@ -68,8 +108,16 @@ module AutoOpenMesh =
             m.Faces.AddFace( m.Vertices.Add (e.X,e.Y,e.Z),  a, d ) |>ignore
 
 
-        /// Adds two welded quad faces to simulate a hexagon. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.
-        /// Obsolete? Use built-in Ngons instead?
+        ///<summary>Adds two welded quad faces to simulate a hexagon. Call Mesh.Normals.ComputeNormals() and Mesh.Compact() after adding the faces.
+        /// Obsolete? Use built-in Ngons instead?</summary>
+        ///<param name="m">(Mesh) The mesh to add the face to</param>
+        ///<param name="a">(Point3d) First vertex</param>
+        ///<param name="b">(Point3d) Second vertex</param>
+        ///<param name="c">(Point3d) Third vertex</param>
+        ///<param name="d">(Point3d) Fourth vertex</param>
+        ///<param name="e">(Point3d) Fifth vertex</param>
+        ///<param name="f">(Point3d) Sixth vertex</param>
+        ///<returns>(unit) void, nothing.</returns>
         static member MeshAddHexaFace (m:Mesh, a:Point3d, b:Point3d, c:Point3d, d:Point3d, e:Point3d, f:Point3d) =
             let a = m.Vertices.Add (a.X,a.Y,a.Z)
             let d = m.Vertices.Add (d.X,d.Y,d.Z)
@@ -77,8 +125,11 @@ module AutoOpenMesh =
             m.Faces.AddFace( m.Vertices.Add (e.X,e.Y,e.Z),  m.Vertices.Add (f.X,f.Y,f.Z),  a, d ) |>ignore
 
 
-        /// Makes a closed loop of welded quads from a list of lines. Requires at least 3 lines.
-        /// Last line is ignored; it is considered the same as the first one (e.g. coming from closed Polyline).
+        ///<summary>Makes a closed loop of welded quads from a list of lines. Requires at least 3 lines.
+        /// Last line is ignored; it is considered the same as the first one (e.g. coming from closed Polyline).</summary>
+        ///<param name="m">(Mesh) The mesh to add the faces to</param>
+        ///<param name="lns">(ResizeArray&lt;Line&gt;) The list of lines forming the loop</param>
+        ///<returns>(unit) void, nothing.</returns>
         static member MeshAddLoopWelded (m:Mesh, lns:ResizeArray<Line>) =
             if lns.Count < 3 then RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.MeshAddLoopWelded: Requires at least 3 lines, but got %d" lns.Count
             // add first face
@@ -107,8 +158,11 @@ module AutoOpenMesh =
             //last face
             m.Faces.AddFace(d,c,b0,a0) |> ignore
 
-        /// Makes a closed loop of unwelded quads from a list of lines. Requires at least 2 lines.
-        /// Uses all lines with wrapping (last line connects back to first).
+        ///<summary>Makes a closed loop of unwelded quads from a list of lines. Requires at least 2 lines.
+        /// Uses all lines with wrapping (last line connects back to first).</summary>
+        ///<param name="m">(Mesh) The mesh to add the faces to</param>
+        ///<param name="lns">(ResizeArray&lt;Line&gt;) The list of lines forming the loop</param>
+        ///<returns>(unit) void, nothing.</returns>
         static member MeshAddLoopUnWelded (m:Mesh, lns:ResizeArray<Line>) =
             if lns.Count < 2 then RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.MeshAddLoopUnWelded: Requires at least 2 lines, but got %d" lns.Count
             for i = 0 to lns.Count-1 do
