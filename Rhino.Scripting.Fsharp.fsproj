@@ -59,7 +59,7 @@
   <ItemGroup>
     <PackageReference Include="FSharp.Core" Version="6.0.7" />  <!-- so that dependabot does not fail, even though it is set to be excluded -->
 
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.102" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.103" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
     <PackageReference Include="Ionide.KeepAChangelog.Tasks" Version="0.3.3" PrivateAssets="all"  />
 
     <PackageReference Include="RhinoCommon" Version="7.0.20314.3001"  Condition="'$(TargetFramework)' == 'net48'"  PrivateAssets="all" ExcludeAssets="runtime" /> <!--should be the same version as Rhino.Scripting and Rhino.Scripting.Extension -->
