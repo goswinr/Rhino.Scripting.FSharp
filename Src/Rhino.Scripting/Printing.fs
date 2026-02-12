@@ -12,6 +12,14 @@ open Rhino.Scripting.RhinoScriptingUtils
 [<AutoOpen>]
 module AutoOpenPrinting =
 
+    /// Just call $"{x}" (for now)
+    let pretty (x:'T) :string =
+        PrettySetup.init() // the shadowing is only done to ensure init() is called once
+        // Pretty.toPretty x // TODO re add pretty printing like in FsEx https://github.com/goswinr/FsEx/blob/main/Src/NiceString.fs
+        $"%A{x}"
+
+    (*
+
     ///<summary>Pretty formatting for Rhino and .Net types, e.g. numbers including thousand Separator and (nested) sequences, first six items are printed out.
     /// Settings are exposed in Pretty.PrettySettings:
     /// - thousandSeparator       = '     ; set this to change the printing of floats and integers larger than 10'000
@@ -20,10 +28,6 @@ module AutoOpenPrinting =
     /// - maxCharsInString        = 2000  ; set this to change how many characters of a string might be printed at once.</summary>
     ///<param name="x">('T) the value or object to pretty-format</param>
     ///<returns>(string) A pretty formatted string.</returns>
-    let pretty (x:'T) :string =
-        PrettySetup.init() // the shadowing is only done to ensure init() is called once
-        // Pretty.toPrettyString x
-        sprintf "%A" x
 
     //   /// Pretty formatting for Rhino and .Net types, e.g. numbers including thousand Separator,
     //   /// all items of sequences, including nested items, are printed out.
@@ -34,7 +38,6 @@ module AutoOpenPrinting =
     //       PrettySetup.init() // the shadowing is only done to ensure init() is called once
     //       PrettyString.toPrettyStringFull x
     //       sprintf "%A" x
-
 
     ///<summary>Print to standard out including nice formatting for Rhino Objects, numbers including thousand Separator and (nested) sequences, first six items are printed out.
     /// Only prints to Console.Out, NOT to Rhino Commandline
@@ -61,6 +64,7 @@ module AutoOpenPrinting =
     //       PrettySetup.init()
     //       printFull x
 
+    *)
 
 
     type RhinoScriptSyntax with
