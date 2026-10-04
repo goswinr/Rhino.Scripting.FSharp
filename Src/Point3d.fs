@@ -360,10 +360,10 @@ module AutoOpenPnt =
                  (Math.Round (pt.Z/precision)) * precision)
 
         /// Every line has a normal vector in X-Y plane.
-        /// Rotated Counter-Clockwise in top view.
+        /// Rotated Clockwise in top view. So it points to the right side when looking from fromPt to toPt.
         /// The result is unitized.
         /// If line is vertical then Xaxis is returned.
-        /// see also : Vector3d.perpendicularVecInXY.
+        /// See also: Vector3d.perpendicularInXY, which rotates Counter-Clockwise and is not unitized.
         static member normalOfTwoPointsInXY(fromPt:Point3d, toPt:Point3d) =
             let x = toPt.Y - fromPt.Y
             let y = fromPt.X - toPt.X  // this is the same as: Vector3d.cross v Vector3d.Zaxis
