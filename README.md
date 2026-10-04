@@ -109,8 +109,9 @@ v.Length            // 5.0
 v.Unitized          // unit vector with error checking
 v.Direction360InXY  // angle in degrees (0 to 360)
 v.IsHorizontal      // true if Z component is near zero
-v.IsParallelTo(other)
-v.IsPerpendicularTo(other)
+Vector3d.areParallel other v       // within 0.25 degrees
+Vector3d.arePerpendicular other v  // within 89.75 to 90.25 degrees
+v.IsParallelTo(other, Cosine.``1.0``) // custom tolerance of 1.0 degree, see Cosine module
 
 // Interpolation
 let mid = Vector3d.lerp(vecA, vecB, 0.5)

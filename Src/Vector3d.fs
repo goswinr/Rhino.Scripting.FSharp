@@ -360,11 +360,12 @@ module AutoOpenVector3d =
 
         /// Checks if two 3D Vector3d are parallel.
         /// Ignores the line orientation.
-        /// The default angle tolerance is 0.25 degrees.
-        /// This tolerance can be customized by an optional minium cosine value.
+        /// The angle tolerance is given as a minimum cosine value, e.g. Cosine.``0.25`` for 0.25 degrees.
         /// See Rhino.Scripting.FSharp.Cosine module.
+        /// The tolerance is a required argument because RhinoCommon's own v.IsParallelTo(other) would take precedence otherwise.
+        /// Use Vector3d.areParallel for the default tolerance of 0.25 degrees.
         /// Fails on Vector3d shorter than zeroLengthTolerance (1e-12).
-        member inline this.IsParallelTo(other:Vector3d, [<OPT;DEF(Cosine.``0.25``)>] minCosine:float<Cosine.cosine> ) =
+        member inline this.IsParallelTo(other:Vector3d, minCosine:float<Cosine.cosine> ) =
             let sa = this.LengthSq
             if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Vector3d.IsParallelTo: Vector3d 'this' is too short: %s. 'other':%s " this.AsString other.AsString
             let sb = other.LengthSq
@@ -391,12 +392,12 @@ module AutoOpenVector3d =
 
 
         /// Checks if two 3D Vector3d are perpendicular to each other.
-        /// The default angle tolerance is 89.75 to 90.25 degrees.
-        /// This tolerance can be customized by an optional minium cosine value.
-        /// The default cosine is 0.0043633 ( = 89.75 deg)
+        /// The angle tolerance is given as a maximum cosine value, e.g. Cosine.``89.75`` for 89.75 to 90.25 degrees.
         /// See Rhino.Scripting.FSharp.Cosine module.
+        /// The tolerance is a required argument because RhinoCommon's own v.IsPerpendicularTo(other) would take precedence otherwise.
+        /// Use Vector3d.arePerpendicular for the default tolerance of 89.75 to 90.25 degrees.
         /// Fails on Vector3d shorter than zeroLengthTolerance (1e-12).
-        member inline this.IsPerpendicularTo (other:Vector3d, [<OPT;DEF(Cosine.``89.75``)>] maxCosine:float<Cosine.cosine> ) =
+        member inline this.IsPerpendicularTo (other:Vector3d, maxCosine:float<Cosine.cosine> ) =
             let sa = this.LengthSq
             if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Vector3d.IsPerpendicularTo: Vector3d 'this' is too short: %s. 'other':%s " this.AsString other.AsString
             let sb = other.LengthSq
@@ -666,7 +667,7 @@ module AutoOpenVector3d =
         /// Checks if Angle between two Vector3d is Below 0.25 Degree.
         /// Ignores Vector3d orientation.
         /// Fails on zero length Vector3d, tolerance 1e-12.
-        static member inline areParallel (other:Vector3d) (v:Vector3d) = v.IsParallelTo other
+        static member inline areParallel (other:Vector3d) (v:Vector3d) : bool = v.IsParallelTo(other, Cosine.``0.25``)
 
         /// Checks if Angle between two Vector3d is less than 0.25 Degree and orientation matches.
         /// Fails on zero length Vector3d, tolerance 1e-12.
@@ -675,7 +676,7 @@ module AutoOpenVector3d =
         /// Checks if Angle between two Vector3d is between 89.75 and 90.25 Degrees.
         /// Ignores Vector3d orientation.
         /// Fails on zero length Vector3d, tolerance 1e-12.
-        static member inline arePerpendicular (other:Vector3d) (v:Vector3d) = v.IsPerpendicularTo other
+        static member inline arePerpendicular (other:Vector3d) (v:Vector3d) : bool = v.IsPerpendicularTo(other, Cosine.``89.75``)
 
 
         // Rotate2D:
