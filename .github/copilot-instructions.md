@@ -18,7 +18,7 @@ dotnet build  # Builds for both net48 and net7.0
 ### File Compile Order (critical in F#)
 The `.fsproj` defines strict compile order — **file order matters**. New files must be inserted at the correct position:
 
-1. [Src/UtilRHinoScriptingFSharp.fs](Src/UtilRHinoScriptingFsharp.fs) — tolerances, math helpers, `RhinoScriptingFSharpException`
+1. [Src/UtilRhinoScriptingFSharp.fs](Src/UtilRhinoScriptingFSharp.fs) — tolerances, math helpers, `RhinoScriptingFSharpException`
 2. [Src/Vector3d.fs](Src/Vector3d.fs), [Src/Point3d.fs](Src/Point3d.fs), [Src/Line.fs](Src/Line.fs), [Src/Plane.fs](Src/Plane.fs) — geometry type extensions
 3. [Src/Rhino.Scripting/Printing.fs](Src/Rhino.Scripting/Printing.fs), [Selection.fs](Src/Rhino.Scripting/Selection.fs), [Curried.fs](Src/Rhino.Scripting/Curried.fs), [Vectors.fs](Src/Rhino.Scripting/Vectors.fs), [Curve.fs](Src/Rhino.Scripting/Curve.fs), [Brep.fs](Src/Rhino.Scripting/Brep.fs), [Mesh.fs](Src/Rhino.Scripting/Mesh.fs) — RhinoScriptSyntax curried wrappers
 4. [Src/RhPoints.fs](Src/RhPoints.fs), [Src/RhTopology.fs](Src/RhTopology.fs) — higher-level abstractions (`[<RequireQualifiedAccess>]`)
@@ -60,7 +60,7 @@ member inline v.Unitized = ...
 RhinoScriptingFSharpException.Raise "Line.UnitTangent: x:%g, y:%g and z:%g are too small" v.X v.Y v.Z
 ```
 
-**Tolerance Constants** (in [UtilRHinoScriptingFsharp.fs](Src/UtilRHinoScriptingFsharp.fs)):
+**Tolerance Constants** (in [UtilRhinoScriptingFSharp.fs](Src/UtilRhinoScriptingFSharp.fs)):
 - `zeroLengthTolerance = 1e-12` — for divisions/unitizing
 - `isTooSmall` (threshold 1e-6), `isTooTiny` (threshold 1e-12) — NaN-safe via `not (x > threshold)` idiom
 
