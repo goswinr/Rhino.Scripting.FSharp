@@ -363,7 +363,7 @@ module AutoOpenLine =
     /// Assumes Line to be infinite.
     /// Returns the parameter at which a point is closest to the infinite line.
     /// If it is smaller than 0.0 or bigger than 1.0 it is outside of the finite line.
-    /// Fails on curves shorter than 1e-9 units. (ln.ClosestParameter does not)
+    /// Fails on curves shorter than 1e-9 units. (Line.closestParameter does not)
     member inline ln.ClosestParameterInfinite (p:Point3d) =
         //http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
         let x = ln.FromX - ln.ToX
@@ -378,23 +378,10 @@ module AutoOpenLine =
         let dot = x*u + y*v + z*w
         dot / lenSq
 
-    /// Returns the parameter at which a point is closest to the (finite) line.
-    /// The result is between 0.0 and 1.0.
-    /// Does not fails on very short curves.
-    member inline ln.ClosestParameter (p:Point3d) =
-        //http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
-        let x = ln.FromX - ln.ToX
-        let y = ln.FromY - ln.ToY
-        let z = ln.FromZ - ln.ToZ
-        let u = ln.FromX-p.X
-        let v = ln.FromY-p.Y
-        let w = ln.FromZ-p.Z
-        let dot = x*u + y*v + z*w
-        let lenSq = x*x + y*y + z*z
-        if isTooSmallSq(lenSq) then
-            if dot < 0.0 then 0.0 else 1.0
-        else
-            dot / lenSq |> clampBetweenZeroAndOne
+    // ln.ClosestParameter(pt) is not defined here as an extension member
+    // because RhinoCommon's intrinsic Line.ClosestParameter(Point3d) would always take precedence.
+    // That intrinsic member returns the parameter on the infinite line.
+    // Use the static Line.closestParameter function for the parameter on the finite line.
 
 
 
@@ -422,7 +409,21 @@ module AutoOpenLine =
     /// Returns closest point on (finite) line.
     /// Does not fail on very short curves.
     member inline ln.ClosestPoint (p:Point3d) =
-        ln.EvaluateAt(ln.ClosestParameter(p))
+        //http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+        let x = ln.FromX - ln.ToX
+        let y = ln.FromY - ln.ToY
+        let z = ln.FromZ - ln.ToZ
+        let u = ln.FromX-p.X
+        let v = ln.FromY-p.Y
+        let w = ln.FromZ-p.Z
+        let dot = x*u + y*v + z*w
+        let lenSq = x*x + y*y + z*z
+        let t =
+            if isTooSmallSq(lenSq) then
+                if dot < 0.0 then 0.0 else 1.0
+            else
+                dot / lenSq |> clampBetweenZeroAndOne
+        ln.EvaluateAt t
 
     /// Assumes Line to be infinite.
     /// Returns square distance from point to infinite line.
@@ -459,9 +460,7 @@ module AutoOpenLine =
 
     /// Returns square distance from point to finite line.
     member inline ln.DistanceSqToPnt(p:Point3d) =
-        p
-        |> ln.ClosestParameter
-        |> ln.EvaluateAt
+        ln.ClosestPoint p
         |> Point3d.distanceSq p
 
     /// Returns distance from point to (finite) line.
@@ -975,8 +974,22 @@ module AutoOpenLine =
 
     /// Returns the parameter at which a point is closest to the (finite) line.
     /// The result is between 0.0 and 1.0.
-    static member inline closestParameter (p:Point3d) (ln:Line) =
-        ln.ClosestParameter p
+    /// Does not fail on very short lines.
+    /// (RhinoCommon's ln.ClosestParameter(pt) returns the parameter on the infinite line instead.)
+    static member inline closestParameter (p:Point3d) (ln:Line) : float =
+        //http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+        let x = ln.FromX - ln.ToX
+        let y = ln.FromY - ln.ToY
+        let z = ln.FromZ - ln.ToZ
+        let u = ln.FromX-p.X
+        let v = ln.FromY-p.Y
+        let w = ln.FromZ-p.Z
+        let dot = x*u + y*v + z*w
+        let lenSq = x*x + y*y + z*z
+        if isTooSmallSq(lenSq) then
+            if dot < 0.0 then 0.0 else 1.0
+        else
+            dot / lenSq |> clampBetweenZeroAndOne
 
     /// Assumes Line to be infinite.
     /// Returns closest point on infinite line.
