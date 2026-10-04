@@ -808,7 +808,7 @@ module AutoOpenVector3d =
 
         /// Reverse Vector3d if Z part is bigger than 0.0
         static member inline orientDown (v:Vector3d) =
-            if v.Z < 0.0 then v else -v
+            if v.Z > 0.0 then -v else v
 
         /// Returns a perpendicular horizontal Vector3d. Rotated counterclockwise.
         /// Just does Vector3d(-v.Y, v.X, 0.0)
