@@ -13,12 +13,9 @@ module AutoOpenLine =
 
   type Line with // copied from Euclid 0.16
 
-    /// Returns the length of the line.
-    member inline ln.Length =
-        let x = ln.ToX-ln.FromX
-        let y = ln.ToY-ln.FromY
-        let z = ln.ToZ-ln.FromZ
-        sqrt(x*x + y*y + z*z)
+    // Extension members with the same name and signature as an intrinsic RhinoCommon member are never used by F#.
+    // Therefore ln.Length, ln.Direction and ln.UnitTangent are not defined here. RhinoCommon's members are used instead.
+    // RhinoCommon's ln.UnitTangent returns a zero vector for zero length lines, Line.unitTangent fails instead.
 
     /// Returns the square length of the line.
     member inline ln.LengthSq =
@@ -40,11 +37,6 @@ module AutoOpenLine =
             (PrettyFormat.float ln.ToZ)
 
 
-    /// Same as ln.Vector or ln.Tangent.
-    /// The returned vector has the same length as the Line.
-    member inline ln.Direction =
-        Vector3d(ln.ToX-ln.FromX, ln.ToY-ln.FromY, ln.ToZ-ln.FromZ)
-
     /// Same as ln.Tangent or ln.Direction.
     /// The returned vector has the same length as the Line.
     member inline ln.Vector =
@@ -54,16 +46,6 @@ module AutoOpenLine =
     /// The returned vector has the same length as the Line.
     member inline ln.Tangent =
         Vector3d(ln.ToX-ln.FromX, ln.ToY-ln.FromY, ln.ToZ-ln.FromZ)
-
-    /// Returns a unit-vector of the line Direction.
-    member inline ln.UnitTangent =
-        let x = ln.ToX-ln.FromX
-        let y = ln.ToY-ln.FromY
-        let z = ln.ToZ-ln.FromZ
-        let l = sqrt(x * x  + y * y + z * z)
-        if isTooTiny l then RhinoScriptingFSharpException.Raise "Line.UnitTangent: x:%g, y:%g and z:%g are too small for creating a unit-vector. Tolerance:%g" x y z zeroLengthTolerance
-        let s = 1.0 / l
-        Vector3d(x*s, y*s, z*s)
 
     /// Checks if line is parallel to the world X axis. Ignoring orientation.
     /// The absolute deviation tolerance along Y and Z axis is 1e-9.
@@ -126,7 +108,7 @@ module AutoOpenLine =
     /// Check if 3D line is shorter than tolerance.
     ///  Or contains a NaN value
     member inline ln.IsTiny tol =
-        ln.Length < tol
+        not (ln.Length >= tol) // use 'not' to catch NaN too
 
     /// Check if 3D line is shorter than the squared tolerance.
     ///  Or contains a NaN value
@@ -198,20 +180,9 @@ module AutoOpenLine =
                 ln.FromY + y*b,
                 ln.FromZ + z*b)
 
-    /// Extend 3D line by absolute amount at start and end.
-    /// Fails on lines shorter than zeroLengthTolerance (1e-12).
-    member inline ln.Extend (distAtStart:float, distAtEnd:float) =
-        let x = ln.ToX-ln.FromX
-        let y = ln.ToY-ln.FromY
-        let z = ln.ToZ-ln.FromZ
-        let l = sqrt(x*x + y*y + z*z)
-        if isTooTiny l then RhinoScriptingFSharpException.Raise "Line.Extend %O too short for finding point at a distance." ln
-        Line( ln.FromX - x*distAtStart/l,
-                ln.FromY - y*distAtStart/l,
-                ln.FromZ - z*distAtStart/l,
-                ln.ToX   + x*distAtEnd/l,
-                ln.ToY   + y*distAtEnd/l,
-                ln.ToZ   + z*distAtEnd/l)
+    // ln.Extend(distAtStart, distAtEnd) is not defined here as an extension member
+    // because RhinoCommon's intrinsic Line.Extend(double, double) : bool (which mutates the line) would always take precedence.
+    // Use the static Line.extend function instead.
 
     /// Extend 3D line by absolute amount at start.
     /// Fails on lines shorter than zeroLengthTolerance (1e-12).
@@ -374,7 +345,7 @@ module AutoOpenLine =
     /// Assumes Line to be infinite.
     /// Returns the parameter at which a point is closest to the infinite line.
     /// If it is smaller than 0.0 or bigger than 1.0 it is outside of the finite line.
-    /// Fails on curves shorter than 1e-9 units. (ln.ClosestParameter does not)
+    /// Fails on lines shorter than 1e-6 units. (Line.closestParameter does not)
     member inline ln.ClosestParameterInfinite (p:Point3d) =
         //http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
         let x = ln.FromX - ln.ToX
@@ -389,29 +360,16 @@ module AutoOpenLine =
         let dot = x*u + y*v + z*w
         dot / lenSq
 
-    /// Returns the parameter at which a point is closest to the (finite) line.
-    /// The result is between 0.0 and 1.0.
-    /// Does not fails on very short curves.
-    member inline ln.ClosestParameter (p:Point3d) =
-        //http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
-        let x = ln.FromX - ln.ToX
-        let y = ln.FromY - ln.ToY
-        let z = ln.FromZ - ln.ToZ
-        let u = ln.FromX-p.X
-        let v = ln.FromY-p.Y
-        let w = ln.FromZ-p.Z
-        let dot = x*u + y*v + z*w
-        let lenSq = x*x + y*y + z*z
-        if isTooSmallSq(lenSq) then
-            if dot < 0.0 then 0.0 else 1.0
-        else
-            dot / lenSq |> clampBetweenZeroAndOne
+    // ln.ClosestParameter(pt) is not defined here as an extension member
+    // because RhinoCommon's intrinsic Line.ClosestParameter(Point3d) would always take precedence.
+    // That intrinsic member returns the parameter on the infinite line.
+    // Use the static Line.closestParameter function for the parameter on the finite line.
 
 
 
     /// Assumes Line to be infinite.
     /// Returns closest point on infinite line.
-    /// Fails on curves shorter than 1e-9 units. (ln.ClosestPoint does not.)
+    /// Fails on lines shorter than 1e-6 units. (ln.ClosestPoint does not.)
     member inline ln.ClosestPointInfinite (p:Point3d) =
         //http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
         let x = ln.FromX - ln.ToX
@@ -433,11 +391,25 @@ module AutoOpenLine =
     /// Returns closest point on (finite) line.
     /// Does not fail on very short curves.
     member inline ln.ClosestPoint (p:Point3d) =
-        ln.EvaluateAt(ln.ClosestParameter(p))
+        //http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+        let x = ln.FromX - ln.ToX
+        let y = ln.FromY - ln.ToY
+        let z = ln.FromZ - ln.ToZ
+        let u = ln.FromX-p.X
+        let v = ln.FromY-p.Y
+        let w = ln.FromZ-p.Z
+        let dot = x*u + y*v + z*w
+        let lenSq = x*x + y*y + z*z
+        let t =
+            if isTooSmallSq(lenSq) then
+                if dot < 0.0 then 0.0 else 1.0
+            else
+                dot / lenSq |> clampBetweenZeroAndOne
+        ln.EvaluateAt t
 
     /// Assumes Line to be infinite.
     /// Returns square distance from point to infinite line.
-    /// Fails on curves shorter than 1e-6 units. (ln.DistanceSqToPnt does not.)
+    /// Fails on lines shorter than 1e-6 units. (ln.DistanceSqToPnt does not.)
     member ln.DistanceSqToPntInfinite(p:Point3d) =
         let lnFromX = ln.FromX
         let lnFromY = ln.FromY
@@ -464,29 +436,27 @@ module AutoOpenLine =
 
     /// Assumes Line to be infinite.
     /// Returns distance from point to infinite line.
-    /// Fails on curves shorter than 1e-9 units. (ln.DistanceToPnt does not.)
+    /// Fails on lines shorter than 1e-6 units. (ln.DistanceToPnt does not.)
     member inline ln.DistanceToPntInfinite(p:Point3d) =
         ln.DistanceSqToPntInfinite(p) |> sqrt
 
     /// Returns square distance from point to finite line.
     member inline ln.DistanceSqToPnt(p:Point3d) =
-        p
-        |> ln.ClosestParameter
-        |> ln.EvaluateAt
+        ln.ClosestPoint p
         |> Point3d.distanceSq p
 
     /// Returns distance from point to (finite) line.
     member inline ln.DistanceToPnt(p:Point3d) =
         ln.DistanceSqToPnt(p) |> sqrt
 
-    /// Checks if the angle between the two 3D lines is less than 180 degrees.
+    /// Checks if the angle between the two 3D lines is less than 90 degrees.
     /// Calculates the dot product of two 3D lines.
     /// Then checks if it is bigger than 1e-12.
     member inline ln.MatchesOrientation180 (otherLn:Line) =
         let dot = (otherLn.ToX-otherLn.FromX)*(ln.ToX-ln.FromX) + (otherLn.ToY-otherLn.FromY)*(ln.ToY-ln.FromY) + (otherLn.ToZ-otherLn.FromZ)*(ln.ToZ-ln.FromZ)
         dot > 1e-12
 
-    /// Checks if the angle between the a 3D line and a 3D vector is less than 180 degrees.
+    /// Checks if the angle between a 3D line and a 3D vector is less than 90 degrees.
     /// Calculates the dot product of both.
     /// Then checks if it is bigger than 1e-12.
     member inline ln.MatchesOrientation180 (v:Vector3d) =
@@ -590,7 +560,7 @@ module AutoOpenLine =
         let au = a * (1.0 / sqrt sa)
         let bu = b * (1.0 / sqrt sb)
         let d = bu * au
-        float -maxCosine < d && d  < float maxCosine // = cosine of 98.75 and 90.25 degrees
+        float -maxCosine < d && d  < float maxCosine // = cosine of 89.75 and 90.25 degrees
 
 
     /// Checks if a 3D lines is perpendicular to a 3D vector.
@@ -609,7 +579,7 @@ module AutoOpenLine =
         let au = a * (1.0 / sqrt sa)
         let bu = b * (1.0 / sqrt sb)
         let d = bu * au
-        float -maxCosine < d && d  < float maxCosine // = cosine of 98.75 and 90.25 degrees
+        float -maxCosine < d && d  < float maxCosine // = cosine of 89.75 and 90.25 degrees
 
 
     /// Checks if two 3D lines are coincident within the distance tolerance. 1e-6 by default.
@@ -812,8 +782,15 @@ module AutoOpenLine =
         Vector3d(ln.ToX-ln.FromX, ln.ToY-ln.FromY, ln.ToZ-ln.FromZ)
 
     /// Returns a unit-vector of the line Direction.
-    static member inline unitTangent (ln:Line) =
-        ln.UnitTangent
+    /// Fails on lines shorter than zeroLengthTolerance (1e-12).
+    static member inline unitTangent (ln:Line) : Vector3d =
+        let x = ln.ToX-ln.FromX
+        let y = ln.ToY-ln.FromY
+        let z = ln.ToZ-ln.FromZ
+        let l = sqrt(x * x  + y * y + z * z)
+        if isTooTiny l then RhinoScriptingFSharpException.Raise "Line.unitTangent: x:%g, y:%g and z:%g are too small for creating a unit-vector. Tolerance:%g" x y z zeroLengthTolerance
+        let s = 1.0 / l
+        Vector3d(x*s, y*s, z*s)
 
     /// Returns the length of the line.
     static member inline length (l:Line) =
@@ -830,7 +807,7 @@ module AutoOpenLine =
     /// Check if line is shorter than tolerance.
     /// Also checks if any component is a NaN.
     static member inline isTiny tol (l:Line) =
-        l.Length < tol
+        not (l.Length >= tol) // use 'not' to catch NaN too
 
     /// Check if the lines square length is shorter than squared tolerance.
     /// Also checks if any component is a NaN.
@@ -945,7 +922,7 @@ module AutoOpenLine =
         if orientationToMatch * lineToFlip.Vector  < 0.0 then lineToFlip.Reversed else lineToFlip
 
 
-    /// Checks if the angle between the two 3D lines is less than 180 degrees.
+    /// Checks if the angle between the two 3D lines is less than 90 degrees.
     /// Calculates the dot product of two 3D lines.
     /// Then checks if it is positive.
     static member inline matchesOrientation180 (l:Line) (ln:Line) =
@@ -958,23 +935,20 @@ module AutoOpenLine =
         l.MatchesOrientation90 ln
 
     /// Checks if two 3D lines are parallel. Ignoring orientation.
-    /// Calculates the cross product of the two line vectors. (= the area of the parallelogram)
-    /// And checks if it is smaller than 1e-9
-    /// (NOTE: for very long lines a higher tolerance might be needed)
+    /// The angle tolerance is 0.25 degrees.
+    /// Fails on lines shorter than zeroLengthTolerance (1e-12).
     static member inline areParallel (l:Line) (ln:Line) =
         l.IsParallelTo ln
 
     /// Checks if two 3D lines are parallel and orientated the same way.
-    /// Calculates the cross product of the two line vectors. (= the area of the parallelogram)
-    /// And checks if it is smaller than 1e-9
-    /// Then calculates the dot product and checks if it is positive.
-    /// (NOTE: for very long lines a higher tolerance might be needed)
+    /// The angle tolerance is 0.25 degrees.
+    /// Fails on lines shorter than zeroLengthTolerance (1e-12).
     static member inline areParallelAndMatchOrientation (l:Line) (ln:Line) =
         l.IsParallelAndOrientedTo ln
 
     /// Checks if two 3D lines are perpendicular.
-    /// Calculates the dot product and checks if it is smaller than 1e-9.
-    /// (NOTE: for very long lines a higher tolerance might be needed)
+    /// The angle tolerance is 89.75 to 90.25 degrees.
+    /// Fails on lines shorter than zeroLengthTolerance (1e-12).
     static member inline arePerpendicular(l:Line) (ln:Line) =
         l.IsPerpendicularTo(ln)
 
@@ -986,8 +960,22 @@ module AutoOpenLine =
 
     /// Returns the parameter at which a point is closest to the (finite) line.
     /// The result is between 0.0 and 1.0.
-    static member inline closestParameter (p:Point3d) (ln:Line) =
-        ln.ClosestParameter p
+    /// Does not fail on very short lines.
+    /// (RhinoCommon's ln.ClosestParameter(pt) returns the parameter on the infinite line instead.)
+    static member inline closestParameter (p:Point3d) (ln:Line) : float =
+        //http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+        let x = ln.FromX - ln.ToX
+        let y = ln.FromY - ln.ToY
+        let z = ln.FromZ - ln.ToZ
+        let u = ln.FromX-p.X
+        let v = ln.FromY-p.Y
+        let w = ln.FromZ-p.Z
+        let dot = x*u + y*v + z*w
+        let lenSq = x*x + y*y + z*z
+        if isTooSmallSq(lenSq) then
+            if dot < 0.0 then 0.0 else 1.0
+        else
+            dot / lenSq |> clampBetweenZeroAndOne
 
     /// Assumes Line to be infinite.
     /// Returns closest point on infinite line.
@@ -1025,9 +1013,20 @@ module AutoOpenLine =
         (t/l) * (pt-ln.From)
 
     /// Extend 3D line by absolute amount at start and end.
+    /// Returns a new line.
     /// Fails on lines shorter than zeroLengthTolerance (1e-12).
-    static member inline extend (distAtStart:float) (distAtEnd:float) (ln:Line) =
-        ln.Extend(distAtStart, distAtEnd)
+    static member inline extend (distAtStart:float) (distAtEnd:float) (ln:Line) : Line =
+        let x = ln.ToX-ln.FromX
+        let y = ln.ToY-ln.FromY
+        let z = ln.ToZ-ln.FromZ
+        let l = sqrt(x*x + y*y + z*z)
+        if isTooTiny l then RhinoScriptingFSharpException.Raise "Line.extend %O too short for finding point at a distance." ln
+        Line( ln.FromX - x*distAtStart/l,
+                ln.FromY - y*distAtStart/l,
+                ln.FromZ - z*distAtStart/l,
+                ln.ToX   + x*distAtEnd/l,
+                ln.ToY   + y*distAtEnd/l,
+                ln.ToZ   + z*distAtEnd/l)
 
     /// Extend 3D line by absolute amount at start.
     /// Fails on lines shorter than zeroLengthTolerance (1e-12).
@@ -1176,14 +1175,15 @@ module AutoOpenLine =
 
     /// Divides a 3D line into as many as segments as possible respecting the minimum segment length.
     /// Returned Array includes start and endpoint of line.
-    /// The input minSegmentLength is multiplied by factor 1.000001 of to avoid numerical errors.
-    /// That means in an edge case there are more segments returned, not fewer.
+    /// The input minSegmentLength is multiplied by factor 1.000001 to avoid numerical errors.
+    /// That means in an edge case there are fewer segments returned, not more.
+    /// At least one segment is returned.
     static member divideMinLength (minSegmentLength:float) (ln:Line) : Point3d[] =
         let len = ln.Length
         if len < minSegmentLength then
             RhinoScriptingFSharpException.Raise "Line.divideMinLength: minSegmentLength %g is bigger than line length %g for %O"  minSegmentLength len ln
         let k = int (len / (minSegmentLength*1.00000095367431640625)) // 8 float steps above 1.0 https://float.exposed/0x3f800008
-        Line.divide k ln
+        Line.divide (max 1 k) ln // k is 0 if len is equal to minSegmentLength
 
 
     /// Divides a 3D line into as few as segments as possible respecting the maximum segment length.
@@ -1234,20 +1234,21 @@ module AutoOpenLine =
 
     /// Divides a 3D line into as many as segments as possible respecting the minimum segment length and the gap.
     /// Includes a gap between the segments. But not at the start or end.
-    /// Returns an array ofe3D Lines
-    /// The input minSegmentLength is multiplied by factor 1.000001 of to avoid numerical errors.
-    /// That means in an edge case there are more segments returned, not fewer.
+    /// Returns an array of 3D Lines
+    /// The input minSegmentLength is multiplied by factor 1.000001 to avoid numerical errors.
+    /// That means in an edge case there are fewer segments returned, not more.
+    /// At least one segment is returned.
     static member splitMinLength (gap:float) (minSegmentLength:float) (ln:Line) : Line[] =
         let len = ln.Length
         if len < minSegmentLength then
             RhinoScriptingFSharpException.Raise "Line.splitMinLength: minSegmentLength %g is bigger than line length %g for %O"  minSegmentLength len ln
         let k = int ((len+gap) / ((minSegmentLength+gap)*1.000000953)) // 8 float steps above 1.0 https://float.exposed/0x3f800008
-        Line.split gap k ln
+        Line.split gap (max 1 k) ln // k is 0 if len is equal to minSegmentLength
 
 
     /// Divides a 3D line into as few as segments as possible respecting the maximum segment length and the gap.
     /// Includes a gap between the segments. But not at the start or end.
-    /// Returns an array ofe3D Lines
+    /// Returns an array of 3D Lines
     /// The input maxSegmentLength is multiplied by factor 0.999999 of to avoid numerical errors.
     /// That means in an edge case there are fewer segments returned, not more.
     static member splitMaxLength (gap:float) (maxSegmentLength:float) (ln:Line)  : Line[] =
@@ -1256,14 +1257,16 @@ module AutoOpenLine =
         Line.split gap k ln
 
 
-    /// Divides a 2D line into segments of given length.
+    /// Divides a 3D line into segments of given length.
     /// Includes start and end point
     /// Adds end point only if there is a remainder bigger than 1% of the segment length.
-    static member  divideEvery dist (l:Line) =
+    /// Fails if the segment length is zero or negative.
+    static member  divideEvery (dist:float) (l:Line) =
+        if isTooTiny dist then RhinoScriptingFSharpException.Raise "Line.divideEvery: segment length %g is too small or negative for %O" dist l
         let len = l.Length
         let div = len / dist
         let floor = System.Math.Floor div
-        let step = 1.0 / floor
+        let step = dist / len // parameter step for one segment
         let count = int floor
         let pts = ResizeArray<Point3d>(count + 2)
         pts.Add l.From
@@ -1273,19 +1276,21 @@ module AutoOpenLine =
             pts.Add l.To // add end point only if there is a remainder bigger than 1%
         pts
 
-    /// Divides a 2D line into segments of given length.
+    /// Divides a 3D line into segments of given length.
     /// Excludes start and end point
     /// Adds last div point before end only if there is a remainder bigger than 1% of the segment length.
-    static member divideInsideEvery dist (l:Line) =
+    /// Fails if the segment length is zero or negative.
+    static member divideInsideEvery (dist:float) (l:Line) =
+        if isTooTiny dist then RhinoScriptingFSharpException.Raise "Line.divideInsideEvery: segment length %g is too small or negative for %O" dist l
         let len = l.Length
         let div = len / dist
         let floor = System.Math.Floor div
-        let step = 1.0 / floor
+        let step = dist / len // parameter step for one segment
         let count = int floor
         let pts = ResizeArray<Point3d>(count)
         for i = 1 to count - 1 do
             pts.Add <| l.EvaluateAt (step * float i)
-        if div - floor > 0.01 then
+        if floor >= 1.0 && div - floor > 0.01 then
             pts.Add <| l.EvaluateAt (step * floor) // add last div point only if there is a remainder bigger than 1%
         pts
 
@@ -1299,11 +1304,11 @@ module AutoOpenLine =
     /// Returns point on lnB (the last parameter)
     static member intersectInOnePoint (lnA:Line) (lnB:Line) : Point3d =
         let ok, ta, tb = Intersect.Intersection.LineLine(lnA,lnB)
-        if not ok then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.Line.intersectInOnePoint failed, parallel ?  on %s and %s" lnA.Pretty lnB.Pretty
+        if not ok then RhinoScriptingFSharpException.Raise "Line.intersectInOnePoint failed, parallel ?  on %s and %s" lnA.Pretty lnB.Pretty
         let a = lnA.PointAt(ta)
         let b = lnB.PointAt(tb)
         if (a-b).SquareLength > RhinoMath.ZeroTolerance then // = Length > 1e-6
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.Line.intersect intersectInOnePoint, they are skew. distance: %g  on %s and %s" (a-b).Length lnA.Pretty lnB.Pretty
+            RhinoScriptingFSharpException.Raise "Line.intersectInOnePoint, they are skew. distance: %g  on %s and %s" (a-b).Length lnA.Pretty lnB.Pretty
         b
 
     /// Finds intersection of two Infinite Lines.
@@ -1313,7 +1318,7 @@ module AutoOpenLine =
     /// Considers Lines infinite
     static member intersectSkew (lnA:Line) (lnB:Line) :Point3d*Point3d=
         let ok, ta, tb = Intersect.Intersection.LineLine(lnA,lnB)
-        if not ok then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.Line.intersectSkew failed, parallel ?  on %s and %s" lnA.Pretty lnB.Pretty
+        if not ok then RhinoScriptingFSharpException.Raise "Line.intersectSkew failed, parallel ?  on %s and %s" lnA.Pretty lnB.Pretty
         let a = lnA.PointAt(ta)
         let b = lnB.PointAt(tb)
         a,b
@@ -1332,29 +1337,42 @@ module AutoOpenLine =
     /// Finds intersection of two Finite Lines.
     /// Returns:
     ///    an empty array if they are parallel,
-    ///    an array with one point if they intersect by RhinoScriptSyntax.Doc.ModelAbsoluteTolerance (Point will be the average of the two points within the tolerance)
-    ///    an array with two points where they are the closest to each other. In same order as input. They might be skew or they might intersect only when infinite.
-    /// Fails if lines are parallel.
-    /// Considers Lines finite
+    ///    an array with one point if they are closer than half of RhinoScriptSyntax.Doc.ModelAbsoluteTolerance (Point will be the average of the two closest points)
+    ///    an array with two points where the finite lines are the closest to each other. In same order as input. They might be skew or they might intersect only when infinite.
+    /// Considers Lines finite.
+    /// Fails on lines of zero length.
     static member intersectFinite (lnA:Line) (lnB:Line) : Point3d[]=
-        let ok, ta, tb = Intersect.Intersection.LineLine(lnA,lnB)
-        if not ok then [||] //RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.Line.intersectFinite failed, parallel ?  on %s and %s" lnA.Pretty lnB.Pretty
+        let d1 = lnA.Direction
+        let d2 = lnB.Direction
+        let a = d1 * d1
+        let e = d2 * d2
+        if isTooTinySq a || isTooTinySq e then
+            RhinoScriptingFSharpException.Raise "Line.intersectFinite: a line has zero length: %s and %s" lnA.Pretty lnB.Pretty
+        let ok, ta, _ = Intersect.Intersection.LineLine(lnA,lnB)
+        if not ok then [||] // parallel
         else
-            let inline clamp01 x =
-                if x < 0.0 then 0.0
-                elif x > 1.0 then 1.0
-                else x
-
-
-            let ca = clamp01 ta
-            let cb = clamp01 tb
-            let a = lnA.PointAt(ca)
-            let b = lnB.PointAt(cb)
-            let d = Point3d.distance a b
+            // Closest points between two finite line segments.
+            // Clamping both infinite line parameters independently is not enough for that.
+            // See Christer Ericson, Real-Time Collision Detection, chapter 5.1.9
+            let r = lnA.From - lnB.From
+            let b = d1 * d2
+            let c = d1 * r
+            let f = d2 * r
+            let mutable s = clampBetweenZeroAndOne ta // parameter on lnA, closest to the infinite lnB
+            let mutable t = (b * s + f) / e // parameter on lnB, closest to lnA.PointAt(s)
+            if t < 0.0 then
+                t <- 0.0
+                s <- clampBetweenZeroAndOne (-c / a)
+            elif t > 1.0 then
+                t <- 1.0
+                s <- clampBetweenZeroAndOne ((b - c) / a)
+            let pa = lnA.PointAt(s)
+            let pb = lnB.PointAt(t)
+            let d = Point3d.distance pa pb
             if  d < RhinoScriptSyntax.Doc.ModelAbsoluteTolerance * 0.5 then
-                if d < RhinoMath.ZeroTolerance then [|a|]
-                else [| Point3d.divPt (a, b, 0.5)|]
-            else [|a ; b|]
+                if d < RhinoMath.ZeroTolerance then [|pa|]
+                else [| Point3d.divPt (pa, pb, 0.5)|]
+            else [|pa ; pb|]
 
     /// Returns the distance between two Infinite Lines.
     /// At the point where they are closest to each other.

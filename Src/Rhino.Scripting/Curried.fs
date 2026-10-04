@@ -130,19 +130,19 @@ module AutoOpenCurried =
     ///<returns>(unit) void, nothing.</returns>
     static member appendUserText(key:string) (value :string) (objectId:Guid) : unit =
         if String.IsNullOrWhiteSpace key then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.appendUserText key is String.IsNullOrWhiteSpace for value  %s on %s" value (pretty objectId)
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.appendUserText key is String.IsNullOrWhiteSpace for value  %s on %s" value (pretty objectId)
         if isNull value then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.appendUserText value is null  for key %s on %s" key (pretty objectId)
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.appendUserText value is null  for key %s on %s" key (pretty objectId)
         let obj = RhinoScriptSyntax.CoerceRhinoObject(objectId)
         let existing = obj.Attributes.GetUserString(key)
         if isNull existing then // only if a value already exist  appending a white space  or empty string is OK too
             if String.IsNullOrWhiteSpace value  then
-                RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.appendUserText failed on %s for key '%s' but value IsNullOrWhiteSpace" (pretty objectId) key
+                RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.appendUserText failed on %s for key '%s' but value IsNullOrWhiteSpace" (pretty objectId) key
             if not <| obj.Attributes.SetUserString(key, value) then
-                RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.appendUserText failed on %s for key '%s' and value '%s'" (pretty objectId) key value
+                RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.appendUserText failed on %s for key '%s' and value '%s'" (pretty objectId) key value
         else
             if not <| obj.Attributes.SetUserString(key,  existing + value ) then
-                RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.appendUserText failed on %s for key '%s' and value '%s'" (pretty objectId) key value
+                RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.appendUserText failed on %s for key '%s' and value '%s'" (pretty objectId) key value
 
     ///<summary>Returns user text stored on an object, fails if non-existing.</summary>
     ///<param name="key">(string) The key name</param>
@@ -185,12 +185,12 @@ module AutoOpenCurried =
         for  i = 0 to usg.Count-1 do
             let key = usg.GetKey(i)
             if not <|de.Geometry.SetUserString(key,sc.Geometry.GetUserString(key)) then
-                RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.matchAllUserText: Geometry failed to set key '%s' from %s on %s" key (pretty sourceId) (pretty targetId)
+                RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.matchAllUserText: Geometry failed to set key '%s' from %s on %s" key (pretty sourceId) (pretty targetId)
         let usa = sc.Attributes.GetUserStrings()
         for  i = 0 to usa.Count-1 do
             let key = usa.GetKey(i)
             if not <|de.Attributes.SetUserString(key,sc.Attributes.GetUserString(key))then
-                RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.matchAllUserText: Attributes failed to set key '%s' from %s on %s" key (pretty sourceId) (pretty targetId)
+                RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.matchAllUserText: Attributes failed to set key '%s' from %s on %s" key (pretty sourceId) (pretty targetId)
 
     ///<summary>Copies the value for a given user text key from a source object to a target object.</summary>
     ///<param name="sourceId">(Guid) The object to take all keys from </param>
@@ -200,7 +200,7 @@ module AutoOpenCurried =
     static member matchUserText (sourceId:Guid) ( key:string) (targetId:Guid) : unit=
         let de = RhinoScriptSyntax.CoerceRhinoObject(targetId)
         let v = RhinoScriptSyntax.GetUserText(sourceId,key)
-        if not <| de.Attributes.SetUserString(key,v) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.matchUserText: failed to set key '%s' to '%s' on %s" key v (pretty targetId)
+        if not <| de.Attributes.SetUserString(key,v) then RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.matchUserText: failed to set key '%s' to '%s' on %s" key v (pretty targetId)
 
     ///<summary>Copies the object name from a source object to a target object.</summary>
     ///<param name="sourceId">(Guid) The object to take the name from </param>
@@ -211,10 +211,10 @@ module AutoOpenCurried =
         let de = RhinoScriptSyntax.CoerceRhinoObject(targetId)
         let n = sc.Attributes.Name
         if isNull n then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.matchName: source object %s has no name. Targets name: '%s'" (pretty sourceId) de.Attributes.Name
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.matchName: source object %s has no name. Targets name: '%s'" (pretty sourceId) de.Attributes.Name
         de.Attributes.Name <- n
         if not <| de.CommitChanges() then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.matchName failed from %s on %s" (pretty sourceId) (pretty targetId)
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.matchName failed from %s on %s" (pretty sourceId) (pretty targetId)
 
     ///<summary>Puts target object on the same Layer as a source object .</summary>
     ///<param name="sourceId">(Guid) The object to take the layer from </param>
@@ -225,7 +225,7 @@ module AutoOpenCurried =
         let de = RhinoScriptSyntax.CoerceRhinoObject(targetId)
         de.Attributes.LayerIndex <- sc.Attributes.LayerIndex
         if not <| de.CommitChanges() then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.matchLayer failed from %s on %s" (pretty sourceId) (pretty targetId)
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.matchLayer failed from %s on %s" (pretty sourceId) (pretty targetId)
 
 
     ///<summary>Matches all properties( layer, name, user text, ....) from a source object to a target object by duplicating attributes.
@@ -238,12 +238,12 @@ module AutoOpenCurried =
         let de = RhinoScriptSyntax.CoerceRhinoObject(targetId)
         de.Attributes <- sc.Attributes.Duplicate()
         if not <| de.CommitChanges() then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.matchAllProperties failed from %s on %s" (pretty sourceId) (pretty targetId)
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.matchAllProperties failed from %s on %s" (pretty sourceId) (pretty targetId)
         let usg = sc.Geometry.GetUserStrings()
         for  i = 0 to usg.Count-1 do
             let key = usg.GetKey(i)
             if not <|de.Geometry.SetUserString(key,sc.Geometry.GetUserString(key)) then
-                RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.matchAllProperties: Geometry failed to set key '%s' from %s on %s" key (pretty sourceId) (pretty targetId)
+                RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.matchAllProperties: Geometry failed to set key '%s' from %s on %s" key (pretty sourceId) (pretty targetId)
     (*
     TODO delete , "draw" should only refer to display pipeline
     //<summary>Draws any Geometry object to a given or current layer.</summary>
@@ -269,7 +269,7 @@ module AutoOpenCurried =
     ///<returns>(unit) void, nothing.</returns>
     static member transformGeo (matrix:Transform) (geo:GeometryBase) : unit =
         if not <| geo.Transform(matrix) then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.transformGeo failed. geo:'%s' matrix:'%s' " (pretty geo) matrix.Pretty
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.transformGeo failed. geo:'%s' matrix:'%s' " (pretty geo) matrix.Pretty
         if matrix.SimilarityType = TransformSimilarityType.OrientationReversing then
             match geo with
             | :? Brep as g -> if g.IsSolid then g.Flip()
@@ -289,7 +289,7 @@ module AutoOpenCurried =
         let xf = Transform.Scale(plane, scale, scale, scale)
         let res = RhinoScriptSyntax.Doc.Objects.Transform(objectId, xf, deleteOriginal=true)
         if res = Guid.Empty then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.scale failed. objectId:'%s' origin:'%s' scale:'%g'" (pretty objectId) origin.Pretty scale
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.scale failed. objectId:'%s' origin:'%s' scale:'%g'" (pretty objectId) origin.Pretty scale
 
 
     ///<summary>Moves a single object.</summary>
@@ -300,7 +300,7 @@ module AutoOpenCurried =
         let xf = Transform.Translation(translation)
         let res = RhinoScriptSyntax.Doc.Objects.Transform(objectId, xf, deleteOriginal=true) // TODO test to ensure GUID is the same ?
         if res = Guid.Empty then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.move failed for objectId:'%s' translation:'%A'" (pretty objectId) translation
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.move failed for objectId:'%s' translation:'%A'" (pretty objectId) translation
 
     ///<summary>Moves a single object in X Direction.</summary>
     ///<param name="translationX">(float) movement in X direction</param>
@@ -310,7 +310,7 @@ module AutoOpenCurried =
         let xf = Transform.Translation(Vector3d(translationX, 0.0, 0.0 ))
         let res = RhinoScriptSyntax.Doc.Objects.Transform(objectId, xf, deleteOriginal=true) // TODO test to ensure GUID is the same ?
         if res = Guid.Empty then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveX failed for objectId:'%s' translationX:'%A'" (pretty objectId) translationX
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.moveX failed for objectId:'%s' translationX:'%A'" (pretty objectId) translationX
 
     ///<summary>Moves a single object in Y Direction.</summary>
     ///<param name="translationY">(float) movement in Y direction</param>
@@ -320,7 +320,7 @@ module AutoOpenCurried =
         let xf = Transform.Translation(Vector3d(0.0, translationY, 0.0))
         let res = RhinoScriptSyntax.Doc.Objects.Transform(objectId, xf, deleteOriginal=true) // TODO test to ensure GUID is the same ?
         if res = Guid.Empty then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveY failed for objectId:'%s' translationY:'%A'" (pretty objectId) translationY
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.moveY failed for objectId:'%s' translationY:'%A'" (pretty objectId) translationY
 
     ///<summary>Moves a single object in Z Direction.</summary>
     ///<param name="translationZ">(float) movement in Z direction</param>
@@ -330,7 +330,7 @@ module AutoOpenCurried =
         let xf = Transform.Translation(Vector3d(0.0, 0.0, translationZ))
         let res = RhinoScriptSyntax.Doc.Objects.Transform(objectId, xf, deleteOriginal=true) // TODO test to ensure GUID is the same ?
         if res = Guid.Empty then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveZ failed for objectId:'%s' translationZ:'%A'" (pretty objectId) translationZ
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.moveZ failed for objectId:'%s' translationZ:'%A'" (pretty objectId) translationZ
 
     ///<summary>Moves a Geometry.</summary>
     ///<param name="translation">(Vector3d) Vector3d</param>
@@ -338,7 +338,7 @@ module AutoOpenCurried =
     ///<returns>(unit) void, nothing.</returns>
     static member moveGeo (translation:Vector3d)  (geo:GeometryBase): unit =
         if not <| geo.Translate translation then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveGeo failed for geo:'%A' translation:'%A'"  geo translation
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.moveGeo failed for geo:'%A' translation:'%A'"  geo translation
 
     ///<summary>Moves a Geometry in X Direction.</summary>
     ///<param name="translationX">(float) movement in X direction</param>
@@ -346,7 +346,7 @@ module AutoOpenCurried =
     ///<returns>(unit) void, nothing.</returns>
     static member moveGeoX (translationX:float)  (geo:GeometryBase): unit =
         if not <| geo.Translate (Vector3d(translationX, 0.0, 0.0 )) then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveGeoX failed for geo:'%A' translationX:'%f'"  geo translationX
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.moveGeoX failed for geo:'%A' translationX:'%f'"  geo translationX
 
     ///<summary>Moves a Geometry in Y Direction.</summary>
     ///<param name="translationY">(float) movement in Y direction</param>
@@ -354,7 +354,7 @@ module AutoOpenCurried =
     ///<returns>(unit) void, nothing.</returns>
     static member moveGeoY (translationY:float)  (geo:GeometryBase): unit =
         if not <| geo.Translate (Vector3d(0.0, translationY, 0.0)) then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveGeoY failed for geo:'%A' translationY:'%f'"  geo translationY
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.moveGeoY failed for geo:'%A' translationY:'%f'"  geo translationY
 
     ///<summary>Moves a Geometry in Z Direction.</summary>
     ///<param name="translationZ">(float) movement in Z direction</param>
@@ -362,7 +362,7 @@ module AutoOpenCurried =
     ///<returns>(unit) void, nothing.</returns>
     static member moveGeoZ (translationZ:float) (geo:GeometryBase): unit =
         if not <| geo.Translate (Vector3d(0.0, 0.0, translationZ)) then
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.moveGeoZ failed for geo:'%A' translationZ:'%f'"  geo translationZ
+            RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.moveGeoZ failed for geo:'%A' translationZ:'%f'"  geo translationZ
 
     ///<summary>Enables or disables a Curve object's annotation arrows.
     /// The size of the arrow cannot be changed. For an adjustable arrow size use a dimension leader object.

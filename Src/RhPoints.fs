@@ -86,10 +86,11 @@ module RhPoints =
 
     /// Culls points if they are too close to the previous point.
     /// First and last points are always kept.
+    /// Returns a new ResizeArray.
     let cullDuplicatePointsInSeq (tolerance:float) (pts:ResizeArray<Point3d>) =
         if pts.Count = 0 then RhinoScriptingFSharpException.Raise "RhPoints.cullDuplicatePointsInSeq: empty list of points 'pts'"
         if pts.Count = 1 then
-            pts
+            ResizeArray(pts)
         else
             let tolSq = tolerance*tolerance
             let res  =  ResizeArray(pts.Count)
@@ -102,7 +103,8 @@ module RhPoints =
                     last <- pt
                     res.Add last
                 elif i=iLast then // to ensure last point stays the same
-                    res.RemoveAt(res.Count-1)
+                    if res.Count > 1 then // but never remove the first point
+                        res.RemoveAt(res.Count-1)
                     res.Add pt
             res
 
@@ -154,10 +156,12 @@ module RhPoints =
     /// 'tolGap' is the maximum allowable gap between the start and the endpoint of two point lists.
     /// Search starts from the point list with the most points.
     /// Both start and end point of each point list is checked for adjacency.
+    /// Returns a new list of points. The input lists are not modified.
     let findContinuousPoints (tolGap:float) (ptss: ResizeArray<ResizeArray<Point3d>>) =
         if ptss.Count = 0 then RhinoScriptingFSharpException.Raise "RhPoints.findContinuousPoints: empty list of point lists 'ptss'"
+        let ptss = ResizeArray(ptss) // shallow copy, items get removed from it below
         let i = ptss |> maxIndexBy (fun a -> a.Count)
-        let res = ptss.[i]
+        let res = ResizeArray(ptss.[i]) // copy, points get added to it below
         ptss.RemoveAt(i)
         let mutable loop = true
         while loop && ptss.Count > 0 do

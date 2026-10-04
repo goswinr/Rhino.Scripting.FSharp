@@ -85,7 +85,7 @@ module AutoOpenVector3d =
             let y = ( ^T : (member Y : _) pt)
             let z = ( ^T : (member Z : _) pt)
             try Vector3d(float x, float y, float z)
-            with e -> RhinoScriptingFSharpException.Raise $"Vector3d.createFromMembersXYZ: {pt} could not be converted to a Rhino.Scripting.FSharp:Vector3d:{Environment.NewLine}{e}"
+            with e -> RhinoScriptingFSharpException.Raise $"Vector3d.createFromMembersXYZ: {pt} could not be converted to a Rhino.Geometry.Vector3d:{Environment.NewLine}{e}"
 
 
         /// Accepts any type that has a x, y and z (lowercase) member that can be converted to a float.
@@ -95,7 +95,7 @@ module AutoOpenVector3d =
             let y = ( ^T : (member y : _) pt)
             let z = ( ^T : (member z : _) pt)
             try Vector3d(float x, float y, float z)
-            with e ->  RhinoScriptingFSharpException.Raise $"Vector3d.createFromMembersxyz: {pt} could not be converted to a Rhino.Scripting.FSharp:Vector3d:{Environment.NewLine}{e}"
+            with e ->  RhinoScriptingFSharpException.Raise $"Vector3d.createFromMembersxyz: {pt} could not be converted to a Rhino.Geometry.Vector3d:{Environment.NewLine}{e}"
 
         //[<Extension>]
         //Unitizes the vector , fails if input is of zero length
@@ -120,18 +120,13 @@ module AutoOpenVector3d =
         // These static members can't be extension methods to be useful for Array.sum and Array.average :
         //-----------------------------------------------------------------------------------------------------
 
-        /// Returns a boolean indicating whether X, Y and Z are all exactly 0.0.
-        member inline v.IsZero =
-            v.X = 0.0 && v.Y = 0.0 && v.Z = 0.0
+        // v.IsZero and v.IsTiny(tol) are not defined here as extension members
+        // because RhinoCommon's intrinsic members with the same name and signature would always take precedence.
+        // RhinoCommon's v.IsTiny(tol) checks each component, not the length. Use Vector3d.isTiny for a length check.
 
         /// Returns a boolean indicating if any of X, Y and Z is not exactly 0.0.
         member inline v.IsNotZero =
             not v.IsZero
-
-        /// Check if the 3D Vector3d is shorter than the tolerance.
-        /// Also checks if any component is a NaN.
-        member inline v.IsTiny tol =
-            not (v.Length > tol)
 
         /// Check if the 3D Vector3d square length is shorter than the squared tolerance.
         /// Also checks if any component is a NaN.
@@ -172,10 +167,10 @@ module AutoOpenVector3d =
 
         // A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        member v.FailedUnitized() = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Vec.Unitized %O is too small for unitizing, Tolerance:%g" v zeroLengthTolerance
+        member v.FailedUnitized() = RhinoScriptingFSharpException.Raise "Vector3d.Unitized %O is too small for unitizing, Tolerance:%g" v zeroLengthTolerance
         /// Returns a new 3D Vector3d unitized.
         /// Fails with RhinoScriptingFSharpException if the length of the Vector3d is
-        /// too small (1e-16) to unitize.
+        /// too small (1e-12) to unitize.
         member inline v.Unitized =
             let l = v.Length
             if isTooTiny l then v.FailedUnitized() // don't compose error msg directly here to keep inlined code small.
@@ -190,8 +185,8 @@ module AutoOpenVector3d =
         //    UnitVector3d.createUnchecked(li*v.X, li*v.Y, li*v.Z)
 
         /// Test if the 3D Vector3d is a unit-Vector3d.
-        /// Test if the Vector3d square length is within 6 float steps of 1.0
-        /// So between 0.99999964 and 1.000000715.
+        /// Test if the Vector3d square length is within approximately 1e-6 of 1.0
+        /// So between 0.99999904632568359375 and 1.00000107288360595703.
         member inline v.IsUnit =
             isOne v.LengthSq
 
@@ -360,11 +355,12 @@ module AutoOpenVector3d =
 
         /// Checks if two 3D Vector3d are parallel.
         /// Ignores the line orientation.
-        /// The default angle tolerance is 0.25 degrees.
-        /// This tolerance can be customized by an optional minium cosine value.
+        /// The angle tolerance is given as a minimum cosine value, e.g. Cosine.``0.25`` for 0.25 degrees.
         /// See Rhino.Scripting.FSharp.Cosine module.
+        /// The tolerance is a required argument because RhinoCommon's own v.IsParallelTo(other) would take precedence otherwise.
+        /// Use Vector3d.areParallel for the default tolerance of 0.25 degrees.
         /// Fails on Vector3d shorter than zeroLengthTolerance (1e-12).
-        member inline this.IsParallelTo(other:Vector3d, [<OPT;DEF(Cosine.``0.25``)>] minCosine:float<Cosine.cosine> ) =
+        member inline this.IsParallelTo(other:Vector3d, minCosine:float<Cosine.cosine> ) =
             let sa = this.LengthSq
             if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Vector3d.IsParallelTo: Vector3d 'this' is too short: %s. 'other':%s " this.AsString other.AsString
             let sb = other.LengthSq
@@ -391,12 +387,12 @@ module AutoOpenVector3d =
 
 
         /// Checks if two 3D Vector3d are perpendicular to each other.
-        /// The default angle tolerance is 89.75 to 90.25 degrees.
-        /// This tolerance can be customized by an optional minium cosine value.
-        /// The default cosine is 0.0043633 ( = 89.75 deg)
+        /// The angle tolerance is given as a maximum cosine value, e.g. Cosine.``89.75`` for 89.75 to 90.25 degrees.
         /// See Rhino.Scripting.FSharp.Cosine module.
+        /// The tolerance is a required argument because RhinoCommon's own v.IsPerpendicularTo(other) would take precedence otherwise.
+        /// Use Vector3d.arePerpendicular for the default tolerance of 89.75 to 90.25 degrees.
         /// Fails on Vector3d shorter than zeroLengthTolerance (1e-12).
-        member inline this.IsPerpendicularTo (other:Vector3d, [<OPT;DEF(Cosine.``89.75``)>] maxCosine:float<Cosine.cosine> ) =
+        member inline this.IsPerpendicularTo (other:Vector3d, maxCosine:float<Cosine.cosine> ) =
             let sa = this.LengthSq
             if isTooTinySq(sa) then RhinoScriptingFSharpException.Raise "Vector3d.IsPerpendicularTo: Vector3d 'this' is too short: %s. 'other':%s " this.AsString other.AsString
             let sb = other.LengthSq
@@ -531,7 +527,6 @@ module AutoOpenVector3d =
 
 
         /// Project Vector3d to World X-Y plane.
-        /// Use Vc.ofVector3d to convert to a 2D Vector3d.
         static member inline projectToXYPlane (v:Vector3d) =
             Vector3d(v.X, v.Y, 0.0)
 
@@ -666,7 +661,7 @@ module AutoOpenVector3d =
         /// Checks if Angle between two Vector3d is Below 0.25 Degree.
         /// Ignores Vector3d orientation.
         /// Fails on zero length Vector3d, tolerance 1e-12.
-        static member inline areParallel (other:Vector3d) (v:Vector3d) = v.IsParallelTo other
+        static member inline areParallel (other:Vector3d) (v:Vector3d) : bool = v.IsParallelTo(other, Cosine.``0.25``)
 
         /// Checks if Angle between two Vector3d is less than 0.25 Degree and orientation matches.
         /// Fails on zero length Vector3d, tolerance 1e-12.
@@ -675,7 +670,7 @@ module AutoOpenVector3d =
         /// Checks if Angle between two Vector3d is between 89.75 and 90.25 Degrees.
         /// Ignores Vector3d orientation.
         /// Fails on zero length Vector3d, tolerance 1e-12.
-        static member inline arePerpendicular (other:Vector3d) (v:Vector3d) = v.IsPerpendicularTo other
+        static member inline arePerpendicular (other:Vector3d) (v:Vector3d) : bool = v.IsPerpendicularTo(other, Cosine.``89.75``)
 
 
         // Rotate2D:
@@ -717,7 +712,7 @@ module AutoOpenVector3d =
         /// Spherically interpolates between start and end by amount rel (0.0 to 1.0).
         /// The difference between this and linear interpolation (aka, "lerp") is that the Vector3d are treated as directions rather than points in space.
         /// The direction of the returned Vector3d is interpolated by the angle and its magnitude is interpolated between the magnitudes of start and end.
-        /// Interpolation continues before and after the range of 0.0 and 0.1
+        /// Interpolation continues before and after the range of 0.0 and 1.0
         static member slerp (start:Vector3d, ende:Vector3d, rel:float) =
             // https://en.wikipedia.org/wiki/Slerp
             // implementation tested in Rhino!
@@ -742,13 +737,13 @@ module AutoOpenVector3d =
                 let cosine = cos (theta360)
                 let sine   = sqrt(1.0 - cosine*cosine)
                 let res =  //unitized result Vector3d
-                    if theta360 < Math.PI then  // in the range 0 to 180 degrees, only applicable if rel is beyond 0.0 or 0.1
+                    if theta360 < Math.PI then  // in the range 0 to 180 degrees, only applicable if rel is beyond 0.0 or 1.0
                         su * cosine + perp * sine
                     else
                         su * cosine - perp * sine
                 let lenRel = sLen + rel * (eLen-sLen)
                 if lenRel < 0.0 then
-                    Vector3d.Zero // otherwise the Vector3d would get flipped and grow again , only applicable if rel is beyond 0.0 or 0.1
+                    Vector3d.Zero // otherwise the Vector3d would get flipped and grow again , only applicable if rel is beyond 0.0 or 1.0
                 else
                     res * abs lenRel
 
@@ -758,30 +753,30 @@ module AutoOpenVector3d =
         static member inline lengthInXY(v:Vector3d) = sqrt(v.X * v.X  + v.Y * v.Y)
 
         /// Checks if 3D Vector3d is parallel to the world X axis. Ignoring orientation.
-        /// Tolerance is 1e-6.
+        /// The absolute deviation tolerance along Y and Z axis is 1e-9.
         /// Fails on Vector3d shorter than 1e-6.
         static member inline isXAligned (v:Vector3d) = v.IsXAligned
 
         /// Checks if 3D Vector3d is parallel to the world Y axis. Ignoring orientation.
-        /// Tolerance is 1e-6.
+        /// The absolute deviation tolerance along X and Z axis is 1e-9.
         /// Fails on Vector3d shorter than 1e-6.
         static member inline isYAligned (v:Vector3d) = v.IsYAligned
 
         /// Checks if 3D Vector3d is parallel to the world Z axis. Ignoring orientation.
-        /// Tolerance is 1e-6.
+        /// The absolute deviation tolerance along X and Y axis is 1e-9.
         /// Fails on Vector3d shorter than 1e-6.
-        /// Same as ln.IsVertical
+        /// Same as Vector3d.isVertical
         static member inline isZAligned (v:Vector3d) = v.IsZAligned
 
         /// Checks if 3D Vector3d is parallel to the world Z axis. Ignoring orientation.
-        /// Tolerance is 1e-6.
+        /// The absolute deviation tolerance along X and Y axis is 1e-9.
         /// Fails on Vector3d shorter than 1e-6.
-        /// Same as ln.IsZAligned
+        /// Same as Vector3d.isZAligned
         static member inline isVertical (v:Vector3d) = v.IsVertical
 
-        /// Checks if line is horizontal (Z component is almost zero).
-        /// Tolerance is 1e-6.
-        /// Fails on lines shorter than 1e-6.
+        /// Checks if 3D Vector3d is horizontal (Z component is almost zero).
+        /// The absolute deviation tolerance along Z axis is 1e-9.
+        /// Fails on Vector3d shorter than 1e-6.
         static member inline isHorizontal (v:Vector3d) = v.IsHorizontal
 
         /// Returns positive or negative slope of a Vector3d in Radians.
@@ -812,7 +807,7 @@ module AutoOpenVector3d =
 
         /// Reverse Vector3d if Z part is bigger than 0.0
         static member inline orientDown (v:Vector3d) =
-            if v.Z < 0.0 then v else -v
+            if v.Z > 0.0 then -v else v
 
         /// Returns a perpendicular horizontal Vector3d. Rotated counterclockwise.
         /// Just does Vector3d(-v.Y, v.X, 0.0)
@@ -901,23 +896,23 @@ module AutoOpenVector3d =
             let pt = pl.Origin + v
             let clpt = pl.ClosestPoint(pt)
             let r = clpt-pl.Origin
-            if r.IsTiny(RhinoMath.SqrtEpsilon) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.projectToPlane: Cannot projectToPlane for perpendicular vector %A to given plane %A" v pl
+            if r.IsTiny(RhinoMath.SqrtEpsilon) then RhinoScriptingFSharpException.Raise "Vector3d.projectToPlane: Cannot projectToPlane for perpendicular vector %A to given plane %A" v pl
             r
 
-        /// Project point onto a finite line in direction of v
+        /// Project point onto an infinite line in direction of v
         /// Fails if line is missed by tolerance 1e-6
         //and draws debug objects on layer 'Error-projectToLine'
         static member projectToLine (ln:Line) (v:Vector3d) (pt:Point3d) =
             let h = Line(pt,v)
             let ok,tln,th = Intersect.Intersection.LineLine(ln,h)
-            if not ok then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.projectToLine: project in direction failed. (are they parallel?)"
+            if not ok then RhinoScriptingFSharpException.Raise "Vector3d.projectToLine: project in direction failed. (are they parallel?)"
             let a = ln.PointAt(tln)
             let b = h.PointAt(th)
             if (a-b).SquareLength > RhinoMath.ZeroTolerance then
                 //Scripting.Doc.Objects.AddLine ln   |> RhinoScriptSyntax.setLayer "Error-projectToLine"
                 //Scripting.Doc.Objects.AddLine h    |> RhinoScriptSyntax.setLayer "Error-projectToLineDirection"
                 //Scripting.Doc.Objects.AddPoint pt  |> RhinoScriptSyntax.setLayer "Error-projectToLineFrom"
-                RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.projectToLine: missed Line by: %g " (a-b).Length
+                RhinoScriptingFSharpException.Raise "Vector3d.projectToLine: missed Line by: %g " (a-b).Length
             a
 
 
@@ -992,7 +987,7 @@ module AutoOpenVector3d =
             let y = ( ^T : (member Y : _) pt)
             let z = ( ^T : (member Z : _) pt)
             try Vector3f(float32 x, float32 y, float32 z)
-            with e -> RhinoScriptingFSharpException.Raise $"Vector3f.createFromMembersXYZ: Rhino.Scripting.FSharp:Vector3d:{Environment.NewLine}{e}"
+            with e -> RhinoScriptingFSharpException.Raise $"Vector3f.createFromMembersXYZ: {pt} could not be converted to a Rhino.Geometry.Vector3f:{Environment.NewLine}{e}"
 
 
         /// Accepts any type that has a x, y and z (lowercase) member that can be converted to a float32.
@@ -1002,4 +997,4 @@ module AutoOpenVector3d =
             let y = ( ^T : (member y : _) pt)
             let z = ( ^T : (member z : _) pt)
             try Vector3f(float32 x, float32 y, float32 z)
-            with e ->  RhinoScriptingFSharpException.Raise $"Vector3f.createFromMembersxyz: Rhino.Scripting.FSharp:Vector3f:{Environment.NewLine}{e}"
+            with e ->  RhinoScriptingFSharpException.Raise $"Vector3f.createFromMembersxyz: {pt} could not be converted to a Rhino.Geometry.Vector3f:{Environment.NewLine}{e}"

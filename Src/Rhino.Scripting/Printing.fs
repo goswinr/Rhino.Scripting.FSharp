@@ -8,11 +8,12 @@ open Rhino.Scripting.RhinoScriptingUtils
 //TODO fix Pretty nuget first
 
 
-/// This module shadows the Pretty module from the Pretty nuget package to include the special formatting for Rhino types.
+/// This module provides the 'pretty' function and colored printing to the Rhino command line.
+/// This module is automatically opened when Rhino.Scripting.FSharp namespace is opened.
 [<AutoOpen>]
 module AutoOpenPrinting =
 
-    /// Just call $"{x}" (for now)
+    /// Formats any value to a string using F#'s "%A" formatting (for now).
     let pretty (x:'T) :string =
         PrettySetup.init() // the shadowing is only done to ensure init() is called once
         // Pretty.toPretty x // TODO re add pretty printing like in FsEx https://github.com/goswinr/FsEx/blob/main/Src/NiceString.fs
@@ -69,26 +70,9 @@ module AutoOpenPrinting =
 
     type RhinoScriptSyntax with
 
-
-        ///<summary>
-        /// Pretty formatting for numbers including thousand Separator and (nested) sequences, first five items are printed out.
-        /// Prints to Console.Out and to Rhino Commandline
-        /// Shows numbers smaller than State.Doc.ModelAbsoluteTolerance * 0.1 as 0.0
-        /// Settings are exposed in Pretty.PrettySettings:
-        /// maxDepth          = 3     : how deep the content of nested seq is printed
-        /// maxVertItems      = 6     : amount of lines printed.
-        /// maxHorChars       = 120   : maximum amount of characters per line.
-        /// maxCharsInString  = 2000  : after this the characters of a string are trimmed off.
-        /// The function rs.PrintFull does not do this trimming.
-        /// </summary>
-        ///<param name="x">('T) the value or object to print</param>
-        ///<returns>(unit) void, nothing.</returns>
-        static member Print (x:'T) : unit =
-            PrettySetup.init()
-            let t = pretty(x)
-            RhinoApp.WriteLine t
-            Console.WriteLine t
-            RhinoApp.Wait() // no switch to UI Thread needed !
+        // rs.Print(x) is not defined here as an extension member
+        // because Rhino.Scripting's own RhinoScriptSyntax.Print would always take precedence.
+        // It prints to Console.Out and to the Rhino command line using F#'s "%A" formatting too.
 
         // ///<summary>
         // /// Pretty formatting for numbers including thousand Separator, all items of sequences, including nested items, are printed out.

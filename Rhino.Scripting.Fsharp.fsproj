@@ -2,9 +2,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>library</OutputType>
-    <TargetFrameworks>net7.0;net48</TargetFrameworks> <!-- FsDoc will use the first target framework: https://fsprojects.github.io/FSharp.Formatting/apidocs.html#Selected-projects -->
+    <TargetFrameworks>net8.0;net48</TargetFrameworks> <!-- FsDoc will use the first target framework: https://fsprojects.github.io/FSharp.Formatting/apidocs.html#Selected-projects -->
 
-    <LangVersion>preview</LangVersion>
+    <LangVersion>latest</LangVersion>
     <NeutralLanguage>en</NeutralLanguage>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>    <!--to only have the english resources-->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -25,7 +25,6 @@
 
     <Configuration>Release</Configuration>
     <PlatformTarget>x64</PlatformTarget>    <!--  x64 is required e.g by Rhino, do not use just 'Platform' tag-->
-    <Configuration>Release</Configuration>
     <OtherFlags>$(OtherFlags) --warnon:3390</OtherFlags>    <!-- warnon:3390 is to verify xml docstrings https://devblogs.microsoft.com/dotnet/announcing-f-5/#improved-compiler-analysis-for-library-authors -->
     <OtherFlags>$(OtherFlags) --warnon:1182</OtherFlags>    <!-- 1182: warn on unused variables -->
   </PropertyGroup>
@@ -37,7 +36,6 @@
     <!--<SymbolPackageFormat>snupkg</SymbolPackageFormat>-->
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/goswinr/Rhino.Scripting.FSharp</PackageProjectUrl>
     <RepositoryUrl>https://github.com/goswinr/Rhino.Scripting.FSharp</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageIcon>logo128.png</PackageIcon>
@@ -67,7 +65,7 @@
     <PackageReference Include="Ionide.KeepAChangelog.Tasks" Version="0.4.0" PrivateAssets="all"  />
 
     <PackageReference Include="RhinoCommon" Version="7.0.20314.3001"  Condition="'$(TargetFramework)' == 'net48'"  PrivateAssets="all" ExcludeAssets="runtime" /> <!--should be the same version as Rhino.Scripting and Rhino.Scripting.Extension -->
-    <PackageReference Include="RhinoCommon" Version="8.19.25132.1001" Condition="'$(TargetFramework)' == 'net7.0'" PrivateAssets="all" ExcludeAssets="runtime" /><!--should be the same version as Rhino.Scripting and Rhino.Scripting.Extension -->
+    <PackageReference Include="RhinoCommon" Version="8.19.25132.1001" Condition="'$(TargetFramework)' == 'net8.0'" PrivateAssets="all" ExcludeAssets="runtime" /><!--should be the same version as Rhino.Scripting and Rhino.Scripting.Extension -->
     <PackageReference Include="Rhino.Scripting" Version="0.14.0" />
     <!-- <Reference Include="Rhino.Scripting" HintPath="../Rhino.Scripting/bin/Release/net48/Rhino.Scripting.dll" /> -->
   </ItemGroup>
