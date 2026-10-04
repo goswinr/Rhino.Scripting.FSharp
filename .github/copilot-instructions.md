@@ -23,7 +23,6 @@ The `.fsproj` defines strict compile order — **file order matters**. New files
 3. [Src/Rhino.Scripting/Printing.fs](Src/Rhino.Scripting/Printing.fs), [Selection.fs](Src/Rhino.Scripting/Selection.fs), [Curried.fs](Src/Rhino.Scripting/Curried.fs), [Vectors.fs](Src/Rhino.Scripting/Vectors.fs), [Curve.fs](Src/Rhino.Scripting/Curve.fs), [Brep.fs](Src/Rhino.Scripting/Brep.fs), [Mesh.fs](Src/Rhino.Scripting/Mesh.fs) — RhinoScriptSyntax curried wrappers
 4. [Src/RhPoints.fs](Src/RhPoints.fs), [Src/RhTopology.fs](Src/RhTopology.fs) — higher-level abstractions (`[<RequireQualifiedAccess>]`)
 
-Note: [Src/RhPlane.fs](Src/RhPlane.fs) exists on disk but is **not** in the compile list.
 
 ### Key Patterns
 
