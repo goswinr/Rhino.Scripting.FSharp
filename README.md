@@ -143,7 +143,7 @@ let closestOnLn = pt.ClosestPointOnLine(lnFrom, lnTo)
 
 ```fsharp
 // Create from three points
-let plane = Plane.createThreePoints(origin, ptOnXAxis, ptOnPlane)
+let plane = Plane.createThreePoints origin ptOnXAxis ptOnPlane
 
 // Evaluate in plane coordinates
 let pt3d = plane.EvaluateAt(2.0, 3.0, 0.0)
@@ -204,14 +204,14 @@ let minDist = RhPoints.minDistBetweenPointSets setA setB
 ```fsharp
 open Rhino.Scripting.FSharp
 
-// Order disconnected line segments into a continuous path
+// Order disconnected line segments (a ResizeArray<Line>) into a continuous path
 RhTopology.sortToLoop (fun seg -> seg) lineSegments
 
-// With optional reversing of individual segments
+// With optional reversing of individual segments (here a ResizeArray<Curve>)
 RhTopology.sortToLoopWithReversing
-    (fun seg -> seg.AsLine)
-    (fun idx seg -> seg.Reverse())
-    segments
+    (fun (crv:Curve) -> Line(crv.PointAtStart, crv.PointAtEnd))
+    (fun idx crv -> crv.Reverse() |> ignore)
+    curves
 ```
 
 ### Remembered Selections
