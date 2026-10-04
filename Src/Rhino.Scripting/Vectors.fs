@@ -209,11 +209,13 @@ module AutoOpenVectors =
                             let struct( _, _, pt, N) = Point3d.findOffsetCorner(prev, t, n, offDists.Last, offDists.[0], refNormal)
                             Pts.Add pt
                             Ns.Add N
-                        else
-                            let struct( _, sn, pt, N) = Point3d.findOffsetCorner(p, t, n, offDists.Last, offDists.[0], refNormal)
+                        elif loop then
+                            let struct( _, _, pt, N) = Point3d.findOffsetCorner(p, t, n, offDists.Last, offDists.[0], refNormal)
+                            Pts.Add pt
                             Ns.Add N
-                            if loop then Pts.Add pt
-                            else         Pts.Add (t + sn)
+                        else // open polyline: set after this loop from the nearest corner
+                            Pts.Add t
+                            Ns.Add Vector3d.Zero
                     // last one:
                     elif i = lastIndex  then
                         if lastIsFirst then
@@ -224,14 +226,33 @@ module AutoOpenVectors =
                             let struct( _, _, pt, N) = Point3d.findOffsetCorner(p, t, n, offDists.[i-1], offDists.[i], refNormal)
                             Pts.Add pt
                             Ns.Add N
-                        else
-                            let struct( sp, _, _, N) = Point3d.findOffsetCorner(p, t, n, offDists.[i-1], offDists.[i-1], refNormal) // or any next off dist since only sp is used
-                            Pts.Add (t + sp)
-                            Ns.Add N
+                        else // open polyline: set after this loop from the nearest corner
+                            Pts.Add t
+                            Ns.Add Vector3d.Zero
                     else
                         let struct( _, _, pt, N ) = Point3d.findOffsetCorner(p, t, n, offDists.[i-1], offDists.[i], refNormal)
                         Pts.Add pt
                         Ns.Add N
+
+                if not lastIsFirst && not loop then
+                    // Open polyline: there is no corner at the start and end point.
+                    // Offset them perpendicular to their segment, using the normal of the nearest corner that is not collinear.
+                    // The segments between an end point and that corner are collinear, so the same offset direction applies.
+                    let mutable fi = 1 // index of the first corner with a normal
+                    while fi < lastIndex && Ns.[fi] = Vector3d.Zero do fi <- fi + 1
+                    let mutable li = lastIndex - 1 // index of the last corner with a normal
+                    while li > 0 && Ns.[li] = Vector3d.Zero do li <- li - 1
+                    if fi = lastIndex then
+                        RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.OffsetPoints: all corners of the open polyline are (almost) collinear: %s" (pretty points)
+                    let nf = Ns.[fi]
+                    let vf = Vector3d.CrossProduct(points.[fi-1] - points.[fi], nf) // same as 'sp' in Point3d.findOffsetCorner
+                    Pts.[0] <- points.[0] + Vector3d.withLength offDists.[0] vf
+                    Ns.[0] <- nf
+                    let nl = Ns.[li]
+                    let vl = Vector3d.CrossProduct(nl, points.[li+1] - points.[li]) // same as 'sn' in Point3d.findOffsetCorner
+                    Pts.[lastIndex] <- points.[lastIndex] + Vector3d.withLength offDists.[lastIndex-1] vl
+                    Ns.[lastIndex] <- nl
+
                 if lenDistNorm > 0 then
                     for i=0 to  distsNeededNorm-1 do // ns might be shorter than pts if lastIsFirst= true
                         let n = Ns.[i]
