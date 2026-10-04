@@ -166,8 +166,8 @@ module AutoOpenPlane=
     /// Y-axis = World Y-axis
     /// Z-axis = World Z-axis
     /// same as Plane.WorldXY
-    static member WorldTop =
-        Plane.WorldTop
+    static member WorldTop : Plane =
+        Plane.WorldXY
 
     /// Returns the Coordinate System Plane of a Front view.
     /// X-axis = World X-axis
