@@ -33,8 +33,10 @@ namespace Rhino.Scripting.FSharp
 [<AutoOpen>]
 module AutoOpenLine =
     type Line with
-        member inline ln.Length = ...
+        member inline ln.LengthSq = ...
 ```
+
+**Never shadow RhinoCommon or Rhino.Scripting members** — F# always prefers an intrinsic member over an extension member with the same name and signature, even when the extension is opened later. Such an extension is silently never called (e.g. an extension `ln.Extend(a, b)` resolves to RhinoCommon's mutating `Line.Extend(a, b) : bool`). Use a different name, a different signature (e.g. a required `float<Cosine.cosine>` argument), or a static member like `Line.extend` instead.
 
 **Curried RhinoScript Wrappers** — object ID is always the last parameter for pipeline use (see [Curried.fs](Src/Rhino.Scripting/Curried.fs)):
 ```fsharp
@@ -54,9 +56,9 @@ member v.FailedUnitized() = RhinoScriptingFSharpException.Raise "..."
 member inline v.Unitized = ...
 ```
 
-**Error Handling** — use `RhinoScriptingFSharpException.Raise` with F# format strings (auto-prefixes `"Rhino.Scripting.FSharp."`). Always include failing values:
+**Error Handling** — use `RhinoScriptingFSharpException.Raise` with F# format strings (auto-prefixes `"Rhino.Scripting.FSharp."`, so don't add that prefix to the message). Always include failing values:
 ```fsharp
-RhinoScriptingFSharpException.Raise "Line.UnitTangent: x:%g, y:%g and z:%g are too small" v.X v.Y v.Z
+RhinoScriptingFSharpException.Raise "Line.unitTangent: x:%g, y:%g and z:%g are too small" v.X v.Y v.Z
 ```
 
 **Tolerance Constants** (in [UtilRhinoScriptingFSharp.fs](Src/UtilRhinoScriptingFSharp.fs)):
@@ -67,7 +69,7 @@ RhinoScriptingFSharpException.Raise "Line.UnitTangent: x:%g, y:%g and z:%g are t
 
 ### Naming Conventions
 - **Curried wrappers**: verb prefix — `setLayer`, `getLayer`, `setName`, `getName`, `hasUserText`, `matchLayer`, `tryGetName`
-- **Geometry members**: PascalCase — `Length`, `LengthSq`, `UnitTangent`, `IsXAligned`, `AsString`
+- **Geometry members**: PascalCase — `LengthSq`, `Tangent`, `IsXAligned`, `AsString`
 - **Modifier members**: `With*` pattern — `WithX`, `WithY`, `WithLength`
 - **AutoOpen modules**: `AutoOpen{TypeName}` (e.g., `AutoOpenLine`, `AutoOpenPnt`)
 - **Static geometry functions**: camelCase — `createFromMembersXYZ`, `distance`, `angle180`
@@ -82,7 +84,7 @@ RhinoScriptingFSharpException.Raise "Line.UnitTangent: x:%g, y:%g and z:%g are t
 `--warnon:3390` (XML doc validation), `--warnon:1182` (unused variables) are enabled.
 
 ## Dependencies
-- **Rhino.Scripting** (0.13.0) — core RhinoScript wrapper
+- **Rhino.Scripting** (0.14.0) — core RhinoScript wrapper
 - **RhinoCommon** — v7.x for net48, v8.x for net8.0 (PrivateAssets, not redistributed)
 - Code derived from [Euclid](https://github.com/goswinr/Euclid) geometry library (noted in source comments as "Copied from Euclid 0.16")
 
