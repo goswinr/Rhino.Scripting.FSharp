@@ -1258,14 +1258,16 @@ module AutoOpenLine =
         Line.split gap k ln
 
 
-    /// Divides a 2D line into segments of given length.
+    /// Divides a 3D line into segments of given length.
     /// Includes start and end point
     /// Adds end point only if there is a remainder bigger than 1% of the segment length.
-    static member  divideEvery dist (l:Line) =
+    /// Fails if the segment length is zero or negative.
+    static member  divideEvery (dist:float) (l:Line) =
+        if isTooTiny dist then RhinoScriptingFSharpException.Raise "Line.divideEvery: segment length %g is too small or negative for %O" dist l
         let len = l.Length
         let div = len / dist
         let floor = System.Math.Floor div
-        let step = 1.0 / floor
+        let step = dist / len // parameter step for one segment
         let count = int floor
         let pts = ResizeArray<Point3d>(count + 2)
         pts.Add l.From
@@ -1275,19 +1277,21 @@ module AutoOpenLine =
             pts.Add l.To // add end point only if there is a remainder bigger than 1%
         pts
 
-    /// Divides a 2D line into segments of given length.
+    /// Divides a 3D line into segments of given length.
     /// Excludes start and end point
     /// Adds last div point before end only if there is a remainder bigger than 1% of the segment length.
-    static member divideInsideEvery dist (l:Line) =
+    /// Fails if the segment length is zero or negative.
+    static member divideInsideEvery (dist:float) (l:Line) =
+        if isTooTiny dist then RhinoScriptingFSharpException.Raise "Line.divideInsideEvery: segment length %g is too small or negative for %O" dist l
         let len = l.Length
         let div = len / dist
         let floor = System.Math.Floor div
-        let step = 1.0 / floor
+        let step = dist / len // parameter step for one segment
         let count = int floor
         let pts = ResizeArray<Point3d>(count)
         for i = 1 to count - 1 do
             pts.Add <| l.EvaluateAt (step * float i)
-        if div - floor > 0.01 then
+        if floor >= 1.0 && div - floor > 0.01 then
             pts.Add <| l.EvaluateAt (step * floor) // add last div point only if there is a remainder bigger than 1%
         pts
 
