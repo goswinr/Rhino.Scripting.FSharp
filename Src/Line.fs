@@ -1340,29 +1340,42 @@ module AutoOpenLine =
     /// Finds intersection of two Finite Lines.
     /// Returns:
     ///    an empty array if they are parallel,
-    ///    an array with one point if they intersect by RhinoScriptSyntax.Doc.ModelAbsoluteTolerance (Point will be the average of the two points within the tolerance)
-    ///    an array with two points where they are the closest to each other. In same order as input. They might be skew or they might intersect only when infinite.
-    /// Fails if lines are parallel.
-    /// Considers Lines finite
+    ///    an array with one point if they are closer than half of RhinoScriptSyntax.Doc.ModelAbsoluteTolerance (Point will be the average of the two closest points)
+    ///    an array with two points where the finite lines are the closest to each other. In same order as input. They might be skew or they might intersect only when infinite.
+    /// Considers Lines finite.
+    /// Fails on lines of zero length.
     static member intersectFinite (lnA:Line) (lnB:Line) : Point3d[]=
-        let ok, ta, tb = Intersect.Intersection.LineLine(lnA,lnB)
-        if not ok then [||] //RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.Line.intersectFinite failed, parallel ?  on %s and %s" lnA.Pretty lnB.Pretty
+        let d1 = lnA.Direction
+        let d2 = lnB.Direction
+        let a = d1 * d1
+        let e = d2 * d2
+        if isTooTinySq a || isTooTinySq e then
+            RhinoScriptingFSharpException.Raise "Line.intersectFinite: a line has zero length: %s and %s" lnA.Pretty lnB.Pretty
+        let ok, ta, _ = Intersect.Intersection.LineLine(lnA,lnB)
+        if not ok then [||] // parallel
         else
-            let inline clamp01 x =
-                if x < 0.0 then 0.0
-                elif x > 1.0 then 1.0
-                else x
-
-
-            let ca = clamp01 ta
-            let cb = clamp01 tb
-            let a = lnA.PointAt(ca)
-            let b = lnB.PointAt(cb)
-            let d = Point3d.distance a b
+            // Closest points between two finite line segments.
+            // Clamping both infinite line parameters independently is not enough for that.
+            // See Christer Ericson, Real-Time Collision Detection, chapter 5.1.9
+            let r = lnA.From - lnB.From
+            let b = d1 * d2
+            let c = d1 * r
+            let f = d2 * r
+            let mutable s = clampBetweenZeroAndOne ta // parameter on lnA, closest to the infinite lnB
+            let mutable t = (b * s + f) / e // parameter on lnB, closest to lnA.PointAt(s)
+            if t < 0.0 then
+                t <- 0.0
+                s <- clampBetweenZeroAndOne (-c / a)
+            elif t > 1.0 then
+                t <- 1.0
+                s <- clampBetweenZeroAndOne ((b - c) / a)
+            let pa = lnA.PointAt(s)
+            let pb = lnB.PointAt(t)
+            let d = Point3d.distance pa pb
             if  d < RhinoScriptSyntax.Doc.ModelAbsoluteTolerance * 0.5 then
-                if d < RhinoMath.ZeroTolerance then [|a|]
-                else [| Point3d.divPt (a, b, 0.5)|]
-            else [|a ; b|]
+                if d < RhinoMath.ZeroTolerance then [|pa|]
+                else [| Point3d.divPt (pa, pb, 0.5)|]
+            else [|pa ; pb|]
 
     /// Returns the distance between two Infinite Lines.
     /// At the point where they are closest to each other.
