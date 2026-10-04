@@ -156,10 +156,12 @@ module RhPoints =
     /// 'tolGap' is the maximum allowable gap between the start and the endpoint of two point lists.
     /// Search starts from the point list with the most points.
     /// Both start and end point of each point list is checked for adjacency.
+    /// Returns a new list of points. The input lists are not modified.
     let findContinuousPoints (tolGap:float) (ptss: ResizeArray<ResizeArray<Point3d>>) =
         if ptss.Count = 0 then RhinoScriptingFSharpException.Raise "RhPoints.findContinuousPoints: empty list of point lists 'ptss'"
+        let ptss = ResizeArray(ptss) // shallow copy, items get removed from it below
         let i = ptss |> maxIndexBy (fun a -> a.Count)
-        let res = ptss.[i]
+        let res = ResizeArray(ptss.[i]) // copy, points get added to it below
         ptss.RemoveAt(i)
         let mutable loop = true
         while loop && ptss.Count > 0 do
