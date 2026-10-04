@@ -85,7 +85,7 @@ module AutoOpenVector3d =
             let y = ( ^T : (member Y : _) pt)
             let z = ( ^T : (member Z : _) pt)
             try Vector3d(float x, float y, float z)
-            with e -> RhinoScriptingFSharpException.Raise $"Vector3d.createFromMembersXYZ: {pt} could not be converted to a Rhino.Scripting.FSharp:Vector3d:{Environment.NewLine}{e}"
+            with e -> RhinoScriptingFSharpException.Raise $"Vector3d.createFromMembersXYZ: {pt} could not be converted to a Rhino.Geometry.Vector3d:{Environment.NewLine}{e}"
 
 
         /// Accepts any type that has a x, y and z (lowercase) member that can be converted to a float.
@@ -95,7 +95,7 @@ module AutoOpenVector3d =
             let y = ( ^T : (member y : _) pt)
             let z = ( ^T : (member z : _) pt)
             try Vector3d(float x, float y, float z)
-            with e ->  RhinoScriptingFSharpException.Raise $"Vector3d.createFromMembersxyz: {pt} could not be converted to a Rhino.Scripting.FSharp:Vector3d:{Environment.NewLine}{e}"
+            with e ->  RhinoScriptingFSharpException.Raise $"Vector3d.createFromMembersxyz: {pt} could not be converted to a Rhino.Geometry.Vector3d:{Environment.NewLine}{e}"
 
         //[<Extension>]
         //Unitizes the vector , fails if input is of zero length
@@ -167,7 +167,7 @@ module AutoOpenVector3d =
 
         // A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        member v.FailedUnitized() = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Vec.Unitized %O is too small for unitizing, Tolerance:%g" v zeroLengthTolerance
+        member v.FailedUnitized() = RhinoScriptingFSharpException.Raise "Vector3d.Unitized %O is too small for unitizing, Tolerance:%g" v zeroLengthTolerance
         /// Returns a new 3D Vector3d unitized.
         /// Fails with RhinoScriptingFSharpException if the length of the Vector3d is
         /// too small (1e-16) to unitize.
@@ -897,7 +897,7 @@ module AutoOpenVector3d =
             let pt = pl.Origin + v
             let clpt = pl.ClosestPoint(pt)
             let r = clpt-pl.Origin
-            if r.IsTiny(RhinoMath.SqrtEpsilon) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.projectToPlane: Cannot projectToPlane for perpendicular vector %A to given plane %A" v pl
+            if r.IsTiny(RhinoMath.SqrtEpsilon) then RhinoScriptingFSharpException.Raise "Vector3d.projectToPlane: Cannot projectToPlane for perpendicular vector %A to given plane %A" v pl
             r
 
         /// Project point onto a finite line in direction of v
@@ -906,14 +906,14 @@ module AutoOpenVector3d =
         static member projectToLine (ln:Line) (v:Vector3d) (pt:Point3d) =
             let h = Line(pt,v)
             let ok,tln,th = Intersect.Intersection.LineLine(ln,h)
-            if not ok then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.projectToLine: project in direction failed. (are they parallel?)"
+            if not ok then RhinoScriptingFSharpException.Raise "Vector3d.projectToLine: project in direction failed. (are they parallel?)"
             let a = ln.PointAt(tln)
             let b = h.PointAt(th)
             if (a-b).SquareLength > RhinoMath.ZeroTolerance then
                 //Scripting.Doc.Objects.AddLine ln   |> RhinoScriptSyntax.setLayer "Error-projectToLine"
                 //Scripting.Doc.Objects.AddLine h    |> RhinoScriptSyntax.setLayer "Error-projectToLineDirection"
                 //Scripting.Doc.Objects.AddPoint pt  |> RhinoScriptSyntax.setLayer "Error-projectToLineFrom"
-                RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.projectToLine: missed Line by: %g " (a-b).Length
+                RhinoScriptingFSharpException.Raise "Vector3d.projectToLine: missed Line by: %g " (a-b).Length
             a
 
 
@@ -988,7 +988,7 @@ module AutoOpenVector3d =
             let y = ( ^T : (member Y : _) pt)
             let z = ( ^T : (member Z : _) pt)
             try Vector3f(float32 x, float32 y, float32 z)
-            with e -> RhinoScriptingFSharpException.Raise $"Vector3f.createFromMembersXYZ: Rhino.Scripting.FSharp:Vector3d:{Environment.NewLine}{e}"
+            with e -> RhinoScriptingFSharpException.Raise $"Vector3f.createFromMembersXYZ: {pt} could not be converted to a Rhino.Geometry.Vector3f:{Environment.NewLine}{e}"
 
 
         /// Accepts any type that has a x, y and z (lowercase) member that can be converted to a float32.
@@ -998,4 +998,4 @@ module AutoOpenVector3d =
             let y = ( ^T : (member y : _) pt)
             let z = ( ^T : (member z : _) pt)
             try Vector3f(float32 x, float32 y, float32 z)
-            with e ->  RhinoScriptingFSharpException.Raise $"Vector3f.createFromMembersxyz: Rhino.Scripting.FSharp:Vector3f:{Environment.NewLine}{e}"
+            with e ->  RhinoScriptingFSharpException.Raise $"Vector3f.createFromMembersxyz: {pt} could not be converted to a Rhino.Geometry.Vector3f:{Environment.NewLine}{e}"

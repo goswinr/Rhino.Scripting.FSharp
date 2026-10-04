@@ -81,7 +81,7 @@ module AutoOpenPnt =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        member p.FailedWithDistanceFromOrigin(l) = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.WithDistFromOrigin %O is too small to be scaled to length %g." p l
+        member p.FailedWithDistanceFromOrigin(l) = RhinoScriptingFSharpException.Raise "Point3d.WithDistanceFromOrigin %O is too small to be scaled to length %g." p l
 
         /// Returns new 3D point with given distance from Origin by scaling it up or down.
         member inline pt.WithDistanceFromOrigin (l:float) =
@@ -91,7 +91,7 @@ module AutoOpenPnt =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        member p.FailedDirectionDiamondInXYTo(o) = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.DirectionDiamondInXYTo failed for too short distance between %O and %O." p o
+        member p.FailedDirectionDiamondInXYTo(o) = RhinoScriptingFSharpException.Raise "Point3d.DirectionDiamondInXYTo failed for too short distance between %O and %O." p o
 
         /// Returns the Diamond Angle from this point to another point projected in X-Y plane.
         /// The diamond angle is always positive and in the range of 0.0 to 4.0 (for 360 Degrees)
@@ -116,7 +116,7 @@ module AutoOpenPnt =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        member p.FailedAngle2PiInXYTo(o:Point3d) = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.Angle2PiInXYTo failed for too short distance between %O and %O." p o
+        member p.FailedAngle2PiInXYTo(o:Point3d) = RhinoScriptingFSharpException.Raise "Point3d.Angle2PiInXYTo failed for too short distance between %O and %O." p o
 
 
         /// Returns the angle in Radians from this point to another point projected in X-Y plane.
@@ -137,7 +137,7 @@ module AutoOpenPnt =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        member p.FailedClosestPointOnLine(fromPt:Point3d, toPt:Point3d) = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.ClosestPointOnLine: Line is too short for fromPt %O to %O and testPt %O" fromPt toPt p
+        member p.FailedClosestPointOnLine(fromPt:Point3d, toPt:Point3d) = RhinoScriptingFSharpException.Raise "Point3d.ClosestPointOnLine: Line is too short for fromPt %O to %O and testPt %O" fromPt toPt p
 
         /// Get closest point on finite line to test point.
         member inline testPt.ClosestPointOnLine(fromPt:Point3d, toPt:Point3d) =
@@ -153,7 +153,7 @@ module AutoOpenPnt =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        member p.FailedDistanceToLine(fromPt:Point3d, toPt:Point3d) = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.DistanceToLine: Line is too short for fromPt %O to %O and %O" fromPt toPt p
+        member p.FailedDistanceToLine(fromPt:Point3d, toPt:Point3d) = RhinoScriptingFSharpException.Raise "Point3d.DistanceToLine: Line is too short for fromPt %O to %O and %O" fromPt toPt p
         /// Returns the distance between point and finite line segment defined by start and end.
         member inline testPt.DistanceToLine(fromPt:Point3d, toPt:Point3d) =
             let dir = testPt - fromPt
@@ -180,7 +180,7 @@ module AutoOpenPnt =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        static member failedCreateFromMembersXYZ(pt:'T,e:exn) = RhinoScriptingFSharpException.Raise $"Rhino.Scripting.FSharp:Point3d.createFromMembersXYZ: {pt} could not be converted to a Rhino.Scripting.FSharp:Point3d:{Environment.NewLine}{e}" pt e
+        static member failedCreateFromMembersXYZ(pt:'T,e:exn) = RhinoScriptingFSharpException.Raise $"Point3d.createFromMembersXYZ: {pt} could not be converted to a Rhino.Geometry.Point3d:{Environment.NewLine}{e}"
 
         /// Accepts any type that has a X, Y and Z (UPPERCASE) member that can be converted to a float.
         /// Internally this is not using reflection at runtime but F# Statically Resolved Type Parameters at compile time.
@@ -193,7 +193,7 @@ module AutoOpenPnt =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        static member failedCreateFromMembersxyz(pt:'T,e:exn) = RhinoScriptingFSharpException.Raise $"Rhino.Scripting.FSharp:Point3d.createFromMembersxyz: {pt} could not be converted to a Rhino.Scripting.FSharp:Point3d:{Environment.NewLine}{e}"
+        static member failedCreateFromMembersxyz(pt:'T,e:exn) = RhinoScriptingFSharpException.Raise $"Point3d.createFromMembersxyz: {pt} could not be converted to a Rhino.Geometry.Point3d:{Environment.NewLine}{e}"
         /// Accepts any type that has a x, y and z (lowercase) member that can be converted to a float.
         /// Internally this is not using reflection at runtime but F# Statically Resolved Type Parameters at compile time.
         static member inline createFromMembersxyz pt =
@@ -298,7 +298,7 @@ module AutoOpenPnt =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        static member failedDistPt (fromPt:Point3d, dirPt:Point3d, distance:float) = RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.distPt: distance from %O to %O is too small to scale to distance: %g" fromPt dirPt distance
+        static member failedDistPt (fromPt:Point3d, dirPt:Point3d, distance:float) = RhinoScriptingFSharpException.Raise "Point3d.distPt: distance from %O to %O is too small to scale to distance: %g" fromPt dirPt distance
 
         /// Returns a point that is at a given distance from a 3D point in the direction of another point.
         static member inline distPt (fromPt:Point3d, dirPt:Point3d, distance:float) : Point3d =
@@ -335,10 +335,10 @@ module AutoOpenPnt =
         /// going from a point in the direction of another point.
         static member inline extendToZLevel (fromPt:Point3d, toPt:Point3d, z:float) =
             let v = toPt - fromPt
-            if fromPt.Z < toPt.Z && z < fromPt.Z  then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.extendToZLevel cannot be reached for fromPt:%O toPt:%O z:%g" fromPt toPt z
-            if fromPt.Z > toPt.Z && z > fromPt.Z  then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.extendToZLevel cannot be reached for fromPt:%O toPt:%O z:%g" fromPt toPt z
+            if fromPt.Z < toPt.Z && z < fromPt.Z  then RhinoScriptingFSharpException.Raise "Point3d.extendToZLevel cannot be reached for fromPt:%O toPt:%O z:%g" fromPt toPt z
+            if fromPt.Z > toPt.Z && z > fromPt.Z  then RhinoScriptingFSharpException.Raise "Point3d.extendToZLevel cannot be reached for fromPt:%O toPt:%O z:%g" fromPt toPt z
             let dot = abs (v * Vector3d.Zaxis)
-            if dot < 0.0001 then  RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.extendToZLevel cannot be reached for fromPt:%O toPt:%O because they are both at the same level. target z:%g " fromPt toPt z
+            if dot < 0.0001 then  RhinoScriptingFSharpException.Raise "Point3d.extendToZLevel cannot be reached for fromPt:%O toPt:%O because they are both at the same level. target z:%g " fromPt toPt z
             let diffZ = abs (fromPt.Z - z)
             let fac = diffZ / dot
             fromPt + v * fac
@@ -354,7 +354,7 @@ module AutoOpenPnt =
         /// e.g. snap 10  Point3d(3    , 19   , 0) -> Point3d(0  , 20 , 0)
         /// does: (Math.Round (x/precision)) * precision
         static member inline snap (precision) (pt:Point3d) =
-            if isTooTiny (precision) then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.snap: precision too small or negative %A" precision
+            if isTooTiny (precision) then RhinoScriptingFSharpException.Raise "Point3d.snap: precision too small or negative %A" precision
             Point3d( (Math.Round (pt.X/precision)) * precision,
                  (Math.Round (pt.Y/precision)) * precision,
                  (Math.Round (pt.Z/precision)) * precision)
@@ -472,7 +472,7 @@ module AutoOpenPnt =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        static member failedProjectedParameter(fromPt:Point3d, v:Vector3d, testPt:Point3d)= RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.projectedParameter: %O is too short for fromPt %O and %O" v fromPt testPt
+        static member failedProjectedParameter(fromPt:Point3d, v:Vector3d, testPt:Point3d)= RhinoScriptingFSharpException.Raise "Point3d.projectedParameter: %O is too short for fromPt %O and %O" v fromPt testPt
 
         /// 'fromPt' point and 'v' vector describe an endless 3D line.
         /// 'testPt' gets projected onto this line.
@@ -485,7 +485,7 @@ module AutoOpenPnt =
 
         /// A separate function to compose the error message that does not get inlined.
         [<Obsolete("Not actually obsolete but just hidden. (Needs to be public for inlining of the functions using it.)")>]
-        static member failedProjectedParameter(fromPt:Point3d, toPt:Point3d, testPt:Point3d)= RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp:Point3d.projectedParameter: Line is too short for fromPt %O to %O and %O" fromPt toPt testPt
+        static member failedProjectedParameter(fromPt:Point3d, toPt:Point3d, testPt:Point3d)= RhinoScriptingFSharpException.Raise "Point3d.projectedParameter: Line is too short for fromPt %O to %O and %O" fromPt toPt testPt
 
         /// 'fromPt' point and 'toPt' point describe an endless 3D line.
         /// 'testPt' gets projected onto this line.
@@ -535,7 +535,7 @@ module AutoOpenPnt =
                 let lp = Line(thisPt + sp , vp)  //|>! ( RhinoScriptSyntax.Doc.Objects.AddLine>>ignore)
                 let ln = Line(thisPt + sn , vn)  //|>! ( RhinoScriptSyntax.Doc.Objects.AddLine>> ignore)
                 let ok, tp , _ = Intersect.Intersection.LineLine(lp, ln) //could also be solved with trigonometry functions
-                if not ok then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.RhPnt.findOffsetCorner: Intersect.Intersection.LineLine failed on %s and %s" lp.Pretty ln.Pretty
+                if not ok then RhinoScriptingFSharpException.Raise "Point3d.findOffsetCorner: Intersect.Intersection.LineLine failed on %s and %s" lp.Pretty ln.Pretty
                 struct(sp, sn, lp.PointAt(tp), n)  //or ln.PointAt(tn), should be same
 
 
@@ -552,7 +552,7 @@ module AutoOpenPnt =
             let y = ( ^T : (member Y : _) pt)
             let z = ( ^T : (member Z : _) pt)
             try Point3f(float32 x, float32 y, float32 z)
-            with e -> RhinoScriptingFSharpException.Raise $"Point3f.createFromMembersXYZ: Rhino.Scripting.FSharp:Point3f:{Environment.NewLine}{e}"
+            with e -> RhinoScriptingFSharpException.Raise $"Point3f.createFromMembersXYZ: {pt} could not be converted to a Rhino.Geometry.Point3f:{Environment.NewLine}{e}"
 
 
         /// Accepts any type that has a x, y and z (lowercase) member that can be converted to a float32.
@@ -562,4 +562,4 @@ module AutoOpenPnt =
             let y = ( ^T : (member y : _) pt)
             let z = ( ^T : (member z : _) pt)
             try Point3f(float32 x, float32 y, float32 z)
-            with e ->  RhinoScriptingFSharpException.Raise $"Point3f.createFromMembersxyz: Rhino.Scripting.FSharp:Point3f:{Environment.NewLine}{e}"
+            with e ->  RhinoScriptingFSharpException.Raise $"Point3f.createFromMembersxyz: {pt} could not be converted to a Rhino.Geometry.Point3f:{Environment.NewLine}{e}"

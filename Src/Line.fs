@@ -1307,11 +1307,11 @@ module AutoOpenLine =
     /// Returns point on lnB (the last parameter)
     static member intersectInOnePoint (lnA:Line) (lnB:Line) : Point3d =
         let ok, ta, tb = Intersect.Intersection.LineLine(lnA,lnB)
-        if not ok then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.Line.intersectInOnePoint failed, parallel ?  on %s and %s" lnA.Pretty lnB.Pretty
+        if not ok then RhinoScriptingFSharpException.Raise "Line.intersectInOnePoint failed, parallel ?  on %s and %s" lnA.Pretty lnB.Pretty
         let a = lnA.PointAt(ta)
         let b = lnB.PointAt(tb)
         if (a-b).SquareLength > RhinoMath.ZeroTolerance then // = Length > 1e-6
-            RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.Line.intersect intersectInOnePoint, they are skew. distance: %g  on %s and %s" (a-b).Length lnA.Pretty lnB.Pretty
+            RhinoScriptingFSharpException.Raise "Line.intersectInOnePoint, they are skew. distance: %g  on %s and %s" (a-b).Length lnA.Pretty lnB.Pretty
         b
 
     /// Finds intersection of two Infinite Lines.
@@ -1321,7 +1321,7 @@ module AutoOpenLine =
     /// Considers Lines infinite
     static member intersectSkew (lnA:Line) (lnB:Line) :Point3d*Point3d=
         let ok, ta, tb = Intersect.Intersection.LineLine(lnA,lnB)
-        if not ok then RhinoScriptingFSharpException.Raise "Rhino.Scripting.FSharp: RhinoScriptSyntax.Line.intersectSkew failed, parallel ?  on %s and %s" lnA.Pretty lnB.Pretty
+        if not ok then RhinoScriptingFSharpException.Raise "Line.intersectSkew failed, parallel ?  on %s and %s" lnA.Pretty lnB.Pretty
         let a = lnA.PointAt(ta)
         let b = lnB.PointAt(tb)
         a,b
