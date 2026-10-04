@@ -4,7 +4,7 @@
     <OutputType>library</OutputType>
     <TargetFrameworks>net8.0;net48</TargetFrameworks> <!-- FsDoc will use the first target framework: https://fsprojects.github.io/FSharp.Formatting/apidocs.html#Selected-projects -->
 
-    <LangVersion>preview</LangVersion>
+    <LangVersion>latest</LangVersion>
     <NeutralLanguage>en</NeutralLanguage>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>    <!--to only have the english resources-->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
