@@ -14,7 +14,7 @@ open Rhino.Scripting
 [<AutoOpen>]
 module AutoOpenSelection =
 
-  // these functions are similar to the ones found in Rhino.Scripting.FSharp: Scripting_Selection.fs
+  // these functions are similar to the ones found in Rhino.Scripting: Scripting_Selection.fs
 
 
   let internal rememberedObjects = Dict<string,ResizeArray<Guid>>()

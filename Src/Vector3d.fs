@@ -170,7 +170,7 @@ module AutoOpenVector3d =
         member v.FailedUnitized() = RhinoScriptingFSharpException.Raise "Vector3d.Unitized %O is too small for unitizing, Tolerance:%g" v zeroLengthTolerance
         /// Returns a new 3D Vector3d unitized.
         /// Fails with RhinoScriptingFSharpException if the length of the Vector3d is
-        /// too small (1e-16) to unitize.
+        /// too small (1e-12) to unitize.
         member inline v.Unitized =
             let l = v.Length
             if isTooTiny l then v.FailedUnitized() // don't compose error msg directly here to keep inlined code small.
@@ -185,8 +185,8 @@ module AutoOpenVector3d =
         //    UnitVector3d.createUnchecked(li*v.X, li*v.Y, li*v.Z)
 
         /// Test if the 3D Vector3d is a unit-Vector3d.
-        /// Test if the Vector3d square length is within 6 float steps of 1.0
-        /// So between 0.99999964 and 1.000000715.
+        /// Test if the Vector3d square length is within approximately 1e-6 of 1.0
+        /// So between 0.99999904632568359375 and 1.00000107288360595703.
         member inline v.IsUnit =
             isOne v.LengthSq
 
@@ -527,7 +527,6 @@ module AutoOpenVector3d =
 
 
         /// Project Vector3d to World X-Y plane.
-        /// Use Vc.ofVector3d to convert to a 2D Vector3d.
         static member inline projectToXYPlane (v:Vector3d) =
             Vector3d(v.X, v.Y, 0.0)
 
@@ -713,7 +712,7 @@ module AutoOpenVector3d =
         /// Spherically interpolates between start and end by amount rel (0.0 to 1.0).
         /// The difference between this and linear interpolation (aka, "lerp") is that the Vector3d are treated as directions rather than points in space.
         /// The direction of the returned Vector3d is interpolated by the angle and its magnitude is interpolated between the magnitudes of start and end.
-        /// Interpolation continues before and after the range of 0.0 and 0.1
+        /// Interpolation continues before and after the range of 0.0 and 1.0
         static member slerp (start:Vector3d, ende:Vector3d, rel:float) =
             // https://en.wikipedia.org/wiki/Slerp
             // implementation tested in Rhino!
@@ -738,13 +737,13 @@ module AutoOpenVector3d =
                 let cosine = cos (theta360)
                 let sine   = sqrt(1.0 - cosine*cosine)
                 let res =  //unitized result Vector3d
-                    if theta360 < Math.PI then  // in the range 0 to 180 degrees, only applicable if rel is beyond 0.0 or 0.1
+                    if theta360 < Math.PI then  // in the range 0 to 180 degrees, only applicable if rel is beyond 0.0 or 1.0
                         su * cosine + perp * sine
                     else
                         su * cosine - perp * sine
                 let lenRel = sLen + rel * (eLen-sLen)
                 if lenRel < 0.0 then
-                    Vector3d.Zero // otherwise the Vector3d would get flipped and grow again , only applicable if rel is beyond 0.0 or 0.1
+                    Vector3d.Zero // otherwise the Vector3d would get flipped and grow again , only applicable if rel is beyond 0.0 or 1.0
                 else
                     res * abs lenRel
 
@@ -754,30 +753,30 @@ module AutoOpenVector3d =
         static member inline lengthInXY(v:Vector3d) = sqrt(v.X * v.X  + v.Y * v.Y)
 
         /// Checks if 3D Vector3d is parallel to the world X axis. Ignoring orientation.
-        /// Tolerance is 1e-6.
+        /// The absolute deviation tolerance along Y and Z axis is 1e-9.
         /// Fails on Vector3d shorter than 1e-6.
         static member inline isXAligned (v:Vector3d) = v.IsXAligned
 
         /// Checks if 3D Vector3d is parallel to the world Y axis. Ignoring orientation.
-        /// Tolerance is 1e-6.
+        /// The absolute deviation tolerance along X and Z axis is 1e-9.
         /// Fails on Vector3d shorter than 1e-6.
         static member inline isYAligned (v:Vector3d) = v.IsYAligned
 
         /// Checks if 3D Vector3d is parallel to the world Z axis. Ignoring orientation.
-        /// Tolerance is 1e-6.
+        /// The absolute deviation tolerance along X and Y axis is 1e-9.
         /// Fails on Vector3d shorter than 1e-6.
-        /// Same as ln.IsVertical
+        /// Same as Vector3d.isVertical
         static member inline isZAligned (v:Vector3d) = v.IsZAligned
 
         /// Checks if 3D Vector3d is parallel to the world Z axis. Ignoring orientation.
-        /// Tolerance is 1e-6.
+        /// The absolute deviation tolerance along X and Y axis is 1e-9.
         /// Fails on Vector3d shorter than 1e-6.
-        /// Same as ln.IsZAligned
+        /// Same as Vector3d.isZAligned
         static member inline isVertical (v:Vector3d) = v.IsVertical
 
-        /// Checks if line is horizontal (Z component is almost zero).
-        /// Tolerance is 1e-6.
-        /// Fails on lines shorter than 1e-6.
+        /// Checks if 3D Vector3d is horizontal (Z component is almost zero).
+        /// The absolute deviation tolerance along Z axis is 1e-9.
+        /// Fails on Vector3d shorter than 1e-6.
         static member inline isHorizontal (v:Vector3d) = v.IsHorizontal
 
         /// Returns positive or negative slope of a Vector3d in Radians.
@@ -900,7 +899,7 @@ module AutoOpenVector3d =
             if r.IsTiny(RhinoMath.SqrtEpsilon) then RhinoScriptingFSharpException.Raise "Vector3d.projectToPlane: Cannot projectToPlane for perpendicular vector %A to given plane %A" v pl
             r
 
-        /// Project point onto a finite line in direction of v
+        /// Project point onto an infinite line in direction of v
         /// Fails if line is missed by tolerance 1e-6
         //and draws debug objects on layer 'Error-projectToLine'
         static member projectToLine (ln:Line) (v:Vector3d) (pt:Point3d) =

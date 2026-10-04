@@ -209,7 +209,6 @@ module AutoOpenPnt =
 
 
         /// Project point to World X-Y plane.
-        /// Use make2D to convert to 2D point instance.
         static member inline projectToXYPlane (pt:Point3d) = Point3d(pt.X, pt.Y, 0.0)
 
         /// Sets the X value and return new 3D point.

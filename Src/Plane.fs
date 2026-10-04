@@ -69,7 +69,7 @@ module AutoOpenPlane=
     /// and the distance of second origin to the first plane is less than the distance tolerance.
     /// The default angle tolerance is 0.25 degrees.
     /// This tolerance can be customized by an optional minimum cosine value.
-    /// See Rhino.Scripting.FSharp:.Cosine module.
+    /// See Rhino.Scripting.FSharp.Cosine module.
     member inline pl.IsCoincidentTo (other:Plane,
                                     [<OPT;DEF(1e-6)>] distanceTolerance:float,
                                     [<OPT;DEF(Cosine.``0.25``)>] minCosine:float<Cosine.cosine>) =
@@ -115,8 +115,9 @@ module AutoOpenPlane=
         Plane(pl.Origin |> Point3d.moveZ z, pl.XAxis, pl.YAxis)
 
 
-    /// Rotate about Z axis by angle in degree.
-    /// Counter clockwise in top view (for WorldXY Plane).
+    /// Rotate about the World Z-axis through the plane's origin by angle in degree.
+    /// Counter clockwise in top view.
+    /// (This is not the plane's own Z-axis, unless the plane is horizontal.)
     static member inline rotateZ (angDegree:float) (pl:Plane) =
         let mutable p = pl.Clone()
         if not <| p.Rotate(toRadians angDegree, Vector3d.ZAxis) then
@@ -236,7 +237,7 @@ module AutoOpenPlane=
     /// The resulting Plane will have the X-Axis in direction of X vector.
     /// The X and Y vectors will define the plane and the side that Z will be on.
     /// The given Y vector does not need to be perpendicular to the X vector, just not parallel.
-    /// Fails if the vectors are shorter than 1e-5.
+    /// Fails if the vectors are shorter than 1e-6.
     static member createOriginXaxisYaxis (origin:Point3d, xAxis:Vector3d, yAxis:Vector3d) =
         let lx = xAxis.Length
         let ly = yAxis.Length
@@ -254,7 +255,7 @@ module AutoOpenPlane=
     /// The X-axis will be found by taking the cross product of the World Z-axis and the given normal (or Z-axis).
     /// This will make the X-axis horizontal.
     /// If this fails because they are coincident, the cross product of the World Y-axis and the given normal (or Z-axis) will be used.
-    /// Fails if the vectors are shorter than 1e-5.
+    /// Fails if the vectors are shorter than 1e-6.
     static member createOriginNormal (origin:Point3d, normal:Vector3d) =
         let len = normal.Length
         if isTooSmall (len) then  RhinoScriptingFSharpException.Raise "Plane.createOriginNormal the Z-axis is too small. origin %s Z-Axis %s" origin.AsString normal.AsString
@@ -272,7 +273,7 @@ module AutoOpenPlane=
 
     /// Creates a Parametrized Plane from a point and unit-vector representing the Z-axis.
     /// The given X vector does not need to be perpendicular to the normal vector, just not parallel.
-    /// Fails if the vectors are shorter than 1e-5 or normal and X are parallel.
+    /// Fails if the vectors are shorter than 1e-6 or normal and X are parallel within 1 degree.
     static member createOriginNormalXaxis (origin:Point3d, normal:Vector3d, xAxis:Vector3d) =
         let lx = xAxis.Length
         let ln = normal.Length

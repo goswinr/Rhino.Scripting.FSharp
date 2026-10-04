@@ -345,7 +345,7 @@ module AutoOpenLine =
     /// Assumes Line to be infinite.
     /// Returns the parameter at which a point is closest to the infinite line.
     /// If it is smaller than 0.0 or bigger than 1.0 it is outside of the finite line.
-    /// Fails on curves shorter than 1e-9 units. (Line.closestParameter does not)
+    /// Fails on lines shorter than 1e-6 units. (Line.closestParameter does not)
     member inline ln.ClosestParameterInfinite (p:Point3d) =
         //http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
         let x = ln.FromX - ln.ToX
@@ -369,7 +369,7 @@ module AutoOpenLine =
 
     /// Assumes Line to be infinite.
     /// Returns closest point on infinite line.
-    /// Fails on curves shorter than 1e-9 units. (ln.ClosestPoint does not.)
+    /// Fails on lines shorter than 1e-6 units. (ln.ClosestPoint does not.)
     member inline ln.ClosestPointInfinite (p:Point3d) =
         //http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
         let x = ln.FromX - ln.ToX
@@ -409,7 +409,7 @@ module AutoOpenLine =
 
     /// Assumes Line to be infinite.
     /// Returns square distance from point to infinite line.
-    /// Fails on curves shorter than 1e-6 units. (ln.DistanceSqToPnt does not.)
+    /// Fails on lines shorter than 1e-6 units. (ln.DistanceSqToPnt does not.)
     member ln.DistanceSqToPntInfinite(p:Point3d) =
         let lnFromX = ln.FromX
         let lnFromY = ln.FromY
@@ -436,7 +436,7 @@ module AutoOpenLine =
 
     /// Assumes Line to be infinite.
     /// Returns distance from point to infinite line.
-    /// Fails on curves shorter than 1e-9 units. (ln.DistanceToPnt does not.)
+    /// Fails on lines shorter than 1e-6 units. (ln.DistanceToPnt does not.)
     member inline ln.DistanceToPntInfinite(p:Point3d) =
         ln.DistanceSqToPntInfinite(p) |> sqrt
 
@@ -449,14 +449,14 @@ module AutoOpenLine =
     member inline ln.DistanceToPnt(p:Point3d) =
         ln.DistanceSqToPnt(p) |> sqrt
 
-    /// Checks if the angle between the two 3D lines is less than 180 degrees.
+    /// Checks if the angle between the two 3D lines is less than 90 degrees.
     /// Calculates the dot product of two 3D lines.
     /// Then checks if it is bigger than 1e-12.
     member inline ln.MatchesOrientation180 (otherLn:Line) =
         let dot = (otherLn.ToX-otherLn.FromX)*(ln.ToX-ln.FromX) + (otherLn.ToY-otherLn.FromY)*(ln.ToY-ln.FromY) + (otherLn.ToZ-otherLn.FromZ)*(ln.ToZ-ln.FromZ)
         dot > 1e-12
 
-    /// Checks if the angle between the a 3D line and a 3D vector is less than 180 degrees.
+    /// Checks if the angle between a 3D line and a 3D vector is less than 90 degrees.
     /// Calculates the dot product of both.
     /// Then checks if it is bigger than 1e-12.
     member inline ln.MatchesOrientation180 (v:Vector3d) =
@@ -560,7 +560,7 @@ module AutoOpenLine =
         let au = a * (1.0 / sqrt sa)
         let bu = b * (1.0 / sqrt sb)
         let d = bu * au
-        float -maxCosine < d && d  < float maxCosine // = cosine of 98.75 and 90.25 degrees
+        float -maxCosine < d && d  < float maxCosine // = cosine of 89.75 and 90.25 degrees
 
 
     /// Checks if a 3D lines is perpendicular to a 3D vector.
@@ -579,7 +579,7 @@ module AutoOpenLine =
         let au = a * (1.0 / sqrt sa)
         let bu = b * (1.0 / sqrt sb)
         let d = bu * au
-        float -maxCosine < d && d  < float maxCosine // = cosine of 98.75 and 90.25 degrees
+        float -maxCosine < d && d  < float maxCosine // = cosine of 89.75 and 90.25 degrees
 
 
     /// Checks if two 3D lines are coincident within the distance tolerance. 1e-6 by default.
@@ -922,7 +922,7 @@ module AutoOpenLine =
         if orientationToMatch * lineToFlip.Vector  < 0.0 then lineToFlip.Reversed else lineToFlip
 
 
-    /// Checks if the angle between the two 3D lines is less than 180 degrees.
+    /// Checks if the angle between the two 3D lines is less than 90 degrees.
     /// Calculates the dot product of two 3D lines.
     /// Then checks if it is positive.
     static member inline matchesOrientation180 (l:Line) (ln:Line) =
@@ -935,23 +935,20 @@ module AutoOpenLine =
         l.MatchesOrientation90 ln
 
     /// Checks if two 3D lines are parallel. Ignoring orientation.
-    /// Calculates the cross product of the two line vectors. (= the area of the parallelogram)
-    /// And checks if it is smaller than 1e-9
-    /// (NOTE: for very long lines a higher tolerance might be needed)
+    /// The angle tolerance is 0.25 degrees.
+    /// Fails on lines shorter than zeroLengthTolerance (1e-12).
     static member inline areParallel (l:Line) (ln:Line) =
         l.IsParallelTo ln
 
     /// Checks if two 3D lines are parallel and orientated the same way.
-    /// Calculates the cross product of the two line vectors. (= the area of the parallelogram)
-    /// And checks if it is smaller than 1e-9
-    /// Then calculates the dot product and checks if it is positive.
-    /// (NOTE: for very long lines a higher tolerance might be needed)
+    /// The angle tolerance is 0.25 degrees.
+    /// Fails on lines shorter than zeroLengthTolerance (1e-12).
     static member inline areParallelAndMatchOrientation (l:Line) (ln:Line) =
         l.IsParallelAndOrientedTo ln
 
     /// Checks if two 3D lines are perpendicular.
-    /// Calculates the dot product and checks if it is smaller than 1e-9.
-    /// (NOTE: for very long lines a higher tolerance might be needed)
+    /// The angle tolerance is 89.75 to 90.25 degrees.
+    /// Fails on lines shorter than zeroLengthTolerance (1e-12).
     static member inline arePerpendicular(l:Line) (ln:Line) =
         l.IsPerpendicularTo(ln)
 
@@ -1237,7 +1234,7 @@ module AutoOpenLine =
 
     /// Divides a 3D line into as many as segments as possible respecting the minimum segment length and the gap.
     /// Includes a gap between the segments. But not at the start or end.
-    /// Returns an array ofe3D Lines
+    /// Returns an array of 3D Lines
     /// The input minSegmentLength is multiplied by factor 1.000001 to avoid numerical errors.
     /// That means in an edge case there are fewer segments returned, not more.
     /// At least one segment is returned.
@@ -1251,7 +1248,7 @@ module AutoOpenLine =
 
     /// Divides a 3D line into as few as segments as possible respecting the maximum segment length and the gap.
     /// Includes a gap between the segments. But not at the start or end.
-    /// Returns an array ofe3D Lines
+    /// Returns an array of 3D Lines
     /// The input maxSegmentLength is multiplied by factor 0.999999 of to avoid numerical errors.
     /// That means in an edge case there are fewer segments returned, not more.
     static member splitMaxLength (gap:float) (maxSegmentLength:float) (ln:Line)  : Line[] =
