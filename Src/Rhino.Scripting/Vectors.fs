@@ -82,12 +82,14 @@ module AutoOpenVectors =
 
 
         /// Returns the average of many points.
+        /// Fails on an empty sequence.
         static member MeanPoint(pts:Point3d seq) : Point3d  =
             let mutable p = Point3d.Origin
             let mutable k = 0.0
             for pt in pts do
                 k <- k + 1.0
                 p <- p + pt
+            if k = 0.0 then RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.MeanPoint: the sequence of points is empty"
             p/k
 
         /// Finds the mean normal of many points.
