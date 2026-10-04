@@ -19,8 +19,7 @@ module AutoOpenPlane=
     /// Returns signed distance of point to plane, also indicating on which side it is.
     member inline pl.DistanceToPt pt = pl.ZAxis * (pt-pl.Origin)
 
-    /// Returns the closest point on the plane from a test point.
-    member inline pl.ClosestPoint pt = pt - pl.ZAxis*(pl.DistanceToPt pt)
+    // pl.ClosestPoint(pt) is not defined here because RhinoCommon's intrinsic member with the same signature would always take precedence.
 
     /// Returns the X, Y and Z parameters of a point with regards to the plane.
     member inline pl.PointParameters pt =
@@ -29,7 +28,7 @@ module AutoOpenPlane=
 
     /// First finds the closest point on plane from a test point.
     /// Then returns a new plane with Origin at this point and the same Axes vectors.
-    member inline pl.PlaneAtClPt pt =
+    member inline pl.PlaneAtClPt (pt:Point3d) =
         let o = pl.ClosestPoint pt
         Plane(o, pl.XAxis, pl.YAxis)
 
@@ -152,14 +151,6 @@ module AutoOpenPlane=
     /// and the distance of second origin to the first plane is less than the tolerance.
     static member inline areCoincident tol (a:Plane) (b:Plane) =
         a.IsCoincidentTo (b,tol)
-
-    /// Returns the World Coordinate System Plane at World Origin.
-    /// X-axis = World X-axis
-    /// Y-axis = World Y-axis
-    /// Z-axis = World Z-axis
-    /// same as Plane.WorldTop
-    static member WorldXY =
-        Plane.WorldXY
 
     /// Returns the World Coordinate System Plane at World Origin.
     /// X-axis = World X-axis

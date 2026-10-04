@@ -53,12 +53,7 @@ module AutoOpenPnt =
         member inline pt.WithZ z =
             Point3d (pt.X, pt.Y, z)
 
-        /// Returns the distance between two 3D points.
-        member inline p.DistanceTo (b:Point3d) =
-            let x = p.X-b.X
-            let y = p.Y-b.Y
-            let z = p.Z-b.Z
-            sqrt(x*x + y*y + z*z)
+        // pt.DistanceTo(b) is not defined here because RhinoCommon's intrinsic member with the same signature would always take precedence.
 
         /// Returns the squared distance between two 3D points.
         /// This operation is slightly faster than the distance function, and sufficient for many algorithms like finding closest points.

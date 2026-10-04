@@ -13,12 +13,9 @@ module AutoOpenLine =
 
   type Line with // copied from Euclid 0.16
 
-    /// Returns the length of the line.
-    member inline ln.Length =
-        let x = ln.ToX-ln.FromX
-        let y = ln.ToY-ln.FromY
-        let z = ln.ToZ-ln.FromZ
-        sqrt(x*x + y*y + z*z)
+    // Extension members with the same name and signature as an intrinsic RhinoCommon member are never used by F#.
+    // Therefore ln.Length, ln.Direction and ln.UnitTangent are not defined here. RhinoCommon's members are used instead.
+    // RhinoCommon's ln.UnitTangent returns a zero vector for zero length lines, Line.unitTangent fails instead.
 
     /// Returns the square length of the line.
     member inline ln.LengthSq =
@@ -40,11 +37,6 @@ module AutoOpenLine =
             (PrettyFormat.float ln.ToZ)
 
 
-    /// Same as ln.Vector or ln.Tangent.
-    /// The returned vector has the same length as the Line.
-    member inline ln.Direction =
-        Vector3d(ln.ToX-ln.FromX, ln.ToY-ln.FromY, ln.ToZ-ln.FromZ)
-
     /// Same as ln.Tangent or ln.Direction.
     /// The returned vector has the same length as the Line.
     member inline ln.Vector =
@@ -54,16 +46,6 @@ module AutoOpenLine =
     /// The returned vector has the same length as the Line.
     member inline ln.Tangent =
         Vector3d(ln.ToX-ln.FromX, ln.ToY-ln.FromY, ln.ToZ-ln.FromZ)
-
-    /// Returns a unit-vector of the line Direction.
-    member inline ln.UnitTangent =
-        let x = ln.ToX-ln.FromX
-        let y = ln.ToY-ln.FromY
-        let z = ln.ToZ-ln.FromZ
-        let l = sqrt(x * x  + y * y + z * z)
-        if isTooTiny l then RhinoScriptingFSharpException.Raise "Line.UnitTangent: x:%g, y:%g and z:%g are too small for creating a unit-vector. Tolerance:%g" x y z zeroLengthTolerance
-        let s = 1.0 / l
-        Vector3d(x*s, y*s, z*s)
 
     /// Checks if line is parallel to the world X axis. Ignoring orientation.
     /// The absolute deviation tolerance along Y and Z axis is 1e-9.
@@ -800,8 +782,15 @@ module AutoOpenLine =
         Vector3d(ln.ToX-ln.FromX, ln.ToY-ln.FromY, ln.ToZ-ln.FromZ)
 
     /// Returns a unit-vector of the line Direction.
-    static member inline unitTangent (ln:Line) =
-        ln.UnitTangent
+    /// Fails on lines shorter than zeroLengthTolerance (1e-12).
+    static member inline unitTangent (ln:Line) : Vector3d =
+        let x = ln.ToX-ln.FromX
+        let y = ln.ToY-ln.FromY
+        let z = ln.ToZ-ln.FromZ
+        let l = sqrt(x * x  + y * y + z * z)
+        if isTooTiny l then RhinoScriptingFSharpException.Raise "Line.unitTangent: x:%g, y:%g and z:%g are too small for creating a unit-vector. Tolerance:%g" x y z zeroLengthTolerance
+        let s = 1.0 / l
+        Vector3d(x*s, y*s, z*s)
 
     /// Returns the length of the line.
     static member inline length (l:Line) =

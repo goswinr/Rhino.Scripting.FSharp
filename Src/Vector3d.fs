@@ -120,18 +120,13 @@ module AutoOpenVector3d =
         // These static members can't be extension methods to be useful for Array.sum and Array.average :
         //-----------------------------------------------------------------------------------------------------
 
-        /// Returns a boolean indicating whether X, Y and Z are all exactly 0.0.
-        member inline v.IsZero =
-            v.X = 0.0 && v.Y = 0.0 && v.Z = 0.0
+        // v.IsZero and v.IsTiny(tol) are not defined here as extension members
+        // because RhinoCommon's intrinsic members with the same name and signature would always take precedence.
+        // RhinoCommon's v.IsTiny(tol) checks each component, not the length. Use Vector3d.isTiny for a length check.
 
         /// Returns a boolean indicating if any of X, Y and Z is not exactly 0.0.
         member inline v.IsNotZero =
             not v.IsZero
-
-        /// Check if the 3D Vector3d is shorter than the tolerance.
-        /// Also checks if any component is a NaN.
-        member inline v.IsTiny tol =
-            not (v.Length > tol)
 
         /// Check if the 3D Vector3d square length is shorter than the squared tolerance.
         /// Also checks if any component is a NaN.
