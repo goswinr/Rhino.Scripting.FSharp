@@ -1178,14 +1178,15 @@ module AutoOpenLine =
 
     /// Divides a 3D line into as many as segments as possible respecting the minimum segment length.
     /// Returned Array includes start and endpoint of line.
-    /// The input minSegmentLength is multiplied by factor 1.000001 of to avoid numerical errors.
-    /// That means in an edge case there are more segments returned, not fewer.
+    /// The input minSegmentLength is multiplied by factor 1.000001 to avoid numerical errors.
+    /// That means in an edge case there are fewer segments returned, not more.
+    /// At least one segment is returned.
     static member divideMinLength (minSegmentLength:float) (ln:Line) : Point3d[] =
         let len = ln.Length
         if len < minSegmentLength then
             RhinoScriptingFSharpException.Raise "Line.divideMinLength: minSegmentLength %g is bigger than line length %g for %O"  minSegmentLength len ln
         let k = int (len / (minSegmentLength*1.00000095367431640625)) // 8 float steps above 1.0 https://float.exposed/0x3f800008
-        Line.divide k ln
+        Line.divide (max 1 k) ln // k is 0 if len is equal to minSegmentLength
 
 
     /// Divides a 3D line into as few as segments as possible respecting the maximum segment length.
@@ -1237,14 +1238,15 @@ module AutoOpenLine =
     /// Divides a 3D line into as many as segments as possible respecting the minimum segment length and the gap.
     /// Includes a gap between the segments. But not at the start or end.
     /// Returns an array ofe3D Lines
-    /// The input minSegmentLength is multiplied by factor 1.000001 of to avoid numerical errors.
-    /// That means in an edge case there are more segments returned, not fewer.
+    /// The input minSegmentLength is multiplied by factor 1.000001 to avoid numerical errors.
+    /// That means in an edge case there are fewer segments returned, not more.
+    /// At least one segment is returned.
     static member splitMinLength (gap:float) (minSegmentLength:float) (ln:Line) : Line[] =
         let len = ln.Length
         if len < minSegmentLength then
             RhinoScriptingFSharpException.Raise "Line.splitMinLength: minSegmentLength %g is bigger than line length %g for %O"  minSegmentLength len ln
         let k = int ((len+gap) / ((minSegmentLength+gap)*1.000000953)) // 8 float steps above 1.0 https://float.exposed/0x3f800008
-        Line.split gap k ln
+        Line.split gap (max 1 k) ln // k is 0 if len is equal to minSegmentLength
 
 
     /// Divides a 3D line into as few as segments as possible respecting the maximum segment length and the gap.
