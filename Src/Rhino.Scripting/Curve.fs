@@ -103,7 +103,8 @@ module AutoOpenCurve =
         let plc = new PolyCurve()
         if fillets.ContainsKey 0 then
             if closed then
-                let arc = RhinoScriptSyntax.FilletArc (polyline.[polyline.Count-1], polyline.[0], polyline.[1], fillets.[0])
+                // the last point is the same as the first point on closed polylines, so the previous point is at Count-2
+                let arc = RhinoScriptSyntax.FilletArc (polyline.[polyline.Count-2], polyline.[0], polyline.[1], fillets.[0])
                 plc.Append arc  |> ignore
                 prevPt <- arc.EndPoint
                 endPt <- arc.StartPoint
