@@ -198,20 +198,9 @@ module AutoOpenLine =
                 ln.FromY + y*b,
                 ln.FromZ + z*b)
 
-    /// Extend 3D line by absolute amount at start and end.
-    /// Fails on lines shorter than zeroLengthTolerance (1e-12).
-    member inline ln.Extend (distAtStart:float, distAtEnd:float) =
-        let x = ln.ToX-ln.FromX
-        let y = ln.ToY-ln.FromY
-        let z = ln.ToZ-ln.FromZ
-        let l = sqrt(x*x + y*y + z*z)
-        if isTooTiny l then RhinoScriptingFSharpException.Raise "Line.Extend %O too short for finding point at a distance." ln
-        Line( ln.FromX - x*distAtStart/l,
-                ln.FromY - y*distAtStart/l,
-                ln.FromZ - z*distAtStart/l,
-                ln.ToX   + x*distAtEnd/l,
-                ln.ToY   + y*distAtEnd/l,
-                ln.ToZ   + z*distAtEnd/l)
+    // ln.Extend(distAtStart, distAtEnd) is not defined here as an extension member
+    // because RhinoCommon's intrinsic Line.Extend(double, double) : bool (which mutates the line) would always take precedence.
+    // Use the static Line.extend function instead.
 
     /// Extend 3D line by absolute amount at start.
     /// Fails on lines shorter than zeroLengthTolerance (1e-12).
@@ -1025,9 +1014,20 @@ module AutoOpenLine =
         (t/l) * (pt-ln.From)
 
     /// Extend 3D line by absolute amount at start and end.
+    /// Returns a new line.
     /// Fails on lines shorter than zeroLengthTolerance (1e-12).
-    static member inline extend (distAtStart:float) (distAtEnd:float) (ln:Line) =
-        ln.Extend(distAtStart, distAtEnd)
+    static member inline extend (distAtStart:float) (distAtEnd:float) (ln:Line) : Line =
+        let x = ln.ToX-ln.FromX
+        let y = ln.ToY-ln.FromY
+        let z = ln.ToZ-ln.FromZ
+        let l = sqrt(x*x + y*y + z*z)
+        if isTooTiny l then RhinoScriptingFSharpException.Raise "Line.extend %O too short for finding point at a distance." ln
+        Line( ln.FromX - x*distAtStart/l,
+                ln.FromY - y*distAtStart/l,
+                ln.FromZ - z*distAtStart/l,
+                ln.ToX   + x*distAtEnd/l,
+                ln.ToY   + y*distAtEnd/l,
+                ln.ToZ   + z*distAtEnd/l)
 
     /// Extend 3D line by absolute amount at start.
     /// Fails on lines shorter than zeroLengthTolerance (1e-12).
