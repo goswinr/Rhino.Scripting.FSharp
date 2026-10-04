@@ -86,10 +86,11 @@ module RhPoints =
 
     /// Culls points if they are too close to the previous point.
     /// First and last points are always kept.
+    /// Returns a new ResizeArray.
     let cullDuplicatePointsInSeq (tolerance:float) (pts:ResizeArray<Point3d>) =
         if pts.Count = 0 then RhinoScriptingFSharpException.Raise "RhPoints.cullDuplicatePointsInSeq: empty list of points 'pts'"
         if pts.Count = 1 then
-            pts
+            ResizeArray(pts)
         else
             let tolSq = tolerance*tolerance
             let res  =  ResizeArray(pts.Count)
@@ -102,7 +103,8 @@ module RhPoints =
                     last <- pt
                     res.Add last
                 elif i=iLast then // to ensure last point stays the same
-                    res.RemoveAt(res.Count-1)
+                    if res.Count > 1 then // but never remove the first point
+                        res.RemoveAt(res.Count-1)
                     res.Add pt
             res
 
