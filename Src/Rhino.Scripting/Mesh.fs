@@ -125,13 +125,14 @@ module AutoOpenMesh =
             m.Faces.AddFace( m.Vertices.Add (e.X,e.Y,e.Z),  m.Vertices.Add (f.X,f.Y,f.Z),  a, d ) |>ignore
 
 
-        ///<summary>Makes a closed loop of welded quads from a list of lines. Requires at least 3 lines.
-        /// Last line is ignored; it is considered the same as the first one (e.g. coming from closed Polyline).</summary>
+        ///<summary>Makes a closed loop of welded quads from a list of lines. Requires at least 4 lines.
+        /// Last line is ignored; it is considered the same as the first one (e.g. coming from closed Polyline).
+        /// So at least 3 distinct lines are needed for a closed loop.</summary>
         ///<param name="m">(Mesh) The mesh to add the faces to</param>
         ///<param name="lns">(ResizeArray&lt;Line&gt;) The list of lines forming the loop</param>
         ///<returns>(unit) void, nothing.</returns>
         static member MeshAddLoopWelded (m:Mesh, lns:ResizeArray<Line>) =
-            if lns.Count < 3 then RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.MeshAddLoopWelded: Requires at least 3 lines, but got %d" lns.Count
+            if lns.Count < 4 then RhinoScriptingFSharpException.Raise "RhinoScriptSyntax.MeshAddLoopWelded: Requires at least 4 lines (the last one is ignored), but got %d" lns.Count
             // add first face
             let ln0 = lns.[0]
             let s0 = ln0.From
