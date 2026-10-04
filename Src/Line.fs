@@ -108,7 +108,7 @@ module AutoOpenLine =
     /// Check if 3D line is shorter than tolerance.
     ///  Or contains a NaN value
     member inline ln.IsTiny tol =
-        ln.Length < tol
+        not (ln.Length >= tol) // use 'not' to catch NaN too
 
     /// Check if 3D line is shorter than the squared tolerance.
     ///  Or contains a NaN value
@@ -807,7 +807,7 @@ module AutoOpenLine =
     /// Check if line is shorter than tolerance.
     /// Also checks if any component is a NaN.
     static member inline isTiny tol (l:Line) =
-        l.Length < tol
+        not (l.Length >= tol) // use 'not' to catch NaN too
 
     /// Check if the lines square length is shorter than squared tolerance.
     /// Also checks if any component is a NaN.
