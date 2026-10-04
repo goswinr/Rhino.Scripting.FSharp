@@ -1,12 +1,12 @@
 # Rhino.Scripting.FSharp - AI Coding Guidelines
 
 ## Project Overview
-F# extension library for [Rhino.Scripting](https://github.com/goswinr/Rhino.Scripting) that adds type extensions and curried functions for idiomatic F# pipeline composition in Rhino3D scripting. Targets .NET Framework 4.8 (Rhino 7) and .NET 7.0 (Rhino 8). There are no tests in this project.
+F# extension library for [Rhino.Scripting](https://github.com/goswinr/Rhino.Scripting) that adds type extensions and curried functions for idiomatic F# pipeline composition in Rhino3D scripting. Targets .NET Framework 4.8 (Rhino 7) and .NET 8.0 (Rhino 8), the same as Rhino.Scripting. There are no tests in this project.
 
 ## Build & Release
 
 ```powershell
-dotnet build  # Builds for both net48 and net7.0
+dotnet build  # Builds for both net48 and net8.0
 ```
 
 - Version is extracted from [CHANGELOG.md](CHANGELOG.md) by `Ionide.KeepAChangelog.Tasks` — update the changelog to set the version.
@@ -84,7 +84,7 @@ RhinoScriptingFSharpException.Raise "Line.UnitTangent: x:%g, y:%g and z:%g are t
 
 ## Dependencies
 - **Rhino.Scripting** (0.13.0) — core RhinoScript wrapper
-- **RhinoCommon** — v7.x for net48, v8.x for net7.0 (PrivateAssets, not redistributed)
+- **RhinoCommon** — v7.x for net48, v8.x for net8.0 (PrivateAssets, not redistributed)
 - Code derived from [Euclid](https://github.com/goswinr/Euclid) geometry library (noted in source comments as "Copied from Euclid 0.16")
 
 ## Thread Safety
