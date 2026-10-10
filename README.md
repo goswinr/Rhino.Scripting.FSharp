@@ -19,6 +19,7 @@ Opening `Rhino.Scripting.FSharp` will extend
 `Rhino.Scripting` and `Rhino.Geometry` types with additional static and member functions.
 
 ```fsharp
+#r "RhinoCommon"
 #r "nuget: Rhino.Scripting.FSharp"
 open Rhino.Scripting
 open Rhino.Scripting.FSharp
