@@ -6,10 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.15.0] - 2026-10-11
 ### Changed
 - Target net8.0 instead of net7.0, the same as Rhino.Scripting 0.14 (the net7.0 build was compiled against the net48 build of Rhino.Scripting)
 - The tolerance argument of `v.IsParallelTo` and `v.IsPerpendicularTo` on Vector3d is required now, because without it RhinoCommon's own members are called
 - Use LangVersion latest instead of preview
+- Depend on Rhino.Scripting 0.15.0
 ### Fixed
 - `Plane.WorldTop` was an infinite loop
 - `Line.extend` returned a bool instead of the extended Line
@@ -88,7 +91,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First public release
 - Referencing Rhino.Scripting 0.5.0
 
-[Unreleased]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.14.0...HEAD
+[Unreleased]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.15.0...HEAD
+[0.15.0]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.14.0...0.15.0
 [0.14.0]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.13.0...0.14.0
 [0.13.0]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.12.1...0.13.0
 [0.12.1]: https://github.com/goswinr/Rhino.Scripting.FSharp/compare/0.11.0...0.12.1
