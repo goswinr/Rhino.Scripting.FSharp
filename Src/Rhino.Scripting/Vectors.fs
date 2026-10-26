@@ -1,6 +1,7 @@
 ﻿namespace Rhino.Scripting.FSharp
 
 open System
+open System.ComponentModel
 open System.Collections.Generic
 open Rhino
 open Rhino.Geometry
@@ -16,7 +17,7 @@ open UtilRHinoScriptingFSharp
 /// This module provides functions to manipulate Rhino Vector3d
 /// This module is automatically opened when Rhino.Scripting.FSharp namespace is opened.
 /// These type extensions are only visible in F#.
-[<AutoOpen>]
+[<AutoOpen; EditorBrowsable(EditorBrowsableState.Never)>]
 module AutoOpenVectors =
 
     type RhinoScriptSyntax with

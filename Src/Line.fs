@@ -1,5 +1,6 @@
 ﻿namespace Rhino.Scripting.FSharp
 open Rhino.Scripting
+open System.ComponentModel
 open Rhino
 open Rhino.Geometry
 open Rhino.Scripting.RhinoScriptingUtils
@@ -8,7 +9,7 @@ open UtilRHinoScriptingFSharp
 
 /// When Rhino.Scripting.FSharp is opened this module will be auto-opened.
 /// It only contains extension members for type Line.
-[<AutoOpen>]
+[<AutoOpen; EditorBrowsable(EditorBrowsableState.Never)>]
 module AutoOpenLine =
 
   type Line with // copied from Euclid 0.16

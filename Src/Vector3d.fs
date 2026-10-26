@@ -1,6 +1,7 @@
 namespace Rhino.Scripting.FSharp
 
 open Rhino
+open System.ComponentModel
 open Rhino.Geometry
 open System
 open Rhino.Scripting.RhinoScriptingUtils
@@ -68,7 +69,7 @@ module internal VecUnitized =
 
 /// When Rhino.Scripting.FSharp is opened this module will be auto-opened.
 /// It only contains extension members for type Vector3d.
-[<AutoOpen>]
+[<AutoOpen; EditorBrowsable(EditorBrowsableState.Never)>]
 module AutoOpenVector3d =
 
     type Vector3d with // copied from Euclid 0.16

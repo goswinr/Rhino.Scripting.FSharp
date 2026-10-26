@@ -1,6 +1,7 @@
 ﻿namespace Rhino.Scripting.FSharp
 
 open System
+open System.ComponentModel
 open System.Collections.Generic
 
 open Rhino
@@ -11,7 +12,7 @@ open Rhino.Scripting
 /// This module provides functions similar to Rhino.Scripting.FSharp.GetObject(..)
 /// This module is automatically opened when Rhino.Scripting.FSharp namespace is opened.
 /// These type extensions are only visible in F#.
-[<AutoOpen>]
+[<AutoOpen; EditorBrowsable(EditorBrowsableState.Never)>]
 module AutoOpenSelection =
 
   // these functions are similar to the ones found in Rhino.Scripting: Scripting_Selection.fs

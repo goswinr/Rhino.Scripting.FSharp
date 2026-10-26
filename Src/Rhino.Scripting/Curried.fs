@@ -2,6 +2,7 @@
 
 
 open System
+open System.ComponentModel
 open Rhino.Geometry
 open Rhino.Scripting
 open Rhino.Scripting.RhinoScriptingUtils
@@ -10,7 +11,7 @@ open Rhino.Scripting.RhinoScriptingUtils
 
 /// This module provides curried F# functions for easy use with pipeline operator |>
 /// This module is automatically opened when Rhino.Scripting.FSharp namespace is opened.
-[<AutoOpen>]
+[<AutoOpen; EditorBrowsable(EditorBrowsableState.Never)>]
 module AutoOpenCurried =
 
   /// Apply function, like |> , but ignore result.

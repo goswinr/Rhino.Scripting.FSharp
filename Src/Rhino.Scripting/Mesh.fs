@@ -1,6 +1,7 @@
 ﻿namespace Rhino.Scripting.FSharp
 
 open Rhino
+open System.ComponentModel
 open Rhino.Geometry
 open Rhino.Scripting
 open Rhino.Scripting.RhinoScriptingUtils
@@ -9,7 +10,7 @@ open Rhino.Scripting.RhinoScriptingUtils
 /// This module provides functions to create or manipulate Rhino Meshes
 /// This module is automatically opened when Rhino.Scripting.FSharp namespace is opened.
 /// These type extensions are only visible in F#.
-[<AutoOpen>]
+[<AutoOpen; EditorBrowsable(EditorBrowsableState.Never)>]
 module AutoOpenMesh =
 
     type RhinoScriptSyntax with

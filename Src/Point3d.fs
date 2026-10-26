@@ -1,6 +1,7 @@
 namespace Rhino.Scripting.FSharp
 
 open Rhino.Scripting
+open System.ComponentModel
 open System
 open Rhino
 open Rhino.Geometry
@@ -11,7 +12,7 @@ open UtilRHinoScriptingFSharp
 
 /// When Rhino.Scripting.FSharp is opened this module will be auto-opened.
 /// It only contains extension members for type Point3d.
-[<AutoOpen>]
+[<AutoOpen; EditorBrowsable(EditorBrowsableState.Never)>]
 module AutoOpenPnt =
 
     type Point3d with // copied from Euclid 0.16

@@ -1,6 +1,7 @@
 ﻿namespace Rhino.Scripting.FSharp
 
 open System
+open System.ComponentModel
 open Rhino
 open Rhino.Geometry
 open Rhino.Scripting
@@ -9,7 +10,7 @@ open Rhino.Scripting.RhinoScriptingUtils
 /// This module provides functions to create or manipulate Rhino Breps/Polysurfaces.
 /// This module is automatically opened when Rhino.Scripting.FSharp namespace is opened.
 /// These type extensions are only visible in F#.
-[<AutoOpen>]
+[<AutoOpen; EditorBrowsable(EditorBrowsableState.Never)>]
 module AutoOpenBrep =
 
   type RhinoScriptSyntax with // TODO change to Brep type extensions ??!!

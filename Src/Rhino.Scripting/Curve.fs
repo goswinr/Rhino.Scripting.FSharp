@@ -1,6 +1,7 @@
 ﻿namespace Rhino.Scripting.FSharp
 
 open System
+open System.ComponentModel
 open System.Collections.Generic
 open Rhino
 open Rhino.Geometry
@@ -10,7 +11,7 @@ open Rhino.Scripting
 /// This module provides functions to create or manipulate Rhino Curves
 /// This module is automatically opened when Rhino.Scripting.FSharp namespace is opened.
 /// These type extensions are only visible in F#.
-[<AutoOpen>]
+[<AutoOpen; EditorBrowsable(EditorBrowsableState.Never)>]
 module AutoOpenCurve =
 
   type PolylineCurve with

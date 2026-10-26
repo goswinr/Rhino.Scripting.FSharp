@@ -1,6 +1,7 @@
 ﻿namespace Rhino.Scripting.FSharp
 
 open System
+open System.ComponentModel
 open Rhino
 open Rhino.Scripting
 open Rhino.Scripting.RhinoScriptingUtils
@@ -10,7 +11,7 @@ open Rhino.Scripting.RhinoScriptingUtils
 
 /// This module provides the 'pretty' function and colored printing to the Rhino command line.
 /// This module is automatically opened when Rhino.Scripting.FSharp namespace is opened.
-[<AutoOpen>]
+[<AutoOpen; EditorBrowsable(EditorBrowsableState.Never)>]
 module AutoOpenPrinting =
 
     /// Formats any value to a string using F#'s "%A" formatting (for now).

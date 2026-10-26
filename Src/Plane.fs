@@ -1,6 +1,7 @@
 ﻿namespace Rhino.Scripting.FSharp
 
 open System
+open System.ComponentModel
 open Rhino
 open Rhino.Geometry
 open Rhino.Scripting
@@ -11,7 +12,7 @@ open Rhino.Scripting.RhinoScriptingUtils
 
 /// When Rhino.Scripting.FSharp is opened this module will be auto-opened.
 /// It only contains extension members for type Plane.
-[<AutoOpen>]
+[<AutoOpen; EditorBrowsable(EditorBrowsableState.Never)>]
 module AutoOpenPlane=
 
   type Plane with  // copied from Euclid 0.16
